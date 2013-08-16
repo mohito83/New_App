@@ -1,0 +1,52 @@
+package youtubedownloader;
+
+option java_package = "edu.isi.usaid.pifi";
+option java_outer_classname = "VideosProtos";
+
+message Video {
+  required string filename = 1; 
+  required string id = 2;
+  required string kind = 3;
+  required string etag = 4;
+  message Snippet{
+    required string publishedAt = 1;
+    required string channelId = 2;
+    required string title = 3;
+    required string description = 4;
+    message Thumbnails {  
+    	message Thumbnail {
+    		required string url = 1;
+    	}
+      required Thumbnail default = 1;
+      required Thumbnail medium = 2;
+      required Thumbnail high = 3;
+    }
+    required Thumbnails thumbnails = 5;
+    required string channelTitle = 6;
+    required string categoryId = 7;
+
+  }
+  required Snippet snippet = 5;
+
+  message ContentDetails {
+    required string duration = 1;
+    required string dimension = 2;
+    required string definition = 3;
+    required bool caption = 4;
+    required bool licensedContent = 5;
+  }
+  required ContentDetails contentDetails = 6;
+
+  message Statistics {
+    required int32 viewCount = 1;
+    required int32 likeCount = 2;
+    required int32 dislikeCount = 3; 
+    required int32 favoriteCount = 4;
+    required int32 commentCount = 5;
+  }
+  required Statistics statistics = 7;
+}
+
+message Videos {
+  repeated Video video = 1;
+}

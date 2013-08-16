@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PiFi</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_video_player">PiFi</string>
+    <string name="title_activity_fullscreen_video">PiFi</string>
+    <string name="description">PiFi</string>
+    <string name="title_activity_test_video">TestVideoActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_video_player2">VideoPlayer2Activity</string>
+
+</resources>
