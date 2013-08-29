@@ -1,12 +1,14 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".VideoPlayerActivity" >
+    android:orientation="vertical" >
     
     <TextView
         android:id="@+id/videoPlayerTitle"
@@ -17,28 +19,25 @@
         android:textSize="15sp"
         android:textStyle="bold"/>
 
-    <VideoView
-        android:id="@+id/videoPlayer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/videoPlayerTitle"/>
-    
-    <Button
-        android:id="@+id/fullscreenButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Fullscreen"
-        android:layout_below="@+id/videoPlayer"/>
-    
-    <TextView
-        android:id="@+id/videoPlayerDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#343434"
-        android:textSize="12sp"
-        android:layout_below="@+id/fullscreenButton"/>
-    
-    
-    
+    <FrameLayout
+        android:id="@+id/videoSurfaceContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-</RelativeLayout>
+        <VideoView
+            android:id="@+id/videoSurface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+    
+    <ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+	    <TextView
+	        android:id="@+id/videoPlayerDesc"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="#343434"
+	        android:textSize="12sp"/>
+	</ScrollView>
+</LinearLayout>

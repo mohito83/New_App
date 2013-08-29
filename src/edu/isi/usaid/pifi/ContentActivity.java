@@ -21,6 +21,17 @@ import edu.isi.usaid.pifi.R;
 import edu.isi.usaid.pifi.VideosProtos.Video;
 import edu.isi.usaid.pifi.VideosProtos.Videos;
 
+/**
+ * 
+ * @author jenniferchen
+ * 
+ * This is the main activity of the app. It shows a list of content from the content directory.
+ * The activity reads the list of content from the metadata file, which uses protocol buffers.
+ * It shows the content as a list.
+ * 
+ * User can select a content to view.
+ * 
+ */
 public class ContentActivity extends Activity implements
 ActionBar.OnNavigationListener {
 	
@@ -58,8 +69,7 @@ ActionBar.OnNavigationListener {
 		
 		// read meatadata
 		metaFile = new File(contentDirectory, metaFileName);
-		if (!metaFile.exists()){
-			// TODO?
+		if (!metaFile.exists()){ // TODO no metadata
 		}
 		try {
 			
@@ -100,8 +110,9 @@ ActionBar.OnNavigationListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int pos, long id) {
+					// play video when content selected
 					Video video = contentListAdapter.getItem(pos);
-					Intent i = new Intent(getApplicationContext(), VideoPlayer2Activity.class);
+					Intent i = new Intent(getApplicationContext(), VideoPlayerActivity.class);
 					i.putExtra("video", contentDirectory + "/" + video.getFilename());
 					i.putExtra("title", video.getSnippet().getTitle());
 					i.putExtra("description", video.getSnippet().getDescription());
@@ -127,6 +138,7 @@ ActionBar.OnNavigationListener {
 	@Override
 	public boolean onNavigationItemSelected(int index, long itemId) {
 		
+		// user selected a different category
 		String cat = categories.get(index);
 		if (cat != selectedCat){
 			contentListAdapter.clear();
@@ -138,6 +150,7 @@ ActionBar.OnNavigationListener {
 					contentListAdapter.add(v);
 				}
 			}
+			// update list
 			contentListAdapter.notifyDataSetChanged();
 			selectedCat = cat;
 		}

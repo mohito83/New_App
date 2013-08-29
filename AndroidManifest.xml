@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="12"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,11 +27,6 @@
         <activity
             android:name="edu.isi.usaid.pifi.VideoPlayerActivity"
             android:label="@string/title_activity_video_player"
-            android:parentActivityName="edu.isi.usaid.pifi.ContentActivity" >
-        </activity>
-        <activity
-            android:name="edu.isi.usaid.pifi.VideoPlayer2Activity"
-            android:label="@string/title_activity_video_player2"
             android:parentActivityName="edu.isi.usaid.pifi.ContentActivity" >
         </activity>
         <activity

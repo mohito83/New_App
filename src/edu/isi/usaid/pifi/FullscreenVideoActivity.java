@@ -9,7 +9,13 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
-
+/**
+ * 
+ * @author jenniferchen
+ * 
+ * This activity is a fullscreen video view
+ * 
+ */
 public class FullscreenVideoActivity extends Activity implements VideoControllerView.MediaPlayerControl {
 	
 	private VideoView videoView;
@@ -118,7 +124,7 @@ public class FullscreenVideoActivity extends Activity implements VideoController
     public void toggleFullScreen() {
     	int pos = videoView.getCurrentPosition();
     	videoView.stopPlayback();
-		Intent i = new Intent(getApplicationContext(), VideoPlayer2Activity.class);
+		Intent i = new Intent(getApplicationContext(), VideoPlayerActivity.class);
 		i.putExtra("position", pos);
 		setResult(Activity.RESULT_OK, i);
 		finish();
@@ -126,6 +132,7 @@ public class FullscreenVideoActivity extends Activity implements VideoController
     
     @Override
 	public void onBackPressed() {
+    	videoView.stopPlayback();
 	    super.onBackPressed();
 	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
