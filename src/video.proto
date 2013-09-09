@@ -1,6 +1,6 @@
 package youtubedownloader;
 
-option java_package = "edu.isi.usaid.pifi";
+option java_package = "edu.isi.usaid.pifi.metadata";
 option java_outer_classname = "VideosProtos";
 
 message Video {
@@ -24,6 +24,7 @@ message Video {
     required Thumbnails thumbnails = 5;
     required string channelTitle = 6;
     required string categoryId = 7;
+    repeated string comments = 8;
 
   }
   required Snippet snippet = 5;

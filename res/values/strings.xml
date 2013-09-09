@@ -9,5 +9,7 @@
     <string name="title_activity_test_video">TestVideoActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_video_player2">VideoPlayer2Activity</string>
+    <string name="title_activity_html">HtmlActivity</string>
+    <string name="title_activity_content_viewer">Content Viewer</string>
 
 </resources>

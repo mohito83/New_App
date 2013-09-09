@@ -71,7 +71,7 @@ public class BitmapTask extends AsyncTask<Uri, Integer, Bitmap>{
 			
 			// resize
 			Bitmap bitmap = Bitmap.createScaledBitmap(bm, (int)(bm.getWidth()/sampleSize), (int)(bm.getHeight()/sampleSize), false);
-			imageCache.put(uri[0].getPath(), bitmap);
+			imageCache.put(uri[0].toString(), bitmap);
 			return bitmap;
 			
 		} catch (FileNotFoundException e) {

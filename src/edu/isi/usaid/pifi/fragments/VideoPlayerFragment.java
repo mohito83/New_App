@@ -1,14 +1,22 @@
-package edu.isi.usaid.pifi;
+package edu.isi.usaid.pifi.fragments;
 
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
+import edu.isi.usaid.pifi.ExtraConstants;
+import edu.isi.usaid.pifi.FullscreenVideoActivity;
+import edu.isi.usaid.pifi.R;
+import edu.isi.usaid.pifi.VideoControllerView;
 
 /**
  * 
@@ -17,7 +25,7 @@ import android.widget.VideoView;
  * This activity shows the video and its description
  * 
  */
-public class VideoPlayerActivity extends Activity implements VideoControllerView.MediaPlayerControl {
+public class VideoPlayerFragment extends Fragment implements VideoControllerView.MediaPlayerControl {
 
     private VideoView videoSurface;
     
@@ -25,42 +33,64 @@ public class VideoPlayerActivity extends Activity implements VideoControllerView
     
     private String videoSource;
     
+    private TextView descView;
+    
     private static final int FULLSCREEN_ACTIVITY = 1011;
+    
+    public static final VideoPlayerFragment newInstance(String source, String title, String desc){
+		VideoPlayerFragment f = new VideoPlayerFragment();
+		Bundle b = new Bundle(3);
+		b.putString(ExtraConstants.PATH, source);
+		b.putString(ExtraConstants.TITLE, title);
+		b.putString(ExtraConstants.DESCRIPTION, desc);
+		f.setArguments(b);
+		return f;
+	}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_player);
         
-        // this is to show the up button on action bar to go back to home screen
-     	getActionBar().setDisplayHomeAsUpEnabled(true);
      	
-     	// UI objects
-     	videoSurface = (VideoView) findViewById(R.id.videoSurface);
-     	TextView titleView = (TextView)findViewById(R.id.videoPlayerTitle);
-		TextView descView = (TextView)findViewById(R.id.videoPlayerDesc);
+        
+    }
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    		Bundle savedInstanceState){
+    	ViewGroup rootView = (ViewGroup) inflater
+    			.inflate(R.layout.fragment_video_player, container, false);
+    	
+    	// UI objects
+     	videoSurface = (VideoView) rootView.findViewById(R.id.videoSurface);
+     	TextView titleView = (TextView)rootView.findViewById(R.id.videoPlayerTitle);
+		descView = (TextView)rootView.findViewById(R.id.videoPlayerDesc);
 		
      	// intent
-     	Intent i = getIntent();
-        videoSource = i.getStringExtra("video");
-        titleView.setText(i.getStringExtra("title"));
-		descView.setText(i.getStringExtra("description"));
+        videoSource = getArguments().getString(ExtraConstants.PATH);
+        titleView.setText(getArguments().getString(ExtraConstants.TITLE));
+		descView.setText(getArguments().getString(ExtraConstants.DESCRIPTION));
         
 		// video controller
-        controller = new VideoControllerView(this);
+        controller = new VideoControllerView(getActivity());
         controller.setMediaPlayer(this);
-        controller.setAnchorView((FrameLayout) findViewById(R.id.videoSurfaceContainer));
+        controller.setAnchorView((FrameLayout) rootView.findViewById(R.id.videoSurfaceContainer));
         
+        videoSurface.setOnTouchListener(new OnTouchListener(){
+
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				controller.show();
+		        return false;
+			}
+        	
+        });
         videoSurface.setVideoPath(videoSource);
         videoSurface.start();
         
+        return rootView;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        controller.show();
-        return false;
-    }
     
     @Override
     /**
@@ -73,7 +103,7 @@ public class VideoPlayerActivity extends Activity implements VideoControllerView
       switch(requestCode) {
         case (FULLSCREEN_ACTIVITY) : {
           if (resultCode == Activity.RESULT_OK) {
-        	  int pos = data.getIntExtra("position", 0);
+        	  int pos = data.getIntExtra(ExtraConstants.POSITION, 0);
         	  videoSurface.seekTo(pos);
         	  videoSurface.start();
           }
@@ -81,7 +111,7 @@ public class VideoPlayerActivity extends Activity implements VideoControllerView
         } 
       }
     }
-
+    
 
     // Implement VideoMediaController.MediaPlayerControl
     @Override
@@ -143,32 +173,11 @@ public class VideoPlayerActivity extends Activity implements VideoControllerView
     public void toggleFullScreen() {
     	int pos = videoSurface.getCurrentPosition();
     	videoSurface.stopPlayback();
-		Intent i = new Intent(getApplicationContext(), FullscreenVideoActivity.class);
-		i.putExtra("video", videoSource);
-		i.putExtra("position", pos);
+		Intent i = new Intent(getActivity(), FullscreenVideoActivity.class);
+		i.putExtra(ExtraConstants.PATH, videoSource);
+		i.putExtra(ExtraConstants.POSITION, pos);
 		startActivityForResult(i, FULLSCREEN_ACTIVITY);
     }
-    
-    @Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.video_player, menu);
-		return true;
-	}
-    
-	@Override
-	public void onBackPressed() {
-		videoSurface.stopPlayback();
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-	}
 
-	@Override
-	public boolean onNavigateUp() {
-		videoSurface.stopPlayback();
-		boolean r = super.onNavigateUp();
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-		return r;
-	}
 
 }

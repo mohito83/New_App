@@ -1,5 +1,6 @@
 package edu.isi.usaid.pifi;
 
+import edu.isi.usaid.pifi.fragments.VideoPlayerFragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -30,9 +31,9 @@ public class FullscreenVideoActivity extends Activity implements VideoController
 		setContentView(R.layout.activity_fullscreen_video);
 		
 		videoView = (VideoView)findViewById(R.id.fullVideoSurface);
-		videoSource = getIntent().getStringExtra("video");
+		videoSource = getIntent().getStringExtra(ExtraConstants.PATH);
 		videoView.setVideoPath(videoSource);
-		int pos = getIntent().getIntExtra("position", 0);
+		int pos = getIntent().getIntExtra(ExtraConstants.POSITION, 0);
 		videoView.seekTo(pos); // start where left off
 		
 		controller = new VideoControllerView(this);
@@ -124,8 +125,8 @@ public class FullscreenVideoActivity extends Activity implements VideoController
     public void toggleFullScreen() {
     	int pos = videoView.getCurrentPosition();
     	videoView.stopPlayback();
-		Intent i = new Intent(getApplicationContext(), VideoPlayerActivity.class);
-		i.putExtra("position", pos);
+		Intent i = new Intent(getApplicationContext(), VideoPlayerFragment.class);
+		i.putExtra(ExtraConstants.POSITION, pos);
 		setResult(Activity.RESULT_OK, i);
 		finish();
     }

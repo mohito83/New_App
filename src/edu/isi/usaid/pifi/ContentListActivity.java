@@ -5,10 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -17,9 +19,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import edu.isi.usaid.pifi.R;
-import edu.isi.usaid.pifi.VideosProtos.Video;
-import edu.isi.usaid.pifi.VideosProtos.Videos;
+import edu.isi.usaid.pifi.metadata.ArticlesProtos.Article;
+import edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles;
+import edu.isi.usaid.pifi.metadata.VideosProtos.Video;
+import edu.isi.usaid.pifi.metadata.VideosProtos.Videos;
 
 /**
  * 
@@ -31,8 +34,10 @@ import edu.isi.usaid.pifi.VideosProtos.Videos;
  * 
  * User can select a content to view.
  * 
+ * TODO articles have no categories right now
+ * 
  */
-public class ContentActivity extends Activity implements
+public class ContentListActivity extends Activity implements
 ActionBar.OnNavigationListener {
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
@@ -41,11 +46,17 @@ ActionBar.OnNavigationListener {
 	
 	private static final String metaFileName = "videos.dat";
 	
+	private static final String webMetaFileName = "news.dat";
+	
 	private File contentDirectory;
 	
 	private File metaFile;
 	
+	private File webMetaFile;
+	
 	private Videos metadata;
+	
+	private Articles webMetadata;
 	
 	private ListView contentList;
 	
@@ -69,6 +80,7 @@ ActionBar.OnNavigationListener {
 		
 		// read meatadata
 		metaFile = new File(contentDirectory, metaFileName);
+		webMetaFile = new File(contentDirectory, webMetaFileName);
 		if (!metaFile.exists()){ // TODO no metadata
 		}
 		try {
@@ -76,6 +88,14 @@ ActionBar.OnNavigationListener {
 			metadata = Videos.parseFrom(new FileInputStream(metaFile));
 			ArrayList<Video> videos = new ArrayList<Video>();
 			videos.addAll(metadata.getVideoList());
+			
+			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
+			ArrayList<Article> articles = new ArrayList<Article>();
+			articles.addAll(webMetadata.getArticleList());
+			
+			ArrayList<Object> allContents = new ArrayList<Object>();
+			allContents.addAll(videos);
+			allContents.addAll(articles);
 			
 			// TODO need a better way to get the list of categories
 			categories = new ArrayList<String>();
@@ -103,20 +123,38 @@ ActionBar.OnNavigationListener {
 			
 			// list of content
 			contentList = (ListView)findViewById(R.id.listing);
-			contentListAdapter = new ContentListAdapter(this, videos, contentDirectory.getAbsolutePath());
+			contentListAdapter = new ContentListAdapter(this, allContents, contentDirectory.getAbsolutePath());
 			contentList.setAdapter(contentListAdapter);
 			contentList.setOnItemClickListener(new OnItemClickListener(){
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int pos, long id) {
-					// play video when content selected
-					Video video = contentListAdapter.getItem(pos);
-					Intent i = new Intent(getApplicationContext(), VideoPlayerActivity.class);
-					i.putExtra("video", contentDirectory + "/" + video.getFilename());
-					i.putExtra("title", video.getSnippet().getTitle());
-					i.putExtra("description", video.getSnippet().getDescription());
-					startActivity(i);
+					
+					Object content = contentListAdapter.getItem(pos);
+					Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
+					
+					// if selected a video
+					if (content instanceof Video){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
+						Video video = (Video)content;
+						intent.putExtra(ExtraConstants.PATH, contentDirectory + "/" + video.getFilename());
+						intent.putExtra(ExtraConstants.TITLE, video.getSnippet().getTitle());
+						intent.putExtra(ExtraConstants.DESCRIPTION, video.getSnippet().getDescription());
+						List<String> commentsList = video.getSnippet().getCommentsList();
+						String[] comments = new String[commentsList.size()];
+						comments = commentsList.toArray(comments);
+						intent.putExtra(ExtraConstants.COMMENTS, comments);
+					}
+					else if (content instanceof Article){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
+						Article article = (Article)content;
+						File htmlFile = new File(contentDirectory + "/" + article.getFilename());
+						Uri uri = Uri.fromFile(htmlFile);
+						intent.putExtra(ExtraConstants.URI, uri.toString());
+					}
+					
+					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
 				
@@ -142,8 +180,10 @@ ActionBar.OnNavigationListener {
 		String cat = categories.get(index);
 		if (cat != selectedCat){
 			contentListAdapter.clear();
-			if (cat.equals("All"))
+			if (cat.equals("All")){
 				contentListAdapter.addAll(metadata.getVideoList());
+				contentListAdapter.addAll(webMetadata.getArticleList());
+			}
 			else {
 				for (Video v : metadata.getVideoList()){
 					if (v.getSnippet().getCategoryId().equals(cat))

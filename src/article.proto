@@ -1,0 +1,24 @@
+package webcrawler;
+
+option java_package = "edu.isi.usaid.pifi.metadata";
+option java_outer_classname = "ArticlesProtos";
+
+message Article {
+  required string filename = 1;
+  required string domain = 2;
+  required string url = 3;
+  required string direction = 4;
+  required string content = 5;
+  optional string title = 6;
+  optional string thumbnail = 7;
+  optional string date_published = 8;
+  optional int32 next_page_id = 9;
+  optional int32 total_pages = 10;
+  optional int32 word_count = 11;
+  optional string author = 12;
+  optional string dek = 13;
+}
+
+message Articles {
+  repeated Article article = 1;
+}

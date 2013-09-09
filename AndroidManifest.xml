@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="edu.isi.usaid.pifi.ContentActivity"
+            android:name="edu.isi.usaid.pifi.ContentListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,10 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="edu.isi.usaid.pifi.VideoPlayerActivity"
-            android:label="@string/title_activity_video_player"
-            android:parentActivityName="edu.isi.usaid.pifi.ContentActivity" >
+                <activity
+            android:name="edu.isi.usaid.pifi.ContentViewerActivity"
+            android:label="@string/title_activity_content_viewer"
+            android:parentActivityName="edu.isi.usaid.pifi.ContentListActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
         <activity
             android:name="edu.isi.usaid.pifi.FullscreenVideoActivity"
