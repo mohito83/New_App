@@ -13,6 +13,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.WindowManager;
+import edu.isi.usaid.pifi.fragments.DescriptionFragment;
 import edu.isi.usaid.pifi.fragments.HtmlFragment;
 import edu.isi.usaid.pifi.fragments.VideoPlayerFragment;
 
@@ -67,11 +68,12 @@ public class ContentViewerActivity extends FragmentActivity {
 		if (type.equals(ExtraConstants.TYPE_VIDEO)){
 			f.add(VideoPlayerFragment.newInstance(
 					getIntent().getStringExtra(ExtraConstants.PATH),
-					getIntent().getStringExtra(ExtraConstants.TITLE),
-					getIntent().getStringExtra(ExtraConstants.DESCRIPTION)));
+					getIntent().getStringExtra(ExtraConstants.TITLE)));
+			f.add(DescriptionFragment.newInstance(getIntent().getStringExtra(ExtraConstants.DESCRIPTION)));
 		}
 		else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
 			f.add(HtmlFragment.newInstance(getIntent().getStringExtra(ExtraConstants.URI)));
+			f.add(DescriptionFragment.newInstance("No Description")); // TODO description for article
 		}
 		return f;
 	}
