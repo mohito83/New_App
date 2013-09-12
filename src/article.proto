@@ -1,7 +1,9 @@
-package webcrawler;
+package metadata;
 
 option java_package = "edu.isi.usaid.pifi.metadata";
-option java_outer_classname = "ArticlesProtos";
+option java_outer_classname = "ArticleProtos";
+
+import "comment.proto";
 
 message Article {
   required string filename = 1;
@@ -17,6 +19,7 @@ message Article {
   optional int32 word_count = 11;
   optional string author = 12;
   optional string dek = 13;
+  repeated Comment comments = 14;
 }
 
 message Articles {
