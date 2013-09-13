@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.WindowManager;
 
@@ -55,6 +59,50 @@ public class ContentViewerActivity extends FragmentActivity {
 		pager = (ViewPager)findViewById(R.id.pager);
 		pagerAdapter = new PageAdapter(getSupportFragmentManager(), getFragments());
 		pager.setAdapter(pagerAdapter);
+		
+		// show tabs
+		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		// tab change listener
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			
+			@Override
+			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			}
+			
+			@Override
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+				pager.setCurrentItem(tab.getPosition(), true);
+			}
+			
+			@Override
+			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+				
+			}
+		};
+		
+		// create tabs, specifying the tab's text and TabListener
+        getActionBar().addTab(getActionBar().newTab().setText("View Content").setTabListener(tabListener));
+        getActionBar().addTab(getActionBar().newTab().setText("Description").setTabListener(tabListener));
+        getActionBar().addTab(getActionBar().newTab().setText("Comments").setTabListener(tabListener));
+        
+        // swip listener
+        pager.setOnPageChangeListener(new OnPageChangeListener(){
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				getActionBar().setSelectedNavigationItem(arg0);
+			}
+        	
+        });
 		
 		// this prevent video to start over when orientation is changed
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

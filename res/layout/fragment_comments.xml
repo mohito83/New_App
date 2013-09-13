@@ -12,12 +12,13 @@
         <EditText
             android:id="@+id/userComment"
            	android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="100dp"
 	        android:inputType="textMultiLine" 
 	        android:scrollHorizontally="false"
         	android:scrollbars="vertical"
-	        android:lines="3"
-	        android:textSize="12sp"
+	        android:textSize="13sp"
+	        android:maxLength="200"
+	        android:gravity="top|start"
 	        android:singleLine="false" />
 
         <Button
