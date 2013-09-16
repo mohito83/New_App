@@ -20,10 +20,11 @@ import edu.isi.usaid.pifi.R;
  */
 public class DescriptionFragment extends Fragment {
 	
-	public static final DescriptionFragment newInstance(String description){
+	public static final DescriptionFragment newInstance(String date, String description){
 		DescriptionFragment f = new DescriptionFragment();
-		Bundle bundle = new Bundle(1);
+		Bundle bundle = new Bundle(2);
 		bundle.putString(ExtraConstants.DESCRIPTION, description);
+		bundle.putString(ExtraConstants.DATE, date);
 		f.setArguments(bundle);
 		return f;
 	}
@@ -35,6 +36,8 @@ public class DescriptionFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater
                 .inflate(R.layout.fragment_description, container, false);
 
+        TextView dateView = (TextView)rootView.findViewById(R.id.publishDate);
+        dateView.setText(getArguments().getString(ExtraConstants.DATE));
         TextView descView = (TextView)rootView.findViewById(R.id.fullDescription);
         descView.setText(getArguments().getString(ExtraConstants.DESCRIPTION));
 

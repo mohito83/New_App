@@ -4,13 +4,16 @@
 package edu.isi.usaid.pifi.fragments;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -62,9 +65,12 @@ public class CommentsFragment extends Fragment {
 	        addButton = (Button)rootView.findViewById(R.id.submitComment);
 	        commentsView = (TextView)rootView.findViewById(R.id.comments);
 	        
-	        for (Comment comment : comments){
-	        	commentsView.append(comment.getUser() + " (" + comment.getDate() + ")\n");
-	        	commentsView.append(comment.getText() + "\n\n");
+	        ListIterator<Comment> iter = comments.listIterator(comments.size()); // bi-directional iterator
+	        while (iter.hasPrevious()){ // want to show comments in reverse order
+	        	Comment comment = iter.previous();
+	        	commentsView.append(Html.fromHtml(
+	        			"<b>" + comment.getUser() + "</b> (" + comment.getDate() + ")<br />"));
+	        	commentsView.append(Html.fromHtml(comment.getText() + "<br/><br/>"));
 	        	
 	        }
 	        
@@ -78,7 +84,12 @@ public class CommentsFragment extends Fragment {
 						String user = "anonymous";
 						Date d = new Date();
 						String date = sdf.format(d);
-						commentsView.append(user + " (" + date + ")\n" + text + "\n\n");
+						
+						// add to top of the view
+						CharSequence oldText = commentsView.getText();
+						commentsView.setText(Html.fromHtml(
+								"<p><b>" + user + "</b> (" + date + ")<br />" + text));
+						commentsView.append(oldText);
 						Comment.setText("");
 						
 						// broadcast a new intent

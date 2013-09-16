@@ -9,6 +9,20 @@
    	    android:layout_height="match_parent"
    	    android:layout_margin="5dp"
         android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="5dp"
+	        android:textSize="16sp"
+	        android:textStyle="bold"
+	        android:text="Published Date" />
+        <TextView
+            android:id="@+id/publishDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:textColor="#343434"
+	        android:textSize="14sp"/>
         <TextView
             android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -21,6 +35,6 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="fill_parent"
 	        android:textColor="#343434"
-	        android:textSize="12sp"/>
+	        android:textSize="14sp"/>
     </LinearLayout>
 </ScrollView>

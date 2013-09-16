@@ -136,7 +136,7 @@ public class ContentViewerActivity extends FragmentActivity {
 				f.add(VideoPlayerFragment.newInstance(
 						contentDirectory + "/" + video.getFilename(),
 						video.getSnippet().getTitle()));
-				f.add(DescriptionFragment.newInstance(video.getSnippet().getDescription()));
+				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
 				f.add(CommentsFragment.newInstance(video.getCommentsList()));
 			}
 			else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
@@ -145,7 +145,7 @@ public class ContentViewerActivity extends FragmentActivity {
 				File htmlFile = new File(contentDirectory + "/" + article.getFilename());
 				Uri uri = Uri.fromFile(htmlFile);
 				f.add(HtmlFragment.newInstance(uri.toString()));
-				f.add(DescriptionFragment.newInstance("No Description")); // TODO description for article
+				f.add(DescriptionFragment.newInstance(article.getDatePublished(), "")); // TODO description for article
 				f.add(CommentsFragment.newInstance(article.getCommentsList()));
 				
 			}

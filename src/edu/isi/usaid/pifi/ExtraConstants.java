@@ -21,6 +21,8 @@ public class ExtraConstants {
 	
 	public static final String DESCRIPTION = "description";
 	
+	public static final String AUTHOR = "author";
+	
 	public static final String POSITION = "position";
 	
 	public static final String TYPE_VIDEO = "video";
