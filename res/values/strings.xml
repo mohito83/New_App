@@ -11,5 +11,6 @@
     <string name="title_activity_video_player2">VideoPlayer2Activity</string>
     <string name="title_activity_html">HtmlActivity</string>
     <string name="title_activity_content_viewer">Content Viewer</string>
-
+    <string name="open_drawer">Open Drawer</string>
+	<string name="close_drawer">Close Drawer</string>
 </resources>

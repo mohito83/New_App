@@ -13,9 +13,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,6 +48,13 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 public class ContentListActivity extends Activity implements
 ActionBar.OnNavigationListener {
 	
+	private DrawerLayout drawerLayout;
+
+	private ListView drawerList;
+
+    private ActionBarDrawerToggle drawerToggle;
+
+    private String[] drawerItems = new String[]{"Videos", "Web"};
 	
 	private File contentDirectory;
 	
@@ -120,7 +131,32 @@ ActionBar.OnNavigationListener {
 					new ArrayAdapter<String>(this,
 							android.R.layout.simple_list_item_1,
 							android.R.id.text1, cats), this);
-					
+			
+			// setup menu drawer
+			actionBar.setDisplayHomeAsUpEnabled(true);
+	        actionBar.setHomeButtonEnabled(true);
+			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			drawerList = (ListView) findViewById(R.id.left_drawer);
+			drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, drawerItems));
+			drawerToggle = new ActionBarDrawerToggle(
+					this,
+					drawerLayout,
+					R.drawable.ic_drawer,
+					R.string.open_drawer,
+					R.string.close_drawer){
+				public void onDrawerClosed(View view) {
+	                getActionBar().setTitle(getTitle());
+	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+	            }
+
+	            public void onDrawerOpened(View drawerView) {
+	                getActionBar().setTitle(getTitle());
+	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+	            }
+			
+			};
+			drawerLayout.setDrawerListener(drawerToggle);		
+			
 			
 			// list of content
 			contentList = (ListView)findViewById(R.id.listing);
@@ -189,6 +225,18 @@ ActionBar.OnNavigationListener {
 	}
 
 	@Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+ 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+    
+	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
 		if (savedInstanceState.containsKey(Constants.STATE_SELECTED_NAVIGATION_ITEM)) {
@@ -196,6 +244,16 @@ ActionBar.OnNavigationListener {
 					savedInstanceState.getInt(Constants.STATE_SELECTED_NAVIGATION_ITEM));
 		}
 	}
+	
+	@Override
+	public boolean onNavigateUp(){
+		if (!drawerLayout.isDrawerOpen(Gravity.LEFT))
+			drawerLayout.openDrawer(Gravity.LEFT);
+		else
+			drawerLayout.closeDrawer(Gravity.LEFT);
+		return true;
+	}
+	
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
