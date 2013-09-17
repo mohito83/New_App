@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import edu.isi.usaid.pifi.VideosProtos.Video;
+import edu.isi.usaid.pifi.metadata.ArticlesProtos.Article;
+import edu.isi.usaid.pifi.metadata.VideosProtos.Video;
 
 /**
  * 
@@ -22,17 +23,17 @@ import edu.isi.usaid.pifi.VideosProtos.Video;
  * Handles the content list
  * 
  */
-public class ContentListAdapter extends ArrayAdapter<Video> {
+public class ContentListAdapter extends ArrayAdapter<Object> {
 	
 	private File contentDirectory;
 	
 	private final Context context;
 	
-	private final List<Video> values;
+	private final List<Object> values;
 	
 	private LruCache<String, Bitmap> bitmapCache;
 
-	public ContentListAdapter(Context context, List<Video> objects, String directory) {
+	public ContentListAdapter(Context context, List<Object> objects, String directory) {
 		super(context, R.layout.content_list_item, objects);
 		this.context = context;
 		this.values = objects;
@@ -63,6 +64,7 @@ public class ContentListAdapter extends ArrayAdapter<Video> {
 	public View getView(int pos, View convertView, ViewGroup parent){
 		ImageView imageView;
 		TextView titleView;
+		TextView catView;
 		TextView descView;
 		
 		// recycle views
@@ -73,26 +75,40 @@ public class ContentListAdapter extends ArrayAdapter<Video> {
 		}
 		imageView = (ImageView)convertView.findViewById(R.id.contentThumb);
 		titleView = (TextView)convertView.findViewById(R.id.contentTitle);
+		catView = (TextView)convertView.findViewById(R.id.contentCatagory);
 		descView = (TextView)convertView.findViewById(R.id.contentDesc);
 		
 		
-		// TODO lazing loading
-		Video video = values.get(pos);
-		String title = video.getSnippet().getTitle();
-		String id = video.getId();
-		String thumb = id + "_default.jpg";
-		String desc = video.getSnippet().getDescription();
-		Uri uri = Uri.fromFile(new File(contentDirectory, thumb));
-		titleView.setText(title);
-		descView.setText(desc);
-		
-		// try to find the image from cache first
-		Bitmap bitmap = getBitmapFromCache(uri.getPath());
-		if (bitmap != null)
-			imageView.setImageBitmap(bitmap);
-		else {
-			BitmapTask task = BitmapTask.BitmapTaskByHeight(imageView, getContext().getContentResolver(), 60, bitmapCache);
-			task.execute(uri);
+		// TODO lazing loading?
+		Object content = values.get(pos);
+		if (content instanceof Video){
+			Video video = (Video)content;
+			String title = video.getSnippet().getTitle();
+			String id = video.getId();
+			String cat = video.getSnippet().getCategoryId();
+			String thumb = id + "_default.jpg";
+			String desc = video.getSnippet().getDescription();
+			Uri uri = Uri.fromFile(new File(contentDirectory, thumb));
+			titleView.setText(title);
+			catView.setText(cat);
+			descView.setText(desc);
+			
+			// try to find the image from cache first
+			Bitmap bitmap = getBitmapFromCache(uri.getPath());
+			if (bitmap != null)
+				imageView.setImageBitmap(bitmap);
+			else {
+				BitmapTask task = BitmapTask.BitmapTaskByHeight(imageView, getContext().getContentResolver(), imageView.getLayoutParams().height, bitmapCache);
+				task.execute(uri);
+			}
+		}
+		else if (content instanceof Article){
+			Article article = (Article)content;
+			String title = article.getTitle();
+			titleView.setText(title);
+			catView.setText("news"); // TODO need category for articles
+			descView.setText("");
+			imageView.setImageBitmap(null);
 		}
 		return convertView;
 	}

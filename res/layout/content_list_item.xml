@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="100dp"
     android:orientation="horizontal"
-    android:padding="10dp" 
     android:background="@drawable/list_selector">
     
 	<ImageView 
 	    android:id="@+id/contentThumb"
 	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
+	    android:layout_height="100dp"
 	    android:layout_marginRight="5dp"></ImageView>
 
 	<TextView
 	    android:id="@+id/contentTitle"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
+	    android:layout_marginTop="1dip"
 	    android:layout_toLeftOf="@+id/arrow"
 	    android:layout_toRightOf="@+id/contentThumb"
 	    android:textColor="#040404"
@@ -25,10 +25,20 @@
 	    android:singleLine="true" />
 	
 	<TextView
+	    android:id="@+id/contentCatagory"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="1dip"
+	    android:layout_below="@+id/contentTitle"
+	    android:layout_toRightOf="@+id/contentThumb" 
+	    android:background="@color/silver"
+	    android:singleLine="true" />
+	
+	<TextView
         android:id="@+id/contentDesc"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/contentTitle"
+        android:layout_below="@id/contentCatagory"
         android:textColor="#343434"
         android:textSize="10sp"
         android:layout_marginTop="1dip"
