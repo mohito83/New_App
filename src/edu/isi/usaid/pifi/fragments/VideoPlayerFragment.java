@@ -33,16 +33,13 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     
     private String videoSource;
     
-    private TextView descView;
-    
     private static final int FULLSCREEN_ACTIVITY = 1011;
     
-    public static final VideoPlayerFragment newInstance(String source, String title, String desc){
+    public static final VideoPlayerFragment newInstance(String source, String title){
 		VideoPlayerFragment f = new VideoPlayerFragment();
-		Bundle b = new Bundle(3);
+		Bundle b = new Bundle(2);
 		b.putString(ExtraConstants.PATH, source);
 		b.putString(ExtraConstants.TITLE, title);
-		b.putString(ExtraConstants.DESCRIPTION, desc);
 		f.setArguments(b);
 		return f;
 	}
@@ -64,12 +61,10 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     	// UI objects
      	videoSurface = (VideoView) rootView.findViewById(R.id.videoSurface);
      	TextView titleView = (TextView)rootView.findViewById(R.id.videoPlayerTitle);
-		descView = (TextView)rootView.findViewById(R.id.videoPlayerDesc);
 		
      	// intent
         videoSource = getArguments().getString(ExtraConstants.PATH);
         titleView.setText(getArguments().getString(ExtraConstants.TITLE));
-		descView.setText(getArguments().getString(ExtraConstants.DESCRIPTION));
         
 		// video controller
         controller = new VideoControllerView(getActivity());
