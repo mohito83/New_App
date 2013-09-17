@@ -9,8 +9,6 @@ package edu.isi.usaid.pifi;
  */
 public class Constants {
 
-	public static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-	
 	public static final int CONTENT_VIEWER_ACTIVITY = 1022;
 	
 	public static final String NEW_COMMENT_ACTION = "edu.isi.usaid.pifi.NewCommentAction";

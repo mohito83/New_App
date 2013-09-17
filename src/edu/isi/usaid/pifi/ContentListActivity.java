@@ -48,13 +48,17 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 public class ContentListActivity extends Activity implements
 ActionBar.OnNavigationListener {
 	
+	public static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+	
+	public static final String STATE_SELECTED_DRAWER_ITEM = "selected_drawer_item";
+	
 	private DrawerLayout drawerLayout;
 
 	private ListView drawerList;
 
     private ActionBarDrawerToggle drawerToggle;
 
-    private String[] drawerItems = new String[]{"Videos", "Web"};
+    private String[] drawerItems = new String[]{"All", "Videos", "Web"};
 	
 	private File contentDirectory;
 	
@@ -74,7 +78,10 @@ ActionBar.OnNavigationListener {
 	
 	private String selectedCat = "All";
 	
+	private String selectedType = "All";
+	
 	private Object currentContent = null;
+	
 	private BroadcastReceiver broadcastReceiver;
 
 	
@@ -157,6 +164,19 @@ ActionBar.OnNavigationListener {
 			};
 			drawerLayout.setDrawerListener(drawerToggle);		
 			
+			drawerList.setOnItemClickListener(new OnItemClickListener(){
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int pos, long id) {
+					applyListFilter(selectedCat, drawerItems[pos]);
+					
+					drawerList.setItemChecked(pos, true);
+				    drawerLayout.closeDrawer(drawerList);
+				}
+				
+			});
+			
 			
 			// list of content
 			contentList = (ListView)findViewById(R.id.listing);
@@ -205,22 +225,7 @@ ActionBar.OnNavigationListener {
 		
 		// user selected a different category
 		String cat = categories.get(index);
-		if (cat != selectedCat){
-			contentListAdapter.clear();
-			if (cat.equals("All")){
-				contentListAdapter.addAll(metadata.getVideoList());
-				contentListAdapter.addAll(webMetadata.getArticleList());
-			}
-			else {
-				for (Video v : metadata.getVideoList()){
-					if (v.getSnippet().getCategoryId().equals(cat))
-					contentListAdapter.add(v);
-				}
-			}
-			// update list
-			contentListAdapter.notifyDataSetChanged();
-			selectedCat = cat;
-		}
+		applyListFilter(cat, selectedType);
 		return true;
 	}
 
@@ -238,10 +243,14 @@ ActionBar.OnNavigationListener {
     
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		// Restore the previously serialized current dropdown position.
-		if (savedInstanceState.containsKey(Constants.STATE_SELECTED_NAVIGATION_ITEM)) {
+		// Restore the previously state
+		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
 			getActionBar().setSelectedNavigationItem(
-					savedInstanceState.getInt(Constants.STATE_SELECTED_NAVIGATION_ITEM));
+					savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
+		}
+		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEM)) {
+			drawerList.setSelection(
+					savedInstanceState.getInt(STATE_SELECTED_DRAWER_ITEM));
 		}
 	}
 	
@@ -258,8 +267,9 @@ ActionBar.OnNavigationListener {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current dropdown position.
-		outState.putInt(Constants.STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
+		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
 				.getSelectedNavigationIndex());
+		outState.putInt(STATE_SELECTED_DRAWER_ITEM, drawerList.getSelectedItemPosition());
 	}
 	
 	@Override
@@ -309,6 +319,47 @@ ActionBar.OnNavigationListener {
 			broadcastReceiver = null;
 		}
 			
+	}
+	
+	private void applyListFilter(String cat, String type){
+		if (type != selectedType || cat != selectedCat) { 
+			selectedType = type;
+			selectedCat = cat;
+			
+			contentListAdapter.clear();
+			
+			// TODO nothing being taken care of for web category
+			if (type.equals("All")){
+				if (cat.equals("All")){
+					contentListAdapter.addAll(metadata.getVideoList());
+					contentListAdapter.addAll(webMetadata.getArticleList());
+				}
+				else {
+					for (Video v : metadata.getVideoList()){
+						if (v.getSnippet().getCategoryId().equals(cat))
+						contentListAdapter.add(v);
+					}
+				}
+			}
+			else if (type.equals("Videos")){
+				if (cat.equals("All"))
+					contentListAdapter.addAll(metadata.getVideoList());
+				else {
+					for (Video v : metadata.getVideoList()){
+						if (v.getSnippet().getCategoryId().equals(cat))
+							contentListAdapter.add(v);
+					}
+				}
+			}
+			else if (type.equals("Web")){
+				if (cat.equals("All"))
+					contentListAdapter.addAll(webMetadata.getArticleList());
+			}
+			
+			
+			// update list
+			contentListAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	/**
