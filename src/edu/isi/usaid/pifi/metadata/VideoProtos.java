@@ -3,8 +3,8 @@
 
 package edu.isi.usaid.pifi.metadata;
 
-public final class VideosProtos {
-  private VideosProtos() {}
+public final class VideoProtos {
+  private VideoProtos() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -71,50 +71,90 @@ public final class VideosProtos {
     com.google.protobuf.ByteString
         getEtagBytes();
 
-    // required .youtubedownloader.Video.Snippet snippet = 5;
+    // required .metadata.Video.Snippet snippet = 5;
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
     boolean hasSnippet();
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet getSnippet();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet getSnippet();
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder getSnippetOrBuilder();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder getSnippetOrBuilder();
 
-    // required .youtubedownloader.Video.ContentDetails contentDetails = 6;
+    // required .metadata.Video.ContentDetails contentDetails = 6;
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
     boolean hasContentDetails();
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails getContentDetails();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails getContentDetails();
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder();
 
-    // required .youtubedownloader.Video.Statistics statistics = 7;
+    // required .metadata.Video.Statistics statistics = 7;
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
     boolean hasStatistics();
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics getStatistics();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics getStatistics();
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder();
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder();
+
+    // optional string filepath = 8;
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    boolean hasFilepath();
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    java.lang.String getFilepath();
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    com.google.protobuf.ByteString
+        getFilepathBytes();
+
+    // repeated .metadata.Comment comments = 9;
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> 
+        getCommentsList();
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index);
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    int getCommentsCount();
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+        getCommentsOrBuilderList();
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+        int index);
   }
   /**
-   * Protobuf type {@code youtubedownloader.Video}
+   * Protobuf type {@code metadata.Video}
    */
   public static final class Video extends
       com.google.protobuf.GeneratedMessage
@@ -185,11 +225,11 @@ public final class VideosProtos {
               break;
             }
             case 42: {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder subBuilder = null;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder subBuilder = null;
               if (((bitField0_ & 0x00000010) == 0x00000010)) {
                 subBuilder = snippet_.toBuilder();
               }
-              snippet_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.PARSER, extensionRegistry);
+              snippet_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(snippet_);
                 snippet_ = subBuilder.buildPartial();
@@ -198,11 +238,11 @@ public final class VideosProtos {
               break;
             }
             case 50: {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder subBuilder = null;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder subBuilder = null;
               if (((bitField0_ & 0x00000020) == 0x00000020)) {
                 subBuilder = contentDetails_.toBuilder();
               }
-              contentDetails_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.PARSER, extensionRegistry);
+              contentDetails_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(contentDetails_);
                 contentDetails_ = subBuilder.buildPartial();
@@ -211,16 +251,29 @@ public final class VideosProtos {
               break;
             }
             case 58: {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder subBuilder = null;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder subBuilder = null;
               if (((bitField0_ & 0x00000040) == 0x00000040)) {
                 subBuilder = statistics_.toBuilder();
               }
-              statistics_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.PARSER, extensionRegistry);
+              statistics_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(statistics_);
                 statistics_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000040;
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
+              filepath_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+                comments_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.CommentProtos.Comment>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              comments_.add(input.readMessage(edu.isi.usaid.pifi.metadata.CommentProtos.Comment.PARSER, extensionRegistry));
               break;
             }
           }
@@ -231,20 +284,23 @@ public final class VideosProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+          comments_ = java.util.Collections.unmodifiableList(comments_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_descriptor;
+      return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_fieldAccessorTable
+      return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder.class);
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Video> PARSER =
@@ -325,19 +381,19 @@ public final class VideosProtos {
       com.google.protobuf.ByteString
           getDescriptionBytes();
 
-      // required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;
+      // required .metadata.Video.Snippet.Thumbnails thumbnails = 5;
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
       boolean hasThumbnails();
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
-      edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails getThumbnails();
+      edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails getThumbnails();
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
-      edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder();
+      edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder();
 
       // required string channelTitle = 6;
       /**
@@ -369,28 +425,23 @@ public final class VideosProtos {
       com.google.protobuf.ByteString
           getCategoryIdBytes();
 
-      // repeated string comments = 8;
+      // required string playlisttitle = 8;
       /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
-      java.util.List<java.lang.String>
-      getCommentsList();
+      boolean hasPlaylisttitle();
       /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
-      int getCommentsCount();
+      java.lang.String getPlaylisttitle();
       /**
-       * <code>repeated string comments = 8;</code>
-       */
-      java.lang.String getComments(int index);
-      /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
       com.google.protobuf.ByteString
-          getCommentsBytes(int index);
+          getPlaylisttitleBytes();
     }
     /**
-     * Protobuf type {@code youtubedownloader.Video.Snippet}
+     * Protobuf type {@code metadata.Video.Snippet}
      */
     public static final class Snippet extends
         com.google.protobuf.GeneratedMessage
@@ -461,11 +512,11 @@ public final class VideosProtos {
                 break;
               }
               case 42: {
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder subBuilder = null;
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder subBuilder = null;
                 if (((bitField0_ & 0x00000010) == 0x00000010)) {
                   subBuilder = thumbnails_.toBuilder();
                 }
-                thumbnails_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.PARSER, extensionRegistry);
+                thumbnails_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.PARSER, extensionRegistry);
                 if (subBuilder != null) {
                   subBuilder.mergeFrom(thumbnails_);
                   thumbnails_ = subBuilder.buildPartial();
@@ -484,11 +535,8 @@ public final class VideosProtos {
                 break;
               }
               case 66: {
-                if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                  comments_ = new com.google.protobuf.LazyStringArrayList();
-                  mutable_bitField0_ |= 0x00000080;
-                }
-                comments_.add(input.readBytes());
+                bitField0_ |= 0x00000080;
+                playlisttitle_ = input.readBytes();
                 break;
               }
             }
@@ -499,23 +547,20 @@ public final class VideosProtos {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e.getMessage()).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-            comments_ = new com.google.protobuf.UnmodifiableLazyStringList(comments_);
-          }
           this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
         }
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder.class);
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder.class);
       }
 
       public static com.google.protobuf.Parser<Snippet> PARSER =
@@ -536,50 +581,50 @@ public final class VideosProtos {
       public interface ThumbnailsOrBuilder
           extends com.google.protobuf.MessageOrBuilder {
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
         boolean hasDefault();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getDefault();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getDefault();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder();
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
         boolean hasMedium();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getMedium();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getMedium();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder();
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
         boolean hasHigh();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getHigh();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getHigh();
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder();
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder();
       }
       /**
-       * Protobuf type {@code youtubedownloader.Video.Snippet.Thumbnails}
+       * Protobuf type {@code metadata.Video.Snippet.Thumbnails}
        */
       public static final class Thumbnails extends
           com.google.protobuf.GeneratedMessage
@@ -630,11 +675,11 @@ public final class VideosProtos {
                   break;
                 }
                 case 10: {
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
                   if (((bitField0_ & 0x00000001) == 0x00000001)) {
                     subBuilder = default_.toBuilder();
                   }
-                  default_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
+                  default_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
                   if (subBuilder != null) {
                     subBuilder.mergeFrom(default_);
                     default_ = subBuilder.buildPartial();
@@ -643,11 +688,11 @@ public final class VideosProtos {
                   break;
                 }
                 case 18: {
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
                   if (((bitField0_ & 0x00000002) == 0x00000002)) {
                     subBuilder = medium_.toBuilder();
                   }
-                  medium_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
+                  medium_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
                   if (subBuilder != null) {
                     subBuilder.mergeFrom(medium_);
                     medium_ = subBuilder.buildPartial();
@@ -656,11 +701,11 @@ public final class VideosProtos {
                   break;
                 }
                 case 26: {
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder subBuilder = null;
                   if (((bitField0_ & 0x00000004) == 0x00000004)) {
                     subBuilder = high_.toBuilder();
                   }
-                  high_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
+                  high_ = input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.PARSER, extensionRegistry);
                   if (subBuilder != null) {
                     subBuilder.mergeFrom(high_);
                     high_ = subBuilder.buildPartial();
@@ -682,14 +727,14 @@ public final class VideosProtos {
         }
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_fieldAccessorTable
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder.class);
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder.class);
         }
 
         public static com.google.protobuf.Parser<Thumbnails> PARSER =
@@ -726,7 +771,7 @@ public final class VideosProtos {
               getUrlBytes();
         }
         /**
-         * Protobuf type {@code youtubedownloader.Video.Snippet.Thumbnails.Thumbnail}
+         * Protobuf type {@code metadata.Video.Snippet.Thumbnails.Thumbnail}
          */
         public static final class Thumbnail extends
             com.google.protobuf.GeneratedMessage
@@ -795,14 +840,14 @@ public final class VideosProtos {
           }
           public static final com.google.protobuf.Descriptors.Descriptor
               getDescriptor() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor;
+            return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor;
           }
 
           protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
               internalGetFieldAccessorTable() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable
+            return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable
                 .ensureFieldAccessorsInitialized(
-                    edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder.class);
+                    edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder.class);
           }
 
           public static com.google.protobuf.Parser<Thumbnail> PARSER =
@@ -911,53 +956,53 @@ public final class VideosProtos {
             return super.writeReplace();
           }
 
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               com.google.protobuf.ByteString data)
               throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               com.google.protobuf.ByteString data,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(byte[] data)
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(byte[] data)
               throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               byte[] data,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(java.io.InputStream input)
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(java.io.InputStream input)
               throws java.io.IOException {
             return PARSER.parseFrom(input);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               java.io.InputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws java.io.IOException {
             return PARSER.parseFrom(input, extensionRegistry);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseDelimitedFrom(java.io.InputStream input)
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseDelimitedFrom(java.io.InputStream input)
               throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseDelimitedFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseDelimitedFrom(
               java.io.InputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input, extensionRegistry);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               com.google.protobuf.CodedInputStream input)
               throws java.io.IOException {
             return PARSER.parseFrom(input);
           }
-          public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
+          public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parseFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws java.io.IOException {
@@ -966,7 +1011,7 @@ public final class VideosProtos {
 
           public static Builder newBuilder() { return Builder.create(); }
           public Builder newBuilderForType() { return newBuilder(); }
-          public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail prototype) {
+          public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail prototype) {
             return newBuilder().mergeFrom(prototype);
           }
           public Builder toBuilder() { return newBuilder(this); }
@@ -978,24 +1023,24 @@ public final class VideosProtos {
             return builder;
           }
           /**
-           * Protobuf type {@code youtubedownloader.Video.Snippet.Thumbnails.Thumbnail}
+           * Protobuf type {@code metadata.Video.Snippet.Thumbnails.Thumbnail}
            */
           public static final class Builder extends
               com.google.protobuf.GeneratedMessage.Builder<Builder>
-             implements edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder {
+             implements edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder {
             public static final com.google.protobuf.Descriptors.Descriptor
                 getDescriptor() {
-              return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor;
+              return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor;
             }
 
             protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
                 internalGetFieldAccessorTable() {
-              return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable
+              return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable
                   .ensureFieldAccessorsInitialized(
-                      edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder.class);
+                      edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder.class);
             }
 
-            // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder()
+            // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder()
             private Builder() {
               maybeForceBuilderInitialization();
             }
@@ -1026,23 +1071,23 @@ public final class VideosProtos {
 
             public com.google.protobuf.Descriptors.Descriptor
                 getDescriptorForType() {
-              return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor;
+              return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor;
             }
 
-            public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getDefaultInstanceForType() {
-              return edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+            public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getDefaultInstanceForType() {
+              return edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
             }
 
-            public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail build() {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail result = buildPartial();
+            public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail build() {
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail result = buildPartial();
               if (!result.isInitialized()) {
                 throw newUninitializedMessageException(result);
               }
               return result;
             }
 
-            public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail buildPartial() {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail(this);
+            public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail buildPartial() {
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail(this);
               int from_bitField0_ = bitField0_;
               int to_bitField0_ = 0;
               if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1055,16 +1100,16 @@ public final class VideosProtos {
             }
 
             public Builder mergeFrom(com.google.protobuf.Message other) {
-              if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail) {
-                return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail)other);
+              if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail) {
+                return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail)other);
               } else {
                 super.mergeFrom(other);
                 return this;
               }
             }
 
-            public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail other) {
-              if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) return this;
+            public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail other) {
+              if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) return this;
               if (other.hasUrl()) {
                 bitField0_ |= 0x00000001;
                 url_ = other.url_;
@@ -1086,11 +1131,11 @@ public final class VideosProtos {
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail parsedMessage = null;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail parsedMessage = null;
               try {
                 parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
               } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail) e.getUnfinishedMessage();
+                parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail) e.getUnfinishedMessage();
                 throw e;
               } finally {
                 if (parsedMessage != null) {
@@ -1175,7 +1220,7 @@ public final class VideosProtos {
               return this;
             }
 
-            // @@protoc_insertion_point(builder_scope:youtubedownloader.Video.Snippet.Thumbnails.Thumbnail)
+            // @@protoc_insertion_point(builder_scope:metadata.Video.Snippet.Thumbnails.Thumbnail)
           }
 
           static {
@@ -1183,80 +1228,80 @@ public final class VideosProtos {
             defaultInstance.initFields();
           }
 
-          // @@protoc_insertion_point(class_scope:youtubedownloader.Video.Snippet.Thumbnails.Thumbnail)
+          // @@protoc_insertion_point(class_scope:metadata.Video.Snippet.Thumbnails.Thumbnail)
         }
 
         private int bitField0_;
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;
         public static final int DEFAULT_FIELD_NUMBER = 1;
-        private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail default_;
+        private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail default_;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
         public boolean hasDefault() {
           return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getDefault() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getDefault() {
           return default_;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder() {
           return default_;
         }
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;
         public static final int MEDIUM_FIELD_NUMBER = 2;
-        private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail medium_;
+        private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail medium_;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
         public boolean hasMedium() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getMedium() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getMedium() {
           return medium_;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder() {
           return medium_;
         }
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;
+        // required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;
         public static final int HIGH_FIELD_NUMBER = 3;
-        private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail high_;
+        private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail high_;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
         public boolean hasHigh() {
           return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getHigh() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getHigh() {
           return high_;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder() {
           return high_;
         }
 
         private void initFields() {
-          default_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
-          medium_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
-          high_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          default_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          medium_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          high_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
         }
         private byte memoizedIsInitialized = -1;
         public final boolean isInitialized() {
@@ -1336,53 +1381,53 @@ public final class VideosProtos {
           return super.writeReplace();
         }
 
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return PARSER.parseFrom(data);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             com.google.protobuf.ByteString data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(byte[] data)
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(byte[] data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return PARSER.parseFrom(data);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             byte[] data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(java.io.InputStream input)
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(java.io.InputStream input)
             throws java.io.IOException {
           return PARSER.parseFrom(input);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
           return PARSER.parseFrom(input, extensionRegistry);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseDelimitedFrom(java.io.InputStream input)
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseDelimitedFrom(java.io.InputStream input)
             throws java.io.IOException {
           return PARSER.parseDelimitedFrom(input);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseDelimitedFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseDelimitedFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
           return PARSER.parseDelimitedFrom(input, extensionRegistry);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             com.google.protobuf.CodedInputStream input)
             throws java.io.IOException {
           return PARSER.parseFrom(input);
         }
-        public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parseFrom(
+        public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parseFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
@@ -1391,7 +1436,7 @@ public final class VideosProtos {
 
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails prototype) {
+        public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails prototype) {
           return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
@@ -1403,24 +1448,24 @@ public final class VideosProtos {
           return builder;
         }
         /**
-         * Protobuf type {@code youtubedownloader.Video.Snippet.Thumbnails}
+         * Protobuf type {@code metadata.Video.Snippet.Thumbnails}
          */
         public static final class Builder extends
             com.google.protobuf.GeneratedMessage.Builder<Builder>
-           implements edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder {
+           implements edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder {
           public static final com.google.protobuf.Descriptors.Descriptor
               getDescriptor() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor;
+            return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_descriptor;
           }
 
           protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
               internalGetFieldAccessorTable() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_fieldAccessorTable
+            return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_fieldAccessorTable
                 .ensureFieldAccessorsInitialized(
-                    edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder.class);
+                    edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder.class);
           }
 
-          // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.newBuilder()
+          // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.newBuilder()
           private Builder() {
             maybeForceBuilderInitialization();
           }
@@ -1444,19 +1489,19 @@ public final class VideosProtos {
           public Builder clear() {
             super.clear();
             if (defaultBuilder_ == null) {
-              default_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              default_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
             } else {
               defaultBuilder_.clear();
             }
             bitField0_ = (bitField0_ & ~0x00000001);
             if (mediumBuilder_ == null) {
-              medium_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              medium_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
             } else {
               mediumBuilder_.clear();
             }
             bitField0_ = (bitField0_ & ~0x00000002);
             if (highBuilder_ == null) {
-              high_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              high_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
             } else {
               highBuilder_.clear();
             }
@@ -1470,23 +1515,23 @@ public final class VideosProtos {
 
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor;
+            return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_Thumbnails_descriptor;
           }
 
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails getDefaultInstanceForType() {
-            return edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance();
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails getDefaultInstanceForType() {
+            return edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance();
           }
 
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails build() {
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails result = buildPartial();
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails build() {
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails result = buildPartial();
             if (!result.isInitialized()) {
               throw newUninitializedMessageException(result);
             }
             return result;
           }
 
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails buildPartial() {
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails(this);
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails buildPartial() {
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails(this);
             int from_bitField0_ = bitField0_;
             int to_bitField0_ = 0;
             if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1519,16 +1564,16 @@ public final class VideosProtos {
           }
 
           public Builder mergeFrom(com.google.protobuf.Message other) {
-            if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails) {
-              return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails)other);
+            if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails) {
+              return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails)other);
             } else {
               super.mergeFrom(other);
               return this;
             }
           }
 
-          public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails other) {
-            if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance()) return this;
+          public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails other) {
+            if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance()) return this;
             if (other.hasDefault()) {
               mergeDefault(other.getDefault());
             }
@@ -1574,11 +1619,11 @@ public final class VideosProtos {
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws java.io.IOException {
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails parsedMessage = null;
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails parsedMessage = null;
             try {
               parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
             } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-              parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails) e.getUnfinishedMessage();
+              parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails) e.getUnfinishedMessage();
               throw e;
             } finally {
               if (parsedMessage != null) {
@@ -1589,20 +1634,20 @@ public final class VideosProtos {
           }
           private int bitField0_;
 
-          // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;
-          private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail default_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          // required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;
+          private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail default_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> defaultBuilder_;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> defaultBuilder_;
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
           public boolean hasDefault() {
             return ((bitField0_ & 0x00000001) == 0x00000001);
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getDefault() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getDefault() {
             if (defaultBuilder_ == null) {
               return default_;
             } else {
@@ -1610,9 +1655,9 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
-          public Builder setDefault(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder setDefault(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (defaultBuilder_ == null) {
               if (value == null) {
                 throw new NullPointerException();
@@ -1626,10 +1671,10 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
           public Builder setDefault(
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
             if (defaultBuilder_ == null) {
               default_ = builderForValue.build();
               onChanged();
@@ -1640,14 +1685,14 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
-          public Builder mergeDefault(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder mergeDefault(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (defaultBuilder_ == null) {
               if (((bitField0_ & 0x00000001) == 0x00000001) &&
-                  default_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
+                  default_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
                 default_ =
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(default_).mergeFrom(value).buildPartial();
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(default_).mergeFrom(value).buildPartial();
               } else {
                 default_ = value;
               }
@@ -1659,11 +1704,11 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
           public Builder clearDefault() {
             if (defaultBuilder_ == null) {
-              default_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              default_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
               onChanged();
             } else {
               defaultBuilder_.clear();
@@ -1672,17 +1717,17 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getDefaultBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getDefaultBuilder() {
             bitField0_ |= 0x00000001;
             onChanged();
             return getDefaultFieldBuilder().getBuilder();
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getDefaultOrBuilder() {
             if (defaultBuilder_ != null) {
               return defaultBuilder_.getMessageOrBuilder();
             } else {
@@ -1690,14 +1735,14 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail default = 1;</code>
            */
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
               getDefaultFieldBuilder() {
             if (defaultBuilder_ == null) {
               defaultBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
                       default_,
                       getParentForChildren(),
                       isClean());
@@ -1706,20 +1751,20 @@ public final class VideosProtos {
             return defaultBuilder_;
           }
 
-          // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;
-          private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail medium_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          // required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;
+          private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail medium_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> mediumBuilder_;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> mediumBuilder_;
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
           public boolean hasMedium() {
             return ((bitField0_ & 0x00000002) == 0x00000002);
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getMedium() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getMedium() {
             if (mediumBuilder_ == null) {
               return medium_;
             } else {
@@ -1727,9 +1772,9 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
-          public Builder setMedium(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder setMedium(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (mediumBuilder_ == null) {
               if (value == null) {
                 throw new NullPointerException();
@@ -1743,10 +1788,10 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
           public Builder setMedium(
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
             if (mediumBuilder_ == null) {
               medium_ = builderForValue.build();
               onChanged();
@@ -1757,14 +1802,14 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
-          public Builder mergeMedium(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder mergeMedium(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (mediumBuilder_ == null) {
               if (((bitField0_ & 0x00000002) == 0x00000002) &&
-                  medium_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
+                  medium_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
                 medium_ =
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(medium_).mergeFrom(value).buildPartial();
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(medium_).mergeFrom(value).buildPartial();
               } else {
                 medium_ = value;
               }
@@ -1776,11 +1821,11 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
           public Builder clearMedium() {
             if (mediumBuilder_ == null) {
-              medium_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              medium_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
               onChanged();
             } else {
               mediumBuilder_.clear();
@@ -1789,17 +1834,17 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getMediumBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getMediumBuilder() {
             bitField0_ |= 0x00000002;
             onChanged();
             return getMediumFieldBuilder().getBuilder();
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getMediumOrBuilder() {
             if (mediumBuilder_ != null) {
               return mediumBuilder_.getMessageOrBuilder();
             } else {
@@ -1807,14 +1852,14 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail medium = 2;</code>
            */
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
               getMediumFieldBuilder() {
             if (mediumBuilder_ == null) {
               mediumBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
                       medium_,
                       getParentForChildren(),
                       isClean());
@@ -1823,20 +1868,20 @@ public final class VideosProtos {
             return mediumBuilder_;
           }
 
-          // required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;
-          private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail high_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+          // required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;
+          private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail high_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> highBuilder_;
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> highBuilder_;
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
           public boolean hasHigh() {
             return ((bitField0_ & 0x00000004) == 0x00000004);
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail getHigh() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail getHigh() {
             if (highBuilder_ == null) {
               return high_;
             } else {
@@ -1844,9 +1889,9 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
-          public Builder setHigh(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder setHigh(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (highBuilder_ == null) {
               if (value == null) {
                 throw new NullPointerException();
@@ -1860,10 +1905,10 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
           public Builder setHigh(
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder builderForValue) {
             if (highBuilder_ == null) {
               high_ = builderForValue.build();
               onChanged();
@@ -1874,14 +1919,14 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
-          public Builder mergeHigh(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail value) {
+          public Builder mergeHigh(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail value) {
             if (highBuilder_ == null) {
               if (((bitField0_ & 0x00000004) == 0x00000004) &&
-                  high_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
+                  high_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance()) {
                 high_ =
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(high_).mergeFrom(value).buildPartial();
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.newBuilder(high_).mergeFrom(value).buildPartial();
               } else {
                 high_ = value;
               }
@@ -1893,11 +1938,11 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
           public Builder clearHigh() {
             if (highBuilder_ == null) {
-              high_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
+              high_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.getDefaultInstance();
               onChanged();
             } else {
               highBuilder_.clear();
@@ -1906,17 +1951,17 @@ public final class VideosProtos {
             return this;
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getHighBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder getHighBuilder() {
             bitField0_ |= 0x00000004;
             onChanged();
             return getHighFieldBuilder().getBuilder();
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
-          public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder() {
+          public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder getHighOrBuilder() {
             if (highBuilder_ != null) {
               return highBuilder_.getMessageOrBuilder();
             } else {
@@ -1924,14 +1969,14 @@ public final class VideosProtos {
             }
           }
           /**
-           * <code>required .youtubedownloader.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
+           * <code>required .metadata.Video.Snippet.Thumbnails.Thumbnail high = 3;</code>
            */
           private com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder> 
               getHighFieldBuilder() {
             if (highBuilder_ == null) {
               highBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Thumbnail.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.ThumbnailOrBuilder>(
                       high_,
                       getParentForChildren(),
                       isClean());
@@ -1940,7 +1985,7 @@ public final class VideosProtos {
             return highBuilder_;
           }
 
-          // @@protoc_insertion_point(builder_scope:youtubedownloader.Video.Snippet.Thumbnails)
+          // @@protoc_insertion_point(builder_scope:metadata.Video.Snippet.Thumbnails)
         }
 
         static {
@@ -1948,7 +1993,7 @@ public final class VideosProtos {
           defaultInstance.initFields();
         }
 
-        // @@protoc_insertion_point(class_scope:youtubedownloader.Video.Snippet.Thumbnails)
+        // @@protoc_insertion_point(class_scope:metadata.Video.Snippet.Thumbnails)
       }
 
       private int bitField0_;
@@ -2124,25 +2169,25 @@ public final class VideosProtos {
         }
       }
 
-      // required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;
+      // required .metadata.Video.Snippet.Thumbnails thumbnails = 5;
       public static final int THUMBNAILS_FIELD_NUMBER = 5;
-      private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails thumbnails_;
+      private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails thumbnails_;
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
       public boolean hasThumbnails() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails getThumbnails() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails getThumbnails() {
         return thumbnails_;
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+       * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder() {
         return thumbnails_;
       }
 
@@ -2232,34 +2277,47 @@ public final class VideosProtos {
         }
       }
 
-      // repeated string comments = 8;
-      public static final int COMMENTS_FIELD_NUMBER = 8;
-      private com.google.protobuf.LazyStringList comments_;
+      // required string playlisttitle = 8;
+      public static final int PLAYLISTTITLE_FIELD_NUMBER = 8;
+      private java.lang.Object playlisttitle_;
       /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
-      public java.util.List<java.lang.String>
-          getCommentsList() {
-        return comments_;
+      public boolean hasPlaylisttitle() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
-      public int getCommentsCount() {
-        return comments_.size();
+      public java.lang.String getPlaylisttitle() {
+        java.lang.Object ref = playlisttitle_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            playlisttitle_ = s;
+          }
+          return s;
+        }
       }
       /**
-       * <code>repeated string comments = 8;</code>
-       */
-      public java.lang.String getComments(int index) {
-        return comments_.get(index);
-      }
-      /**
-       * <code>repeated string comments = 8;</code>
+       * <code>required string playlisttitle = 8;</code>
        */
       public com.google.protobuf.ByteString
-          getCommentsBytes(int index) {
-        return comments_.getByteString(index);
+          getPlaylisttitleBytes() {
+        java.lang.Object ref = playlisttitle_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          playlisttitle_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       private void initFields() {
@@ -2267,10 +2325,10 @@ public final class VideosProtos {
         channelId_ = "";
         title_ = "";
         description_ = "";
-        thumbnails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance();
+        thumbnails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance();
         channelTitle_ = "";
         categoryId_ = "";
-        comments_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        playlisttitle_ = "";
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -2302,6 +2360,10 @@ public final class VideosProtos {
           return false;
         }
         if (!hasCategoryId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasPlaylisttitle()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -2337,8 +2399,8 @@ public final class VideosProtos {
         if (((bitField0_ & 0x00000040) == 0x00000040)) {
           output.writeBytes(7, getCategoryIdBytes());
         }
-        for (int i = 0; i < comments_.size(); i++) {
-          output.writeBytes(8, comments_.getByteString(i));
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          output.writeBytes(8, getPlaylisttitleBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -2377,14 +2439,9 @@ public final class VideosProtos {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(7, getCategoryIdBytes());
         }
-        {
-          int dataSize = 0;
-          for (int i = 0; i < comments_.size(); i++) {
-            dataSize += com.google.protobuf.CodedOutputStream
-              .computeBytesSizeNoTag(comments_.getByteString(i));
-          }
-          size += dataSize;
-          size += 1 * getCommentsList().size();
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(8, getPlaylisttitleBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -2398,53 +2455,53 @@ public final class VideosProtos {
         return super.writeReplace();
       }
 
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(byte[] data)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseDelimitedFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseDelimitedFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -2453,7 +2510,7 @@ public final class VideosProtos {
 
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet prototype) {
+      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -2465,24 +2522,24 @@ public final class VideosProtos {
         return builder;
       }
       /**
-       * Protobuf type {@code youtubedownloader.Video.Snippet}
+       * Protobuf type {@code metadata.Video.Snippet}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder {
+         implements edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_fieldAccessorTable
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder.class);
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder.class);
         }
 
-        // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.newBuilder()
+        // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -2512,7 +2569,7 @@ public final class VideosProtos {
           description_ = "";
           bitField0_ = (bitField0_ & ~0x00000008);
           if (thumbnailsBuilder_ == null) {
-            thumbnails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance();
+            thumbnails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance();
           } else {
             thumbnailsBuilder_.clear();
           }
@@ -2521,7 +2578,7 @@ public final class VideosProtos {
           bitField0_ = (bitField0_ & ~0x00000020);
           categoryId_ = "";
           bitField0_ = (bitField0_ & ~0x00000040);
-          comments_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          playlisttitle_ = "";
           bitField0_ = (bitField0_ & ~0x00000080);
           return this;
         }
@@ -2532,23 +2589,23 @@ public final class VideosProtos {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Snippet_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Snippet_descriptor;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet getDefaultInstanceForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet getDefaultInstanceForType() {
+          return edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance();
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet build() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet result = buildPartial();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet build() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet buildPartial() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet(this);
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet buildPartial() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -2583,28 +2640,26 @@ public final class VideosProtos {
             to_bitField0_ |= 0x00000040;
           }
           result.categoryId_ = categoryId_;
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
-            comments_ = new com.google.protobuf.UnmodifiableLazyStringList(
-                comments_);
-            bitField0_ = (bitField0_ & ~0x00000080);
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+            to_bitField0_ |= 0x00000080;
           }
-          result.comments_ = comments_;
+          result.playlisttitle_ = playlisttitle_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
         }
 
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet) {
-            return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet)other);
+          if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet) {
+            return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet other) {
-          if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance()) return this;
+        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet other) {
+          if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance()) return this;
           if (other.hasPublishedAt()) {
             bitField0_ |= 0x00000001;
             publishedAt_ = other.publishedAt_;
@@ -2638,14 +2693,9 @@ public final class VideosProtos {
             categoryId_ = other.categoryId_;
             onChanged();
           }
-          if (!other.comments_.isEmpty()) {
-            if (comments_.isEmpty()) {
-              comments_ = other.comments_;
-              bitField0_ = (bitField0_ & ~0x00000080);
-            } else {
-              ensureCommentsIsMutable();
-              comments_.addAll(other.comments_);
-            }
+          if (other.hasPlaylisttitle()) {
+            bitField0_ |= 0x00000080;
+            playlisttitle_ = other.playlisttitle_;
             onChanged();
           }
           this.mergeUnknownFields(other.getUnknownFields());
@@ -2681,6 +2731,10 @@ public final class VideosProtos {
             
             return false;
           }
+          if (!hasPlaylisttitle()) {
+            
+            return false;
+          }
           if (!getThumbnails().isInitialized()) {
             
             return false;
@@ -2692,11 +2746,11 @@ public final class VideosProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet parsedMessage = null;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet) e.getUnfinishedMessage();
+            parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet) e.getUnfinishedMessage();
             throw e;
           } finally {
             if (parsedMessage != null) {
@@ -3003,20 +3057,20 @@ public final class VideosProtos {
           return this;
         }
 
-        // required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;
-        private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails thumbnails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance();
+        // required .metadata.Video.Snippet.Thumbnails thumbnails = 5;
+        private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails thumbnails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance();
         private com.google.protobuf.SingleFieldBuilder<
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder> thumbnailsBuilder_;
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder> thumbnailsBuilder_;
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
         public boolean hasThumbnails() {
           return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails getThumbnails() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails getThumbnails() {
           if (thumbnailsBuilder_ == null) {
             return thumbnails_;
           } else {
@@ -3024,9 +3078,9 @@ public final class VideosProtos {
           }
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
-        public Builder setThumbnails(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails value) {
+        public Builder setThumbnails(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails value) {
           if (thumbnailsBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -3040,10 +3094,10 @@ public final class VideosProtos {
           return this;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
         public Builder setThumbnails(
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder builderForValue) {
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder builderForValue) {
           if (thumbnailsBuilder_ == null) {
             thumbnails_ = builderForValue.build();
             onChanged();
@@ -3054,14 +3108,14 @@ public final class VideosProtos {
           return this;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
-        public Builder mergeThumbnails(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails value) {
+        public Builder mergeThumbnails(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails value) {
           if (thumbnailsBuilder_ == null) {
             if (((bitField0_ & 0x00000010) == 0x00000010) &&
-                thumbnails_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance()) {
+                thumbnails_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance()) {
               thumbnails_ =
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.newBuilder(thumbnails_).mergeFrom(value).buildPartial();
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.newBuilder(thumbnails_).mergeFrom(value).buildPartial();
             } else {
               thumbnails_ = value;
             }
@@ -3073,11 +3127,11 @@ public final class VideosProtos {
           return this;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
         public Builder clearThumbnails() {
           if (thumbnailsBuilder_ == null) {
-            thumbnails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.getDefaultInstance();
+            thumbnails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.getDefaultInstance();
             onChanged();
           } else {
             thumbnailsBuilder_.clear();
@@ -3086,17 +3140,17 @@ public final class VideosProtos {
           return this;
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder getThumbnailsBuilder() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder getThumbnailsBuilder() {
           bitField0_ |= 0x00000010;
           onChanged();
           return getThumbnailsFieldBuilder().getBuilder();
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder() {
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder getThumbnailsOrBuilder() {
           if (thumbnailsBuilder_ != null) {
             return thumbnailsBuilder_.getMessageOrBuilder();
           } else {
@@ -3104,14 +3158,14 @@ public final class VideosProtos {
           }
         }
         /**
-         * <code>required .youtubedownloader.Video.Snippet.Thumbnails thumbnails = 5;</code>
+         * <code>required .metadata.Video.Snippet.Thumbnails thumbnails = 5;</code>
          */
         private com.google.protobuf.SingleFieldBuilder<
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder> 
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder> 
             getThumbnailsFieldBuilder() {
           if (thumbnailsBuilder_ == null) {
             thumbnailsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.ThumbnailsOrBuilder>(
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Thumbnails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.ThumbnailsOrBuilder>(
                     thumbnails_,
                     getParentForChildren(),
                     isClean());
@@ -3268,100 +3322,81 @@ public final class VideosProtos {
           return this;
         }
 
-        // repeated string comments = 8;
-        private com.google.protobuf.LazyStringList comments_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        private void ensureCommentsIsMutable() {
-          if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-            comments_ = new com.google.protobuf.LazyStringArrayList(comments_);
-            bitField0_ |= 0x00000080;
-           }
-        }
+        // required string playlisttitle = 8;
+        private java.lang.Object playlisttitle_ = "";
         /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
-        public java.util.List<java.lang.String>
-            getCommentsList() {
-          return java.util.Collections.unmodifiableList(comments_);
+        public boolean hasPlaylisttitle() {
+          return ((bitField0_ & 0x00000080) == 0x00000080);
         }
         /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
-        public int getCommentsCount() {
-          return comments_.size();
+        public java.lang.String getPlaylisttitle() {
+          java.lang.Object ref = playlisttitle_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            playlisttitle_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>repeated string comments = 8;</code>
-         */
-        public java.lang.String getComments(int index) {
-          return comments_.get(index);
-        }
-        /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
         public com.google.protobuf.ByteString
-            getCommentsBytes(int index) {
-          return comments_.getByteString(index);
+            getPlaylisttitleBytes() {
+          java.lang.Object ref = playlisttitle_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            playlisttitle_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
         }
         /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
-        public Builder setComments(
-            int index, java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureCommentsIsMutable();
-          comments_.set(index, value);
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>repeated string comments = 8;</code>
-         */
-        public Builder addComments(
+        public Builder setPlaylisttitle(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  ensureCommentsIsMutable();
-          comments_.add(value);
+  bitField0_ |= 0x00000080;
+          playlisttitle_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
-        public Builder addAllComments(
-            java.lang.Iterable<java.lang.String> values) {
-          ensureCommentsIsMutable();
-          super.addAll(values, comments_);
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>repeated string comments = 8;</code>
-         */
-        public Builder clearComments() {
-          comments_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        public Builder clearPlaylisttitle() {
           bitField0_ = (bitField0_ & ~0x00000080);
+          playlisttitle_ = getDefaultInstance().getPlaylisttitle();
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string comments = 8;</code>
+         * <code>required string playlisttitle = 8;</code>
          */
-        public Builder addCommentsBytes(
+        public Builder setPlaylisttitleBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  ensureCommentsIsMutable();
-          comments_.add(value);
+  bitField0_ |= 0x00000080;
+          playlisttitle_ = value;
           onChanged();
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:youtubedownloader.Video.Snippet)
+        // @@protoc_insertion_point(builder_scope:metadata.Video.Snippet)
       }
 
       static {
@@ -3369,7 +3404,7 @@ public final class VideosProtos {
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:youtubedownloader.Video.Snippet)
+      // @@protoc_insertion_point(class_scope:metadata.Video.Snippet)
     }
 
     public interface ContentDetailsOrBuilder
@@ -3441,7 +3476,7 @@ public final class VideosProtos {
       boolean getLicensedContent();
     }
     /**
-     * Protobuf type {@code youtubedownloader.Video.ContentDetails}
+     * Protobuf type {@code metadata.Video.ContentDetails}
      */
     public static final class ContentDetails extends
         com.google.protobuf.GeneratedMessage
@@ -3530,14 +3565,14 @@ public final class VideosProtos {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_ContentDetails_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_ContentDetails_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_ContentDetails_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_ContentDetails_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder.class);
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder.class);
       }
 
       public static com.google.protobuf.Parser<ContentDetails> PARSER =
@@ -3812,53 +3847,53 @@ public final class VideosProtos {
         return super.writeReplace();
       }
 
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(byte[] data)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseDelimitedFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseDelimitedFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -3867,7 +3902,7 @@ public final class VideosProtos {
 
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails prototype) {
+      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -3879,24 +3914,24 @@ public final class VideosProtos {
         return builder;
       }
       /**
-       * Protobuf type {@code youtubedownloader.Video.ContentDetails}
+       * Protobuf type {@code metadata.Video.ContentDetails}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder {
+         implements edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_ContentDetails_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_ContentDetails_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_ContentDetails_fieldAccessorTable
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_ContentDetails_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder.class);
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder.class);
         }
 
-        // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.newBuilder()
+        // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -3935,23 +3970,23 @@ public final class VideosProtos {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_ContentDetails_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_ContentDetails_descriptor;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails getDefaultInstanceForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails getDefaultInstanceForType() {
+          return edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance();
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails build() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails result = buildPartial();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails build() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails buildPartial() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails(this);
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails buildPartial() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3980,16 +4015,16 @@ public final class VideosProtos {
         }
 
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails) {
-            return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails)other);
+          if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails) {
+            return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails other) {
-          if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance()) return this;
+        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails other) {
+          if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance()) return this;
           if (other.hasDuration()) {
             bitField0_ |= 0x00000001;
             duration_ = other.duration_;
@@ -4043,11 +4078,11 @@ public final class VideosProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails parsedMessage = null;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails) e.getUnfinishedMessage();
+            parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails) e.getUnfinishedMessage();
             throw e;
           } finally {
             if (parsedMessage != null) {
@@ -4346,7 +4381,7 @@ public final class VideosProtos {
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:youtubedownloader.Video.ContentDetails)
+        // @@protoc_insertion_point(builder_scope:metadata.Video.ContentDetails)
       }
 
       static {
@@ -4354,7 +4389,7 @@ public final class VideosProtos {
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:youtubedownloader.Video.ContentDetails)
+      // @@protoc_insertion_point(class_scope:metadata.Video.ContentDetails)
     }
 
     public interface StatisticsOrBuilder
@@ -4411,7 +4446,7 @@ public final class VideosProtos {
       int getCommentCount();
     }
     /**
-     * Protobuf type {@code youtubedownloader.Video.Statistics}
+     * Protobuf type {@code metadata.Video.Statistics}
      */
     public static final class Statistics extends
         com.google.protobuf.GeneratedMessage
@@ -4500,14 +4535,14 @@ public final class VideosProtos {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Statistics_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Statistics_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Statistics_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Statistics_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder.class);
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder.class);
       }
 
       public static com.google.protobuf.Parser<Statistics> PARSER =
@@ -4701,53 +4736,53 @@ public final class VideosProtos {
         return super.writeReplace();
       }
 
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(byte[] data)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseDelimitedFrom(java.io.InputStream input)
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseDelimitedFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input, extensionRegistry);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parseFrom(
+      public static edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -4756,7 +4791,7 @@ public final class VideosProtos {
 
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics prototype) {
+      public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -4768,24 +4803,24 @@ public final class VideosProtos {
         return builder;
       }
       /**
-       * Protobuf type {@code youtubedownloader.Video.Statistics}
+       * Protobuf type {@code metadata.Video.Statistics}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder {
+         implements edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Statistics_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Statistics_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Statistics_fieldAccessorTable
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Statistics_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder.class);
+                  edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder.class);
         }
 
-        // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.newBuilder()
+        // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -4824,23 +4859,23 @@ public final class VideosProtos {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_Statistics_descriptor;
+          return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_Statistics_descriptor;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics getDefaultInstanceForType() {
-          return edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics getDefaultInstanceForType() {
+          return edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance();
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics build() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics result = buildPartial();
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics build() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics buildPartial() {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics(this);
+        public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics buildPartial() {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -4869,16 +4904,16 @@ public final class VideosProtos {
         }
 
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics) {
-            return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics)other);
+          if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics) {
+            return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics other) {
-          if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance()) return this;
+        public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics other) {
+          if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance()) return this;
           if (other.hasViewCount()) {
             setViewCount(other.getViewCount());
           }
@@ -4926,11 +4961,11 @@ public final class VideosProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics parsedMessage = null;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics) e.getUnfinishedMessage();
+            parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics) e.getUnfinishedMessage();
             throw e;
           } finally {
             if (parsedMessage != null) {
@@ -5106,7 +5141,7 @@ public final class VideosProtos {
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:youtubedownloader.Video.Statistics)
+        // @@protoc_insertion_point(builder_scope:metadata.Video.Statistics)
       }
 
       static {
@@ -5114,7 +5149,7 @@ public final class VideosProtos {
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:youtubedownloader.Video.Statistics)
+      // @@protoc_insertion_point(class_scope:metadata.Video.Statistics)
     }
 
     private int bitField0_;
@@ -5290,70 +5325,149 @@ public final class VideosProtos {
       }
     }
 
-    // required .youtubedownloader.Video.Snippet snippet = 5;
+    // required .metadata.Video.Snippet snippet = 5;
     public static final int SNIPPET_FIELD_NUMBER = 5;
-    private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet snippet_;
+    private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet snippet_;
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
     public boolean hasSnippet() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet getSnippet() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet getSnippet() {
       return snippet_;
     }
     /**
-     * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+     * <code>required .metadata.Video.Snippet snippet = 5;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder getSnippetOrBuilder() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder getSnippetOrBuilder() {
       return snippet_;
     }
 
-    // required .youtubedownloader.Video.ContentDetails contentDetails = 6;
+    // required .metadata.Video.ContentDetails contentDetails = 6;
     public static final int CONTENTDETAILS_FIELD_NUMBER = 6;
-    private edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails contentDetails_;
+    private edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails contentDetails_;
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
     public boolean hasContentDetails() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails getContentDetails() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails getContentDetails() {
       return contentDetails_;
     }
     /**
-     * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+     * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder() {
       return contentDetails_;
     }
 
-    // required .youtubedownloader.Video.Statistics statistics = 7;
+    // required .metadata.Video.Statistics statistics = 7;
     public static final int STATISTICS_FIELD_NUMBER = 7;
-    private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics statistics_;
+    private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics statistics_;
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
     public boolean hasStatistics() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics getStatistics() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics getStatistics() {
       return statistics_;
     }
     /**
-     * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+     * <code>required .metadata.Video.Statistics statistics = 7;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder() {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder() {
       return statistics_;
+    }
+
+    // optional string filepath = 8;
+    public static final int FILEPATH_FIELD_NUMBER = 8;
+    private java.lang.Object filepath_;
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    public boolean hasFilepath() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    public java.lang.String getFilepath() {
+      java.lang.Object ref = filepath_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          filepath_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string filepath = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFilepathBytes() {
+      java.lang.Object ref = filepath_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        filepath_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .metadata.Comment comments = 9;
+    public static final int COMMENTS_FIELD_NUMBER = 9;
+    private java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> comments_;
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> getCommentsList() {
+      return comments_;
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    public java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+        getCommentsOrBuilderList() {
+      return comments_;
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    public int getCommentsCount() {
+      return comments_.size();
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    public edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index) {
+      return comments_.get(index);
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 9;</code>
+     */
+    public edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+        int index) {
+      return comments_.get(index);
     }
 
     private void initFields() {
@@ -5361,9 +5475,11 @@ public final class VideosProtos {
       id_ = "";
       kind_ = "";
       etag_ = "";
-      snippet_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance();
-      contentDetails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance();
-      statistics_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance();
+      snippet_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance();
+      contentDetails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance();
+      statistics_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance();
+      filepath_ = "";
+      comments_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5410,6 +5526,12 @@ public final class VideosProtos {
         memoizedIsInitialized = 0;
         return false;
       }
+      for (int i = 0; i < getCommentsCount(); i++) {
+        if (!getComments(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -5437,6 +5559,12 @@ public final class VideosProtos {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeMessage(7, statistics_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getFilepathBytes());
+      }
+      for (int i = 0; i < comments_.size(); i++) {
+        output.writeMessage(9, comments_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -5475,6 +5603,14 @@ public final class VideosProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, statistics_);
       }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getFilepathBytes());
+      }
+      for (int i = 0; i < comments_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, comments_.get(i));
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -5487,53 +5623,53 @@ public final class VideosProtos {
       return super.writeReplace();
     }
 
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(byte[] data)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseDelimitedFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseDelimitedFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Video parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Video parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5542,7 +5678,7 @@ public final class VideosProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Video prototype) {
+    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Video prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -5554,24 +5690,24 @@ public final class VideosProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code youtubedownloader.Video}
+     * Protobuf type {@code metadata.Video}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder {
+       implements edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.VideosProtos.Video.class, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder.class);
+                edu.isi.usaid.pifi.metadata.VideoProtos.Video.class, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder.class);
       }
 
-      // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Video.newBuilder()
+      // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Video.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5586,6 +5722,7 @@ public final class VideosProtos {
           getSnippetFieldBuilder();
           getContentDetailsFieldBuilder();
           getStatisticsFieldBuilder();
+          getCommentsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -5603,23 +5740,31 @@ public final class VideosProtos {
         etag_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
         if (snippetBuilder_ == null) {
-          snippet_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance();
+          snippet_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance();
         } else {
           snippetBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000010);
         if (contentDetailsBuilder_ == null) {
-          contentDetails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance();
+          contentDetails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance();
         } else {
           contentDetailsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
         if (statisticsBuilder_ == null) {
-          statistics_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance();
+          statistics_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance();
         } else {
           statisticsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000040);
+        filepath_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (commentsBuilder_ == null) {
+          comments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000100);
+        } else {
+          commentsBuilder_.clear();
+        }
         return this;
       }
 
@@ -5629,23 +5774,23 @@ public final class VideosProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Video_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Video_descriptor;
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video getDefaultInstanceForType() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.Video.getDefaultInstance();
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video getDefaultInstanceForType() {
+        return edu.isi.usaid.pifi.metadata.VideoProtos.Video.getDefaultInstance();
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video build() {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video result = buildPartial();
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video build() {
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video buildPartial() {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video result = new edu.isi.usaid.pifi.metadata.VideosProtos.Video(this);
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video buildPartial() {
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video result = new edu.isi.usaid.pifi.metadata.VideoProtos.Video(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -5688,22 +5833,35 @@ public final class VideosProtos {
         } else {
           result.statistics_ = statisticsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.filepath_ = filepath_;
+        if (commentsBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+            comments_ = java.util.Collections.unmodifiableList(comments_);
+            bitField0_ = (bitField0_ & ~0x00000100);
+          }
+          result.comments_ = comments_;
+        } else {
+          result.comments_ = commentsBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Video) {
-          return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Video)other);
+        if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Video) {
+          return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Video)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Video other) {
-        if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Video.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Video other) {
+        if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Video.getDefaultInstance()) return this;
         if (other.hasFilename()) {
           bitField0_ |= 0x00000001;
           filename_ = other.filename_;
@@ -5732,6 +5890,37 @@ public final class VideosProtos {
         }
         if (other.hasStatistics()) {
           mergeStatistics(other.getStatistics());
+        }
+        if (other.hasFilepath()) {
+          bitField0_ |= 0x00000080;
+          filepath_ = other.filepath_;
+          onChanged();
+        }
+        if (commentsBuilder_ == null) {
+          if (!other.comments_.isEmpty()) {
+            if (comments_.isEmpty()) {
+              comments_ = other.comments_;
+              bitField0_ = (bitField0_ & ~0x00000100);
+            } else {
+              ensureCommentsIsMutable();
+              comments_.addAll(other.comments_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.comments_.isEmpty()) {
+            if (commentsBuilder_.isEmpty()) {
+              commentsBuilder_.dispose();
+              commentsBuilder_ = null;
+              comments_ = other.comments_;
+              bitField0_ = (bitField0_ & ~0x00000100);
+              commentsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getCommentsFieldBuilder() : null;
+            } else {
+              commentsBuilder_.addAllMessages(other.comments_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5778,6 +5967,12 @@ public final class VideosProtos {
           
           return false;
         }
+        for (int i = 0; i < getCommentsCount(); i++) {
+          if (!getComments(i).isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
 
@@ -5785,11 +5980,11 @@ public final class VideosProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Video parsedMessage = null;
+        edu.isi.usaid.pifi.metadata.VideoProtos.Video parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Video) e.getUnfinishedMessage();
+          parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Video) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -6096,20 +6291,20 @@ public final class VideosProtos {
         return this;
       }
 
-      // required .youtubedownloader.Video.Snippet snippet = 5;
-      private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet snippet_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance();
+      // required .metadata.Video.Snippet snippet = 5;
+      private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet snippet_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder> snippetBuilder_;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder> snippetBuilder_;
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
       public boolean hasSnippet() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet getSnippet() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet getSnippet() {
         if (snippetBuilder_ == null) {
           return snippet_;
         } else {
@@ -6117,9 +6312,9 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
-      public Builder setSnippet(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet value) {
+      public Builder setSnippet(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet value) {
         if (snippetBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6133,10 +6328,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
       public Builder setSnippet(
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder builderForValue) {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder builderForValue) {
         if (snippetBuilder_ == null) {
           snippet_ = builderForValue.build();
           onChanged();
@@ -6147,14 +6342,14 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
-      public Builder mergeSnippet(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet value) {
+      public Builder mergeSnippet(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet value) {
         if (snippetBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010) &&
-              snippet_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance()) {
+              snippet_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance()) {
             snippet_ =
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.newBuilder(snippet_).mergeFrom(value).buildPartial();
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.newBuilder(snippet_).mergeFrom(value).buildPartial();
           } else {
             snippet_ = value;
           }
@@ -6166,11 +6361,11 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
       public Builder clearSnippet() {
         if (snippetBuilder_ == null) {
-          snippet_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.getDefaultInstance();
+          snippet_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.getDefaultInstance();
           onChanged();
         } else {
           snippetBuilder_.clear();
@@ -6179,17 +6374,17 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder getSnippetBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder getSnippetBuilder() {
         bitField0_ |= 0x00000010;
         onChanged();
         return getSnippetFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder getSnippetOrBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder getSnippetOrBuilder() {
         if (snippetBuilder_ != null) {
           return snippetBuilder_.getMessageOrBuilder();
         } else {
@@ -6197,14 +6392,14 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.Snippet snippet = 5;</code>
+       * <code>required .metadata.Video.Snippet snippet = 5;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder> 
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder> 
           getSnippetFieldBuilder() {
         if (snippetBuilder_ == null) {
           snippetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.SnippetOrBuilder>(
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Snippet.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.SnippetOrBuilder>(
                   snippet_,
                   getParentForChildren(),
                   isClean());
@@ -6213,20 +6408,20 @@ public final class VideosProtos {
         return snippetBuilder_;
       }
 
-      // required .youtubedownloader.Video.ContentDetails contentDetails = 6;
-      private edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails contentDetails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance();
+      // required .metadata.Video.ContentDetails contentDetails = 6;
+      private edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails contentDetails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder> contentDetailsBuilder_;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder> contentDetailsBuilder_;
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
       public boolean hasContentDetails() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails getContentDetails() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails getContentDetails() {
         if (contentDetailsBuilder_ == null) {
           return contentDetails_;
         } else {
@@ -6234,9 +6429,9 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
-      public Builder setContentDetails(edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails value) {
+      public Builder setContentDetails(edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails value) {
         if (contentDetailsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6250,10 +6445,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
       public Builder setContentDetails(
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder builderForValue) {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder builderForValue) {
         if (contentDetailsBuilder_ == null) {
           contentDetails_ = builderForValue.build();
           onChanged();
@@ -6264,14 +6459,14 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
-      public Builder mergeContentDetails(edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails value) {
+      public Builder mergeContentDetails(edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails value) {
         if (contentDetailsBuilder_ == null) {
           if (((bitField0_ & 0x00000020) == 0x00000020) &&
-              contentDetails_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance()) {
+              contentDetails_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance()) {
             contentDetails_ =
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.newBuilder(contentDetails_).mergeFrom(value).buildPartial();
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.newBuilder(contentDetails_).mergeFrom(value).buildPartial();
           } else {
             contentDetails_ = value;
           }
@@ -6283,11 +6478,11 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
       public Builder clearContentDetails() {
         if (contentDetailsBuilder_ == null) {
-          contentDetails_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.getDefaultInstance();
+          contentDetails_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.getDefaultInstance();
           onChanged();
         } else {
           contentDetailsBuilder_.clear();
@@ -6296,17 +6491,17 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder getContentDetailsBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder getContentDetailsBuilder() {
         bitField0_ |= 0x00000020;
         onChanged();
         return getContentDetailsFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder getContentDetailsOrBuilder() {
         if (contentDetailsBuilder_ != null) {
           return contentDetailsBuilder_.getMessageOrBuilder();
         } else {
@@ -6314,14 +6509,14 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.ContentDetails contentDetails = 6;</code>
+       * <code>required .metadata.Video.ContentDetails contentDetails = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder> 
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder> 
           getContentDetailsFieldBuilder() {
         if (contentDetailsBuilder_ == null) {
           contentDetailsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.ContentDetailsOrBuilder>(
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetails.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.ContentDetailsOrBuilder>(
                   contentDetails_,
                   getParentForChildren(),
                   isClean());
@@ -6330,20 +6525,20 @@ public final class VideosProtos {
         return contentDetailsBuilder_;
       }
 
-      // required .youtubedownloader.Video.Statistics statistics = 7;
-      private edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics statistics_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance();
+      // required .metadata.Video.Statistics statistics = 7;
+      private edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics statistics_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder> statisticsBuilder_;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder> statisticsBuilder_;
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
       public boolean hasStatistics() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics getStatistics() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics getStatistics() {
         if (statisticsBuilder_ == null) {
           return statistics_;
         } else {
@@ -6351,9 +6546,9 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
-      public Builder setStatistics(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics value) {
+      public Builder setStatistics(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics value) {
         if (statisticsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6367,10 +6562,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
       public Builder setStatistics(
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder builderForValue) {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder builderForValue) {
         if (statisticsBuilder_ == null) {
           statistics_ = builderForValue.build();
           onChanged();
@@ -6381,14 +6576,14 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
-      public Builder mergeStatistics(edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics value) {
+      public Builder mergeStatistics(edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics value) {
         if (statisticsBuilder_ == null) {
           if (((bitField0_ & 0x00000040) == 0x00000040) &&
-              statistics_ != edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance()) {
+              statistics_ != edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance()) {
             statistics_ =
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.newBuilder(statistics_).mergeFrom(value).buildPartial();
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.newBuilder(statistics_).mergeFrom(value).buildPartial();
           } else {
             statistics_ = value;
           }
@@ -6400,11 +6595,11 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
       public Builder clearStatistics() {
         if (statisticsBuilder_ == null) {
-          statistics_ = edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.getDefaultInstance();
+          statistics_ = edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.getDefaultInstance();
           onChanged();
         } else {
           statisticsBuilder_.clear();
@@ -6413,17 +6608,17 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder getStatisticsBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder getStatisticsBuilder() {
         bitField0_ |= 0x00000040;
         onChanged();
         return getStatisticsFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder getStatisticsOrBuilder() {
         if (statisticsBuilder_ != null) {
           return statisticsBuilder_.getMessageOrBuilder();
         } else {
@@ -6431,14 +6626,14 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>required .youtubedownloader.Video.Statistics statistics = 7;</code>
+       * <code>required .metadata.Video.Statistics statistics = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder> 
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder> 
           getStatisticsFieldBuilder() {
         if (statisticsBuilder_ == null) {
           statisticsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.Video.StatisticsOrBuilder>(
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Statistics.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.Video.StatisticsOrBuilder>(
                   statistics_,
                   getParentForChildren(),
                   isClean());
@@ -6447,7 +6642,321 @@ public final class VideosProtos {
         return statisticsBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:youtubedownloader.Video)
+      // optional string filepath = 8;
+      private java.lang.Object filepath_ = "";
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public boolean hasFilepath() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public java.lang.String getFilepath() {
+        java.lang.Object ref = filepath_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          filepath_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFilepathBytes() {
+        java.lang.Object ref = filepath_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          filepath_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public Builder setFilepath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        filepath_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public Builder clearFilepath() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        filepath_ = getDefaultInstance().getFilepath();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string filepath = 8;</code>
+       */
+      public Builder setFilepathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        filepath_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated .metadata.Comment comments = 9;
+      private java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> comments_ =
+        java.util.Collections.emptyList();
+      private void ensureCommentsIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          comments_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.CommentProtos.Comment>(comments_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> commentsBuilder_;
+
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> getCommentsList() {
+        if (commentsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(comments_);
+        } else {
+          return commentsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public int getCommentsCount() {
+        if (commentsBuilder_ == null) {
+          return comments_.size();
+        } else {
+          return commentsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index) {
+        if (commentsBuilder_ == null) {
+          return comments_.get(index);
+        } else {
+          return commentsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder setComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.set(index, value);
+          onChanged();
+        } else {
+          commentsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder setComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder addComments(edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.add(value);
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder addComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.add(index, value);
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder addComments(
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.add(builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder addComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder addAllComments(
+          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.CommentProtos.Comment> values) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          super.addAll(values, comments_);
+          onChanged();
+        } else {
+          commentsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder clearComments() {
+        if (commentsBuilder_ == null) {
+          comments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000100);
+          onChanged();
+        } else {
+          commentsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public Builder removeComments(int index) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.remove(index);
+          onChanged();
+        } else {
+          commentsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder getCommentsBuilder(
+          int index) {
+        return getCommentsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+          int index) {
+        if (commentsBuilder_ == null) {
+          return comments_.get(index);  } else {
+          return commentsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+           getCommentsOrBuilderList() {
+        if (commentsBuilder_ != null) {
+          return commentsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(comments_);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder addCommentsBuilder() {
+        return getCommentsFieldBuilder().addBuilder(
+            edu.isi.usaid.pifi.metadata.CommentProtos.Comment.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder addCommentsBuilder(
+          int index) {
+        return getCommentsFieldBuilder().addBuilder(
+            index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 9;</code>
+       */
+      public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder> 
+           getCommentsBuilderList() {
+        return getCommentsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+          getCommentsFieldBuilder() {
+        if (commentsBuilder_ == null) {
+          commentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder>(
+                  comments_,
+                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  getParentForChildren(),
+                  isClean());
+          comments_ = null;
+        }
+        return commentsBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:metadata.Video)
     }
 
     static {
@@ -6455,39 +6964,39 @@ public final class VideosProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:youtubedownloader.Video)
+    // @@protoc_insertion_point(class_scope:metadata.Video)
   }
 
   public interface VideosOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .youtubedownloader.Video video = 1;
+    // repeated .metadata.Video video = 1;
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video> 
+    java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video> 
         getVideoList();
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.Video getVideo(int index);
+    edu.isi.usaid.pifi.metadata.VideoProtos.Video getVideo(int index);
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
     int getVideoCount();
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    java.util.List<? extends edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder> 
+    java.util.List<? extends edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder> 
         getVideoOrBuilderList();
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder getVideoOrBuilder(
+    edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder getVideoOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code youtubedownloader.Videos}
+   * Protobuf type {@code metadata.Videos}
    */
   public static final class Videos extends
       com.google.protobuf.GeneratedMessage
@@ -6539,10 +7048,10 @@ public final class VideosProtos {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                video_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.VideosProtos.Video>();
+                video_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.VideoProtos.Video>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              video_.add(input.readMessage(edu.isi.usaid.pifi.metadata.VideosProtos.Video.PARSER, extensionRegistry));
+              video_.add(input.readMessage(edu.isi.usaid.pifi.metadata.VideoProtos.Video.PARSER, extensionRegistry));
               break;
             }
           }
@@ -6562,14 +7071,14 @@ public final class VideosProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Videos_descriptor;
+      return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Videos_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Videos_fieldAccessorTable
+      return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Videos_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              edu.isi.usaid.pifi.metadata.VideosProtos.Videos.class, edu.isi.usaid.pifi.metadata.VideosProtos.Videos.Builder.class);
+              edu.isi.usaid.pifi.metadata.VideoProtos.Videos.class, edu.isi.usaid.pifi.metadata.VideoProtos.Videos.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Videos> PARSER =
@@ -6587,38 +7096,38 @@ public final class VideosProtos {
       return PARSER;
     }
 
-    // repeated .youtubedownloader.Video video = 1;
+    // repeated .metadata.Video video = 1;
     public static final int VIDEO_FIELD_NUMBER = 1;
-    private java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video> video_;
+    private java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video> video_;
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    public java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video> getVideoList() {
+    public java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video> getVideoList() {
       return video_;
     }
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    public java.util.List<? extends edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder> 
+    public java.util.List<? extends edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder> 
         getVideoOrBuilderList() {
       return video_;
     }
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
     public int getVideoCount() {
       return video_.size();
     }
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.Video getVideo(int index) {
+    public edu.isi.usaid.pifi.metadata.VideoProtos.Video getVideo(int index) {
       return video_.get(index);
     }
     /**
-     * <code>repeated .youtubedownloader.Video video = 1;</code>
+     * <code>repeated .metadata.Video video = 1;</code>
      */
-    public edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder getVideoOrBuilder(
+    public edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder getVideoOrBuilder(
         int index) {
       return video_.get(index);
     }
@@ -6672,53 +7181,53 @@ public final class VideosProtos {
       return super.writeReplace();
     }
 
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(byte[] data)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseDelimitedFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseDelimitedFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.VideosProtos.Videos parseFrom(
+    public static edu.isi.usaid.pifi.metadata.VideoProtos.Videos parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6727,7 +7236,7 @@ public final class VideosProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideosProtos.Videos prototype) {
+    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.VideoProtos.Videos prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -6739,24 +7248,24 @@ public final class VideosProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code youtubedownloader.Videos}
+     * Protobuf type {@code metadata.Videos}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.isi.usaid.pifi.metadata.VideosProtos.VideosOrBuilder {
+       implements edu.isi.usaid.pifi.metadata.VideoProtos.VideosOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Videos_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Videos_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Videos_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Videos_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.VideosProtos.Videos.class, edu.isi.usaid.pifi.metadata.VideosProtos.Videos.Builder.class);
+                edu.isi.usaid.pifi.metadata.VideoProtos.Videos.class, edu.isi.usaid.pifi.metadata.VideoProtos.Videos.Builder.class);
       }
 
-      // Construct using edu.isi.usaid.pifi.metadata.VideosProtos.Videos.newBuilder()
+      // Construct using edu.isi.usaid.pifi.metadata.VideoProtos.Videos.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6792,23 +7301,23 @@ public final class VideosProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.internal_static_youtubedownloader_Videos_descriptor;
+        return edu.isi.usaid.pifi.metadata.VideoProtos.internal_static_metadata_Videos_descriptor;
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Videos getDefaultInstanceForType() {
-        return edu.isi.usaid.pifi.metadata.VideosProtos.Videos.getDefaultInstance();
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Videos getDefaultInstanceForType() {
+        return edu.isi.usaid.pifi.metadata.VideoProtos.Videos.getDefaultInstance();
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Videos build() {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Videos result = buildPartial();
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Videos build() {
+        edu.isi.usaid.pifi.metadata.VideoProtos.Videos result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Videos buildPartial() {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Videos result = new edu.isi.usaid.pifi.metadata.VideosProtos.Videos(this);
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Videos buildPartial() {
+        edu.isi.usaid.pifi.metadata.VideoProtos.Videos result = new edu.isi.usaid.pifi.metadata.VideoProtos.Videos(this);
         int from_bitField0_ = bitField0_;
         if (videoBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -6824,16 +7333,16 @@ public final class VideosProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.isi.usaid.pifi.metadata.VideosProtos.Videos) {
-          return mergeFrom((edu.isi.usaid.pifi.metadata.VideosProtos.Videos)other);
+        if (other instanceof edu.isi.usaid.pifi.metadata.VideoProtos.Videos) {
+          return mergeFrom((edu.isi.usaid.pifi.metadata.VideoProtos.Videos)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideosProtos.Videos other) {
-        if (other == edu.isi.usaid.pifi.metadata.VideosProtos.Videos.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.VideoProtos.Videos other) {
+        if (other == edu.isi.usaid.pifi.metadata.VideoProtos.Videos.getDefaultInstance()) return this;
         if (videoBuilder_ == null) {
           if (!other.video_.isEmpty()) {
             if (video_.isEmpty()) {
@@ -6878,11 +7387,11 @@ public final class VideosProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        edu.isi.usaid.pifi.metadata.VideosProtos.Videos parsedMessage = null;
+        edu.isi.usaid.pifi.metadata.VideoProtos.Videos parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (edu.isi.usaid.pifi.metadata.VideosProtos.Videos) e.getUnfinishedMessage();
+          parsedMessage = (edu.isi.usaid.pifi.metadata.VideoProtos.Videos) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -6893,23 +7402,23 @@ public final class VideosProtos {
       }
       private int bitField0_;
 
-      // repeated .youtubedownloader.Video video = 1;
-      private java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video> video_ =
+      // repeated .metadata.Video video = 1;
+      private java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video> video_ =
         java.util.Collections.emptyList();
       private void ensureVideoIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          video_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.VideosProtos.Video>(video_);
+          video_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.VideoProtos.Video>(video_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder> videoBuilder_;
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder> videoBuilder_;
 
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video> getVideoList() {
+      public java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video> getVideoList() {
         if (videoBuilder_ == null) {
           return java.util.Collections.unmodifiableList(video_);
         } else {
@@ -6917,7 +7426,7 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public int getVideoCount() {
         if (videoBuilder_ == null) {
@@ -6927,9 +7436,9 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video getVideo(int index) {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video getVideo(int index) {
         if (videoBuilder_ == null) {
           return video_.get(index);
         } else {
@@ -6937,10 +7446,10 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder setVideo(
-          int index, edu.isi.usaid.pifi.metadata.VideosProtos.Video value) {
+          int index, edu.isi.usaid.pifi.metadata.VideoProtos.Video value) {
         if (videoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6954,10 +7463,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder setVideo(
-          int index, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder builderForValue) {
+          int index, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder builderForValue) {
         if (videoBuilder_ == null) {
           ensureVideoIsMutable();
           video_.set(index, builderForValue.build());
@@ -6968,9 +7477,9 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public Builder addVideo(edu.isi.usaid.pifi.metadata.VideosProtos.Video value) {
+      public Builder addVideo(edu.isi.usaid.pifi.metadata.VideoProtos.Video value) {
         if (videoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6984,10 +7493,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder addVideo(
-          int index, edu.isi.usaid.pifi.metadata.VideosProtos.Video value) {
+          int index, edu.isi.usaid.pifi.metadata.VideoProtos.Video value) {
         if (videoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -7001,10 +7510,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder addVideo(
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder builderForValue) {
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder builderForValue) {
         if (videoBuilder_ == null) {
           ensureVideoIsMutable();
           video_.add(builderForValue.build());
@@ -7015,10 +7524,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder addVideo(
-          int index, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder builderForValue) {
+          int index, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder builderForValue) {
         if (videoBuilder_ == null) {
           ensureVideoIsMutable();
           video_.add(index, builderForValue.build());
@@ -7029,10 +7538,10 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder addAllVideo(
-          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.VideosProtos.Video> values) {
+          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.VideoProtos.Video> values) {
         if (videoBuilder_ == null) {
           ensureVideoIsMutable();
           super.addAll(values, video_);
@@ -7043,7 +7552,7 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder clearVideo() {
         if (videoBuilder_ == null) {
@@ -7056,7 +7565,7 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
       public Builder removeVideo(int index) {
         if (videoBuilder_ == null) {
@@ -7069,16 +7578,16 @@ public final class VideosProtos {
         return this;
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder getVideoBuilder(
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder getVideoBuilder(
           int index) {
         return getVideoFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder getVideoOrBuilder(
+      public edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder getVideoOrBuilder(
           int index) {
         if (videoBuilder_ == null) {
           return video_.get(index);  } else {
@@ -7086,9 +7595,9 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public java.util.List<? extends edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder> 
+      public java.util.List<? extends edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder> 
            getVideoOrBuilderList() {
         if (videoBuilder_ != null) {
           return videoBuilder_.getMessageOrBuilderList();
@@ -7097,33 +7606,33 @@ public final class VideosProtos {
         }
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder addVideoBuilder() {
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder addVideoBuilder() {
         return getVideoFieldBuilder().addBuilder(
-            edu.isi.usaid.pifi.metadata.VideosProtos.Video.getDefaultInstance());
+            edu.isi.usaid.pifi.metadata.VideoProtos.Video.getDefaultInstance());
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder addVideoBuilder(
+      public edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder addVideoBuilder(
           int index) {
         return getVideoFieldBuilder().addBuilder(
-            index, edu.isi.usaid.pifi.metadata.VideosProtos.Video.getDefaultInstance());
+            index, edu.isi.usaid.pifi.metadata.VideoProtos.Video.getDefaultInstance());
       }
       /**
-       * <code>repeated .youtubedownloader.Video video = 1;</code>
+       * <code>repeated .metadata.Video video = 1;</code>
        */
-      public java.util.List<edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder> 
+      public java.util.List<edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder> 
            getVideoBuilderList() {
         return getVideoFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.isi.usaid.pifi.metadata.VideosProtos.Video, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder> 
+          edu.isi.usaid.pifi.metadata.VideoProtos.Video, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder> 
           getVideoFieldBuilder() {
         if (videoBuilder_ == null) {
           videoBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              edu.isi.usaid.pifi.metadata.VideosProtos.Video, edu.isi.usaid.pifi.metadata.VideosProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideosProtos.VideoOrBuilder>(
+              edu.isi.usaid.pifi.metadata.VideoProtos.Video, edu.isi.usaid.pifi.metadata.VideoProtos.Video.Builder, edu.isi.usaid.pifi.metadata.VideoProtos.VideoOrBuilder>(
                   video_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -7133,7 +7642,7 @@ public final class VideosProtos {
         return videoBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:youtubedownloader.Videos)
+      // @@protoc_insertion_point(builder_scope:metadata.Videos)
     }
 
     static {
@@ -7141,44 +7650,44 @@ public final class VideosProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:youtubedownloader.Videos)
+    // @@protoc_insertion_point(class_scope:metadata.Videos)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_descriptor;
+    internal_static_metadata_Video_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_fieldAccessorTable;
+      internal_static_metadata_Video_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_Snippet_descriptor;
+    internal_static_metadata_Video_Snippet_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_Snippet_fieldAccessorTable;
+      internal_static_metadata_Video_Snippet_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor;
+    internal_static_metadata_Video_Snippet_Thumbnails_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_Snippet_Thumbnails_fieldAccessorTable;
+      internal_static_metadata_Video_Snippet_Thumbnails_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor;
+    internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable;
+      internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_ContentDetails_descriptor;
+    internal_static_metadata_Video_ContentDetails_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_ContentDetails_fieldAccessorTable;
+      internal_static_metadata_Video_ContentDetails_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Video_Statistics_descriptor;
+    internal_static_metadata_Video_Statistics_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Video_Statistics_fieldAccessorTable;
+      internal_static_metadata_Video_Statistics_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_youtubedownloader_Videos_descriptor;
+    internal_static_metadata_Videos_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_youtubedownloader_Videos_fieldAccessorTable;
+      internal_static_metadata_Videos_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -7188,80 +7697,80 @@ public final class VideosProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013video.proto\022\021youtubedownloader\"\254\007\n\005Vid" +
-      "eo\022\020\n\010filename\030\001 \002(\t\022\n\n\002id\030\002 \002(\t\022\014\n\004kind" +
-      "\030\003 \002(\t\022\014\n\004etag\030\004 \002(\t\0221\n\007snippet\030\005 \002(\0132 ." +
-      "youtubedownloader.Video.Snippet\022?\n\016conte" +
-      "ntDetails\030\006 \002(\0132\'.youtubedownloader.Vide" +
-      "o.ContentDetails\0227\n\nstatistics\030\007 \002(\0132#.y" +
-      "outubedownloader.Video.Statistics\032\317\003\n\007Sn" +
-      "ippet\022\023\n\013publishedAt\030\001 \002(\t\022\021\n\tchannelId\030" +
-      "\002 \002(\t\022\r\n\005title\030\003 \002(\t\022\023\n\013description\030\004 \002(" +
-      "\t\022?\n\nthumbnails\030\005 \002(\0132+.youtubedownloade",
-      "r.Video.Snippet.Thumbnails\022\024\n\014channelTit" +
-      "le\030\006 \002(\t\022\022\n\ncategoryId\030\007 \002(\t\022\020\n\010comments" +
-      "\030\010 \003(\t\032\372\001\n\nThumbnails\022F\n\007default\030\001 \002(\01325" +
-      ".youtubedownloader.Video.Snippet.Thumbna" +
-      "ils.Thumbnail\022E\n\006medium\030\002 \002(\01325.youtubed" +
-      "ownloader.Video.Snippet.Thumbnails.Thumb" +
-      "nail\022C\n\004high\030\003 \002(\01325.youtubedownloader.V" +
-      "ideo.Snippet.Thumbnails.Thumbnail\032\030\n\tThu" +
-      "mbnail\022\013\n\003url\030\001 \002(\t\032s\n\016ContentDetails\022\020\n" +
-      "\010duration\030\001 \002(\t\022\021\n\tdimension\030\002 \002(\t\022\022\n\nde",
-      "finition\030\003 \002(\t\022\017\n\007caption\030\004 \002(\010\022\027\n\017licen" +
-      "sedContent\030\005 \002(\010\032u\n\nStatistics\022\021\n\tviewCo" +
-      "unt\030\001 \002(\005\022\021\n\tlikeCount\030\002 \002(\005\022\024\n\014dislikeC" +
-      "ount\030\003 \002(\005\022\025\n\rfavoriteCount\030\004 \002(\005\022\024\n\014com" +
-      "mentCount\030\005 \002(\005\"1\n\006Videos\022\'\n\005video\030\001 \003(\013" +
-      "2\030.youtubedownloader.VideoB+\n\033edu.isi.us" +
-      "aid.pifi.metadataB\014VideosProtos"
+      "\n\013video.proto\022\010metadata\032\rcomment.proto\"\251" +
+      "\007\n\005Video\022\020\n\010filename\030\001 \002(\t\022\n\n\002id\030\002 \002(\t\022\014" +
+      "\n\004kind\030\003 \002(\t\022\014\n\004etag\030\004 \002(\t\022(\n\007snippet\030\005 " +
+      "\002(\0132\027.metadata.Video.Snippet\0226\n\016contentD" +
+      "etails\030\006 \002(\0132\036.metadata.Video.ContentDet" +
+      "ails\022.\n\nstatistics\030\007 \002(\0132\032.metadata.Vide" +
+      "o.Statistics\022\020\n\010filepath\030\010 \001(\t\022#\n\010commen" +
+      "ts\030\t \003(\0132\021.metadata.Comment\032\260\003\n\007Snippet\022" +
+      "\023\n\013publishedAt\030\001 \002(\t\022\021\n\tchannelId\030\002 \002(\t\022" +
+      "\r\n\005title\030\003 \002(\t\022\023\n\013description\030\004 \002(\t\0226\n\nt",
+      "humbnails\030\005 \002(\0132\".metadata.Video.Snippet" +
+      ".Thumbnails\022\024\n\014channelTitle\030\006 \002(\t\022\022\n\ncat" +
+      "egoryId\030\007 \002(\t\022\025\n\rplaylisttitle\030\010 \002(\t\032\337\001\n" +
+      "\nThumbnails\022=\n\007default\030\001 \002(\0132,.metadata." +
+      "Video.Snippet.Thumbnails.Thumbnail\022<\n\006me" +
+      "dium\030\002 \002(\0132,.metadata.Video.Snippet.Thum" +
+      "bnails.Thumbnail\022:\n\004high\030\003 \002(\0132,.metadat" +
+      "a.Video.Snippet.Thumbnails.Thumbnail\032\030\n\t" +
+      "Thumbnail\022\013\n\003url\030\001 \002(\t\032s\n\016ContentDetails" +
+      "\022\020\n\010duration\030\001 \002(\t\022\021\n\tdimension\030\002 \002(\t\022\022\n",
+      "\ndefinition\030\003 \002(\t\022\017\n\007caption\030\004 \002(\010\022\027\n\017li" +
+      "censedContent\030\005 \002(\010\032u\n\nStatistics\022\021\n\tvie" +
+      "wCount\030\001 \002(\005\022\021\n\tlikeCount\030\002 \002(\005\022\024\n\014disli" +
+      "keCount\030\003 \002(\005\022\025\n\rfavoriteCount\030\004 \002(\005\022\024\n\014" +
+      "commentCount\030\005 \002(\005\"(\n\006Videos\022\036\n\005video\030\001 " +
+      "\003(\0132\017.metadata.VideoB*\n\033edu.isi.usaid.pi" +
+      "fi.metadataB\013VideoProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_youtubedownloader_Video_descriptor =
+          internal_static_metadata_Video_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_youtubedownloader_Video_fieldAccessorTable = new
+          internal_static_metadata_Video_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_descriptor,
-              new java.lang.String[] { "Filename", "Id", "Kind", "Etag", "Snippet", "ContentDetails", "Statistics", });
-          internal_static_youtubedownloader_Video_Snippet_descriptor =
-            internal_static_youtubedownloader_Video_descriptor.getNestedTypes().get(0);
-          internal_static_youtubedownloader_Video_Snippet_fieldAccessorTable = new
+              internal_static_metadata_Video_descriptor,
+              new java.lang.String[] { "Filename", "Id", "Kind", "Etag", "Snippet", "ContentDetails", "Statistics", "Filepath", "Comments", });
+          internal_static_metadata_Video_Snippet_descriptor =
+            internal_static_metadata_Video_descriptor.getNestedTypes().get(0);
+          internal_static_metadata_Video_Snippet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_Snippet_descriptor,
-              new java.lang.String[] { "PublishedAt", "ChannelId", "Title", "Description", "Thumbnails", "ChannelTitle", "CategoryId", "Comments", });
-          internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor =
-            internal_static_youtubedownloader_Video_Snippet_descriptor.getNestedTypes().get(0);
-          internal_static_youtubedownloader_Video_Snippet_Thumbnails_fieldAccessorTable = new
+              internal_static_metadata_Video_Snippet_descriptor,
+              new java.lang.String[] { "PublishedAt", "ChannelId", "Title", "Description", "Thumbnails", "ChannelTitle", "CategoryId", "Playlisttitle", });
+          internal_static_metadata_Video_Snippet_Thumbnails_descriptor =
+            internal_static_metadata_Video_Snippet_descriptor.getNestedTypes().get(0);
+          internal_static_metadata_Video_Snippet_Thumbnails_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor,
+              internal_static_metadata_Video_Snippet_Thumbnails_descriptor,
               new java.lang.String[] { "Default", "Medium", "High", });
-          internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor =
-            internal_static_youtubedownloader_Video_Snippet_Thumbnails_descriptor.getNestedTypes().get(0);
-          internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable = new
+          internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor =
+            internal_static_metadata_Video_Snippet_Thumbnails_descriptor.getNestedTypes().get(0);
+          internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_Snippet_Thumbnails_Thumbnail_descriptor,
+              internal_static_metadata_Video_Snippet_Thumbnails_Thumbnail_descriptor,
               new java.lang.String[] { "Url", });
-          internal_static_youtubedownloader_Video_ContentDetails_descriptor =
-            internal_static_youtubedownloader_Video_descriptor.getNestedTypes().get(1);
-          internal_static_youtubedownloader_Video_ContentDetails_fieldAccessorTable = new
+          internal_static_metadata_Video_ContentDetails_descriptor =
+            internal_static_metadata_Video_descriptor.getNestedTypes().get(1);
+          internal_static_metadata_Video_ContentDetails_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_ContentDetails_descriptor,
+              internal_static_metadata_Video_ContentDetails_descriptor,
               new java.lang.String[] { "Duration", "Dimension", "Definition", "Caption", "LicensedContent", });
-          internal_static_youtubedownloader_Video_Statistics_descriptor =
-            internal_static_youtubedownloader_Video_descriptor.getNestedTypes().get(2);
-          internal_static_youtubedownloader_Video_Statistics_fieldAccessorTable = new
+          internal_static_metadata_Video_Statistics_descriptor =
+            internal_static_metadata_Video_descriptor.getNestedTypes().get(2);
+          internal_static_metadata_Video_Statistics_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Video_Statistics_descriptor,
+              internal_static_metadata_Video_Statistics_descriptor,
               new java.lang.String[] { "ViewCount", "LikeCount", "DislikeCount", "FavoriteCount", "CommentCount", });
-          internal_static_youtubedownloader_Videos_descriptor =
+          internal_static_metadata_Videos_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_youtubedownloader_Videos_fieldAccessorTable = new
+          internal_static_metadata_Videos_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_youtubedownloader_Videos_descriptor,
+              internal_static_metadata_Videos_descriptor,
               new java.lang.String[] { "Video", });
           return null;
         }
@@ -7269,6 +7778,7 @@ public final class VideosProtos {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          edu.isi.usaid.pifi.metadata.CommentProtos.getDescriptor(),
         }, assigner);
   }
 

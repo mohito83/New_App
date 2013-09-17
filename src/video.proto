@@ -1,10 +1,12 @@
-package youtubedownloader;
+package metadata;
 
 option java_package = "edu.isi.usaid.pifi.metadata";
-option java_outer_classname = "VideosProtos";
+option java_outer_classname = "VideoProtos";
+
+import "comment.proto";
 
 message Video {
-  required string filename = 1; 
+  required string filename = 1;
   required string id = 2;
   required string kind = 3;
   required string etag = 4;
@@ -13,10 +15,10 @@ message Video {
     required string channelId = 2;
     required string title = 3;
     required string description = 4;
-    message Thumbnails {  
-    	message Thumbnail {
-    		required string url = 1;
-    	}
+    message Thumbnails {
+     message Thumbnail {
+     required string url = 1;
+     }
       required Thumbnail default = 1;
       required Thumbnail medium = 2;
       required Thumbnail high = 3;
@@ -24,8 +26,7 @@ message Video {
     required Thumbnails thumbnails = 5;
     required string channelTitle = 6;
     required string categoryId = 7;
-    repeated string comments = 8;
-
+    required string playlisttitle = 8;
   }
   required Snippet snippet = 5;
 
@@ -41,11 +42,13 @@ message Video {
   message Statistics {
     required int32 viewCount = 1;
     required int32 likeCount = 2;
-    required int32 dislikeCount = 3; 
+    required int32 dislikeCount = 3;
     required int32 favoriteCount = 4;
     required int32 commentCount = 5;
   }
   required Statistics statistics = 7;
+  optional string filepath = 8;
+  repeated Comment comments = 9;
 }
 
 message Videos {

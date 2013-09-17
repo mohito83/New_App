@@ -3,26 +3,34 @@ package edu.isi.usaid.pifi;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import edu.isi.usaid.pifi.metadata.ArticlesProtos.Article;
-import edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles;
-import edu.isi.usaid.pifi.metadata.VideosProtos.Video;
-import edu.isi.usaid.pifi.metadata.VideosProtos.Videos;
+import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
+import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
+import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
+import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
+import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 
 /**
  * 
@@ -40,13 +48,17 @@ import edu.isi.usaid.pifi.metadata.VideosProtos.Videos;
 public class ContentListActivity extends Activity implements
 ActionBar.OnNavigationListener {
 	
-	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+	public static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
-	private static final String contentDirName = "PifiContent";
+	public static final String STATE_SELECTED_DRAWER_ITEM = "selected_drawer_item";
 	
-	private static final String metaFileName = "videos.dat";
-	
-	private static final String webMetaFileName = "news.dat";
+	private DrawerLayout drawerLayout;
+
+	private ListView drawerList;
+
+    private ActionBarDrawerToggle drawerToggle;
+
+    private String[] drawerItems = new String[]{"All", "Videos", "Web"};
 	
 	private File contentDirectory;
 	
@@ -65,6 +77,12 @@ ActionBar.OnNavigationListener {
 	private ContentListAdapter contentListAdapter;
 	
 	private String selectedCat = "All";
+	
+	private String selectedType = "All";
+	
+	private Object currentContent = null;
+	
+	private BroadcastReceiver broadcastReceiver;
 
 	
 	@Override
@@ -74,24 +92,25 @@ ActionBar.OnNavigationListener {
 		
 		// content directory
 		File sdDir = Environment.getExternalStorageDirectory();
-		contentDirectory = new File(sdDir, contentDirName);
+		contentDirectory = new File(sdDir, Constants.contentDirName);
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
 		
 		// read meatadata
-		metaFile = new File(contentDirectory, metaFileName);
-		webMetaFile = new File(contentDirectory, webMetaFileName);
+		metaFile = new File(contentDirectory, Constants.metaFileName);
+		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
 		if (!metaFile.exists()){ // TODO no metadata
 		}
 		try {
+			
+			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
+			ArrayList<Article> articles = new ArrayList<Article>();
+			articles.addAll(webMetadata.getArticleList());
 			
 			metadata = Videos.parseFrom(new FileInputStream(metaFile));
 			ArrayList<Video> videos = new ArrayList<Video>();
 			videos.addAll(metadata.getVideoList());
 			
-			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
-			ArrayList<Article> articles = new ArrayList<Article>();
-			articles.addAll(webMetadata.getArticleList());
 			
 			ArrayList<Object> allContents = new ArrayList<Object>();
 			allContents.addAll(videos);
@@ -119,7 +138,45 @@ ActionBar.OnNavigationListener {
 					new ArrayAdapter<String>(this,
 							android.R.layout.simple_list_item_1,
 							android.R.id.text1, cats), this);
+			
+			// setup menu drawer
+			actionBar.setDisplayHomeAsUpEnabled(true);
+	        actionBar.setHomeButtonEnabled(true);
+			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			drawerList = (ListView) findViewById(R.id.left_drawer);
+			drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, drawerItems));
+			drawerToggle = new ActionBarDrawerToggle(
+					this,
+					drawerLayout,
+					R.drawable.ic_drawer,
+					R.string.open_drawer,
+					R.string.close_drawer){
+				public void onDrawerClosed(View view) {
+	                getActionBar().setTitle(getTitle());
+	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+	            }
+
+	            public void onDrawerOpened(View drawerView) {
+	                getActionBar().setTitle(getTitle());
+	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+	            }
+			
+			};
+			drawerLayout.setDrawerListener(drawerToggle);		
+			
+			drawerList.setOnItemClickListener(new OnItemClickListener(){
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int pos, long id) {
+					applyListFilter(selectedCat, drawerItems[pos]);
 					
+					drawerList.setItemChecked(pos, true);
+				    drawerLayout.closeDrawer(drawerList);
+				}
+				
+			});
+			
 			
 			// list of content
 			contentList = (ListView)findViewById(R.id.listing);
@@ -131,27 +188,17 @@ ActionBar.OnNavigationListener {
 				public void onItemClick(AdapterView<?> parent, View view,
 						int pos, long id) {
 					
-					Object content = contentListAdapter.getItem(pos);
+					currentContent = contentListAdapter.getItem(pos);
 					Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
 					
 					// if selected a video
-					if (content instanceof Video){
+					if (currentContent instanceof Video){
 						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
-						Video video = (Video)content;
-						intent.putExtra(ExtraConstants.PATH, contentDirectory + "/" + video.getFilename());
-						intent.putExtra(ExtraConstants.TITLE, video.getSnippet().getTitle());
-						intent.putExtra(ExtraConstants.DESCRIPTION, video.getSnippet().getDescription());
-						List<String> commentsList = video.getSnippet().getCommentsList();
-						String[] comments = new String[commentsList.size()];
-						comments = commentsList.toArray(comments);
-						intent.putExtra(ExtraConstants.COMMENTS, comments);
+						intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
 					}
-					else if (content instanceof Article){
+					else if (currentContent instanceof Article){
 						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-						Article article = (Article)content;
-						File htmlFile = new File(contentDirectory + "/" + article.getFilename());
-						Uri uri = Uri.fromFile(htmlFile);
-						intent.putExtra(ExtraConstants.URI, uri.toString());
+						intent.putExtra("content", ((Article)currentContent).toByteArray());
 					}
 					
 					startActivity(intent);
@@ -178,38 +225,239 @@ ActionBar.OnNavigationListener {
 		
 		// user selected a different category
 		String cat = categories.get(index);
-		if (cat != selectedCat){
-			contentListAdapter.clear();
-			if (cat.equals("All")){
-				contentListAdapter.addAll(metadata.getVideoList());
-				contentListAdapter.addAll(webMetadata.getArticleList());
-			}
-			else {
-				for (Video v : metadata.getVideoList()){
-					if (v.getSnippet().getCategoryId().equals(cat))
-					contentListAdapter.add(v);
-				}
-			}
-			// update list
-			contentListAdapter.notifyDataSetChanged();
-			selectedCat = cat;
-		}
+		applyListFilter(cat, selectedType);
 		return true;
 	}
 
 	@Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+ 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+    
+	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		// Restore the previously serialized current dropdown position.
+		// Restore the previously state
 		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
 			getActionBar().setSelectedNavigationItem(
 					savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
 		}
+		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEM)) {
+			drawerList.setSelection(
+					savedInstanceState.getInt(STATE_SELECTED_DRAWER_ITEM));
+		}
 	}
+	
+	@Override
+	public boolean onNavigateUp(){
+		if (!drawerLayout.isDrawerOpen(Gravity.LEFT))
+			drawerLayout.openDrawer(Gravity.LEFT);
+		else
+			drawerLayout.closeDrawer(Gravity.LEFT);
+		return true;
+	}
+	
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current dropdown position.
 		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
 				.getSelectedNavigationIndex());
+		outState.putInt(STATE_SELECTED_DRAWER_ITEM, drawerList.getSelectedItemPosition());
+	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		
+		// register to receive message when a new comment is added
+		broadcastReceiver = new BroadcastReceiver(){
+
+			@Override
+			public void onReceive(Context c, Intent i) {
+				if (i.getAction().equals(Constants.NEW_COMMENT_ACTION)){ // adding new comment
+					String user = i.getStringExtra(ExtraConstants.USER);
+					String date = i.getStringExtra(ExtraConstants.DATE);
+					String comment = i.getStringExtra(ExtraConstants.USER_COMMENT);
+					addComment(user, date, comment);
+				}
+				if (i.getAction().equals(Constants.META_UPDATED_ACTION)){ // meta file updated
+					
+					// update adapter's list data
+					ArrayList<Article> articles = new ArrayList<Article>();
+					articles.addAll(webMetadata.getArticleList());
+					
+					ArrayList<Video> videos = new ArrayList<Video>();
+					videos.addAll(metadata.getVideoList());
+					
+					ArrayList<Object> allContents = new ArrayList<Object>();
+					allContents.addAll(videos);
+					allContents.addAll(articles);
+					
+					contentListAdapter.clear();
+					contentListAdapter.addAll(allContents);
+					contentListAdapter.notifyDataSetChanged();
+				}
+			}
+			
+		};
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.NEW_COMMENT_ACTION));
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.META_UPDATED_ACTION));
+	}
+	
+	@Override
+	protected void onDestroy(){
+		super.onDestroy();
+		if (broadcastReceiver != null){
+			LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+			broadcastReceiver = null;
+		}
+			
+	}
+	
+	private void applyListFilter(String cat, String type){
+		if (type != selectedType || cat != selectedCat) { 
+			selectedType = type;
+			selectedCat = cat;
+			
+			contentListAdapter.clear();
+			
+			// TODO nothing being taken care of for web category
+			if (type.equals("All")){
+				if (cat.equals("All")){
+					contentListAdapter.addAll(metadata.getVideoList());
+					contentListAdapter.addAll(webMetadata.getArticleList());
+				}
+				else {
+					for (Video v : metadata.getVideoList()){
+						if (v.getSnippet().getCategoryId().equals(cat))
+						contentListAdapter.add(v);
+					}
+				}
+			}
+			else if (type.equals("Videos")){
+				if (cat.equals("All"))
+					contentListAdapter.addAll(metadata.getVideoList());
+				else {
+					for (Video v : metadata.getVideoList()){
+						if (v.getSnippet().getCategoryId().equals(cat))
+							contentListAdapter.add(v);
+					}
+				}
+			}
+			else if (type.equals("Web")){
+				if (cat.equals("All"))
+					contentListAdapter.addAll(webMetadata.getArticleList());
+			}
+			
+			
+			// update list
+			contentListAdapter.notifyDataSetChanged();
+		}
+	}
+	
+	/**
+	 * add new user comment to metadata
+	 * @param comment
+	 */
+	private void addComment(final String user, final String date, final String comment){
+		if (currentContent == null || comment == null || comment.isEmpty())
+			return;
+		
+		Thread t = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				
+				// Add comments to metadata
+
+				if (currentContent instanceof Video){
+					Videos.Builder newVideos = Videos.newBuilder();
+					for (Video video : metadata.getVideoList()){
+						
+						// copy from original
+						Video.Builder videoBuilder = Video.newBuilder();
+						videoBuilder.mergeFrom(video);
+						
+						// found the video to add comment
+						if (video.getId().equals(((Video)currentContent).getId())){ 
+							
+							// create new comment
+							Comment.Builder commentBuilder = Comment.newBuilder();
+							commentBuilder.setUser(user);
+							commentBuilder.setDate(date);
+							commentBuilder.setText(comment);
+							
+							// modify the video snippet by adding comment
+							videoBuilder.addComments(commentBuilder);
+						}
+						
+						newVideos.addVideo(videoBuilder);
+					}
+					
+					// write new meta out and update metadata in memory
+					try {
+						FileOutputStream out = new FileOutputStream(metaFile);
+						metadata = newVideos.build(); // update metadata in memory
+						metadata.writeTo(out); // write out to file
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					
+				}
+				else if (currentContent instanceof Article){
+					Articles.Builder newArticles = Articles.newBuilder();
+					for (Article article : webMetadata.getArticleList()){
+						
+						// copy data from original
+						Article.Builder articleBuilder = Article.newBuilder();
+						articleBuilder.mergeFrom(article);
+						
+						// found the article to add comment
+						if (article.getUrl().equals(((Article)currentContent).getUrl())){ 
+							
+							// create new comment
+							Comment.Builder commentBuilder = Comment.newBuilder();
+							commentBuilder.setUser(user);
+							commentBuilder.setDate(date);
+							commentBuilder.setText(comment);
+							
+							// modify the article by adding comment
+							articleBuilder.addComments(commentBuilder);
+						}
+						
+						newArticles.addArticle(articleBuilder);
+					}
+					
+					// write new meta out and update metadata in memory
+					try {
+						FileOutputStream out = new FileOutputStream(webMetaFile);
+						webMetadata = newArticles.build(); // update metadata in memory
+						webMetadata.writeTo(out); // write out to file
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				// broadcast metadata updated
+				Intent i = new Intent();
+				i.setAction(Constants.META_UPDATED_ACTION);
+				LocalBroadcastManager.getInstance(ContentListActivity.this).sendBroadcast(i);
+			}
+			
+		});
+		
+		t.start();
 	}
 }

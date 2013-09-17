@@ -127,7 +127,7 @@ public class FullscreenVideoActivity extends Activity implements VideoController
     	videoView.stopPlayback();
 		Intent i = new Intent(getApplicationContext(), VideoPlayerFragment.class);
 		i.putExtra(ExtraConstants.POSITION, pos);
-		setResult(Activity.RESULT_OK, i);
+		setResult(RESULT_OK, i);
 		finish();
     }
     

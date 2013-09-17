@@ -3,8 +3,8 @@
 
 package edu.isi.usaid.pifi.metadata;
 
-public final class ArticlesProtos {
-  private ArticlesProtos() {}
+public final class ArticleProtos {
+  private ArticleProtos() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -190,9 +190,34 @@ public final class ArticlesProtos {
      */
     com.google.protobuf.ByteString
         getDekBytes();
+
+    // repeated .metadata.Comment comments = 14;
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> 
+        getCommentsList();
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index);
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    int getCommentsCount();
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+        getCommentsOrBuilderList();
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+        int index);
   }
   /**
-   * Protobuf type {@code webcrawler.Article}
+   * Protobuf type {@code metadata.Article}
    */
   public static final class Article extends
       com.google.protobuf.GeneratedMessage
@@ -307,6 +332,14 @@ public final class ArticlesProtos {
               dek_ = input.readBytes();
               break;
             }
+            case 114: {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+                comments_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.CommentProtos.Comment>();
+                mutable_bitField0_ |= 0x00002000;
+              }
+              comments_.add(input.readMessage(edu.isi.usaid.pifi.metadata.CommentProtos.Comment.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -315,20 +348,23 @@ public final class ArticlesProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+          comments_ = java.util.Collections.unmodifiableList(comments_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Article_descriptor;
+      return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Article_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Article_fieldAccessorTable
+      return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Article_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.class, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder.class);
+              edu.isi.usaid.pifi.metadata.ArticleProtos.Article.class, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Article> PARSER =
@@ -825,6 +861,42 @@ public final class ArticlesProtos {
       }
     }
 
+    // repeated .metadata.Comment comments = 14;
+    public static final int COMMENTS_FIELD_NUMBER = 14;
+    private java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> comments_;
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> getCommentsList() {
+      return comments_;
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    public java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+        getCommentsOrBuilderList() {
+      return comments_;
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    public int getCommentsCount() {
+      return comments_.size();
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    public edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index) {
+      return comments_.get(index);
+    }
+    /**
+     * <code>repeated .metadata.Comment comments = 14;</code>
+     */
+    public edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+        int index) {
+      return comments_.get(index);
+    }
+
     private void initFields() {
       filename_ = "";
       domain_ = "";
@@ -839,6 +911,7 @@ public final class ArticlesProtos {
       wordCount_ = 0;
       author_ = "";
       dek_ = "";
+      comments_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -864,6 +937,12 @@ public final class ArticlesProtos {
       if (!hasContent()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getCommentsCount(); i++) {
+        if (!getComments(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -910,6 +989,9 @@ public final class ArticlesProtos {
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         output.writeBytes(13, getDekBytes());
+      }
+      for (int i = 0; i < comments_.size(); i++) {
+        output.writeMessage(14, comments_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -972,6 +1054,10 @@ public final class ArticlesProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(13, getDekBytes());
       }
+      for (int i = 0; i < comments_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, comments_.get(i));
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -984,53 +1070,53 @@ public final class ArticlesProtos {
       return super.writeReplace();
     }
 
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(byte[] data)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseDelimitedFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseDelimitedFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Article parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1039,7 +1125,7 @@ public final class ArticlesProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.ArticlesProtos.Article prototype) {
+    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.ArticleProtos.Article prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -1051,24 +1137,24 @@ public final class ArticlesProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code webcrawler.Article}
+     * Protobuf type {@code metadata.Article}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder {
+       implements edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Article_descriptor;
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Article_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Article_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Article_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.class, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder.class);
+                edu.isi.usaid.pifi.metadata.ArticleProtos.Article.class, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder.class);
       }
 
-      // Construct using edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.newBuilder()
+      // Construct using edu.isi.usaid.pifi.metadata.ArticleProtos.Article.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1080,6 +1166,7 @@ public final class ArticlesProtos {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getCommentsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1114,6 +1201,12 @@ public final class ArticlesProtos {
         bitField0_ = (bitField0_ & ~0x00000800);
         dek_ = "";
         bitField0_ = (bitField0_ & ~0x00001000);
+        if (commentsBuilder_ == null) {
+          comments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+        } else {
+          commentsBuilder_.clear();
+        }
         return this;
       }
 
@@ -1123,23 +1216,23 @@ public final class ArticlesProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Article_descriptor;
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Article_descriptor;
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article getDefaultInstanceForType() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.getDefaultInstance();
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article getDefaultInstanceForType() {
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.Article.getDefaultInstance();
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article build() {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Article result = buildPartial();
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article build() {
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Article result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article buildPartial() {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Article result = new edu.isi.usaid.pifi.metadata.ArticlesProtos.Article(this);
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article buildPartial() {
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Article result = new edu.isi.usaid.pifi.metadata.ArticleProtos.Article(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1194,22 +1287,31 @@ public final class ArticlesProtos {
           to_bitField0_ |= 0x00001000;
         }
         result.dek_ = dek_;
+        if (commentsBuilder_ == null) {
+          if (((bitField0_ & 0x00002000) == 0x00002000)) {
+            comments_ = java.util.Collections.unmodifiableList(comments_);
+            bitField0_ = (bitField0_ & ~0x00002000);
+          }
+          result.comments_ = comments_;
+        } else {
+          result.comments_ = commentsBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.isi.usaid.pifi.metadata.ArticlesProtos.Article) {
-          return mergeFrom((edu.isi.usaid.pifi.metadata.ArticlesProtos.Article)other);
+        if (other instanceof edu.isi.usaid.pifi.metadata.ArticleProtos.Article) {
+          return mergeFrom((edu.isi.usaid.pifi.metadata.ArticleProtos.Article)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.ArticlesProtos.Article other) {
-        if (other == edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.ArticleProtos.Article other) {
+        if (other == edu.isi.usaid.pifi.metadata.ArticleProtos.Article.getDefaultInstance()) return this;
         if (other.hasFilename()) {
           bitField0_ |= 0x00000001;
           filename_ = other.filename_;
@@ -1269,6 +1371,32 @@ public final class ArticlesProtos {
           dek_ = other.dek_;
           onChanged();
         }
+        if (commentsBuilder_ == null) {
+          if (!other.comments_.isEmpty()) {
+            if (comments_.isEmpty()) {
+              comments_ = other.comments_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+            } else {
+              ensureCommentsIsMutable();
+              comments_.addAll(other.comments_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.comments_.isEmpty()) {
+            if (commentsBuilder_.isEmpty()) {
+              commentsBuilder_.dispose();
+              commentsBuilder_ = null;
+              comments_ = other.comments_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+              commentsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getCommentsFieldBuilder() : null;
+            } else {
+              commentsBuilder_.addAllMessages(other.comments_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1294,6 +1422,12 @@ public final class ArticlesProtos {
           
           return false;
         }
+        for (int i = 0; i < getCommentsCount(); i++) {
+          if (!getComments(i).isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
 
@@ -1301,11 +1435,11 @@ public final class ArticlesProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Article parsedMessage = null;
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Article parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (edu.isi.usaid.pifi.metadata.ArticlesProtos.Article) e.getUnfinishedMessage();
+          parsedMessage = (edu.isi.usaid.pifi.metadata.ArticleProtos.Article) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2155,7 +2289,247 @@ public final class ArticlesProtos {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:webcrawler.Article)
+      // repeated .metadata.Comment comments = 14;
+      private java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> comments_ =
+        java.util.Collections.emptyList();
+      private void ensureCommentsIsMutable() {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
+          comments_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.CommentProtos.Comment>(comments_);
+          bitField0_ |= 0x00002000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> commentsBuilder_;
+
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment> getCommentsList() {
+        if (commentsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(comments_);
+        } else {
+          return commentsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public int getCommentsCount() {
+        if (commentsBuilder_ == null) {
+          return comments_.size();
+        } else {
+          return commentsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment getComments(int index) {
+        if (commentsBuilder_ == null) {
+          return comments_.get(index);
+        } else {
+          return commentsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder setComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.set(index, value);
+          onChanged();
+        } else {
+          commentsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder setComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder addComments(edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.add(value);
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder addComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment value) {
+        if (commentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommentsIsMutable();
+          comments_.add(index, value);
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder addComments(
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.add(builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder addComments(
+          int index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder builderForValue) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          commentsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder addAllComments(
+          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.CommentProtos.Comment> values) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          super.addAll(values, comments_);
+          onChanged();
+        } else {
+          commentsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder clearComments() {
+        if (commentsBuilder_ == null) {
+          comments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+          onChanged();
+        } else {
+          commentsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public Builder removeComments(int index) {
+        if (commentsBuilder_ == null) {
+          ensureCommentsIsMutable();
+          comments_.remove(index);
+          onChanged();
+        } else {
+          commentsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder getCommentsBuilder(
+          int index) {
+        return getCommentsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder getCommentsOrBuilder(
+          int index) {
+        if (commentsBuilder_ == null) {
+          return comments_.get(index);  } else {
+          return commentsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public java.util.List<? extends edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+           getCommentsOrBuilderList() {
+        if (commentsBuilder_ != null) {
+          return commentsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(comments_);
+        }
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder addCommentsBuilder() {
+        return getCommentsFieldBuilder().addBuilder(
+            edu.isi.usaid.pifi.metadata.CommentProtos.Comment.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder addCommentsBuilder(
+          int index) {
+        return getCommentsFieldBuilder().addBuilder(
+            index, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .metadata.Comment comments = 14;</code>
+       */
+      public java.util.List<edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder> 
+           getCommentsBuilderList() {
+        return getCommentsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder> 
+          getCommentsFieldBuilder() {
+        if (commentsBuilder_ == null) {
+          commentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              edu.isi.usaid.pifi.metadata.CommentProtos.Comment, edu.isi.usaid.pifi.metadata.CommentProtos.Comment.Builder, edu.isi.usaid.pifi.metadata.CommentProtos.CommentOrBuilder>(
+                  comments_,
+                  ((bitField0_ & 0x00002000) == 0x00002000),
+                  getParentForChildren(),
+                  isClean());
+          comments_ = null;
+        }
+        return commentsBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:metadata.Article)
     }
 
     static {
@@ -2163,39 +2537,39 @@ public final class ArticlesProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:webcrawler.Article)
+    // @@protoc_insertion_point(class_scope:metadata.Article)
   }
 
   public interface ArticlesOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .webcrawler.Article article = 1;
+    // repeated .metadata.Article article = 1;
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> 
+    java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article> 
         getArticleList();
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    edu.isi.usaid.pifi.metadata.ArticlesProtos.Article getArticle(int index);
+    edu.isi.usaid.pifi.metadata.ArticleProtos.Article getArticle(int index);
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
     int getArticleCount();
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder> 
+    java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder> 
         getArticleOrBuilderList();
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder getArticleOrBuilder(
+    edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder getArticleOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code webcrawler.Articles}
+   * Protobuf type {@code metadata.Articles}
    */
   public static final class Articles extends
       com.google.protobuf.GeneratedMessage
@@ -2247,10 +2621,10 @@ public final class ArticlesProtos {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                article_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article>();
+                article_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.ArticleProtos.Article>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              article_.add(input.readMessage(edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.PARSER, extensionRegistry));
+              article_.add(input.readMessage(edu.isi.usaid.pifi.metadata.ArticleProtos.Article.PARSER, extensionRegistry));
               break;
             }
           }
@@ -2270,14 +2644,14 @@ public final class ArticlesProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Articles_descriptor;
+      return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Articles_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Articles_fieldAccessorTable
+      return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Articles_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.class, edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.Builder.class);
+              edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.class, edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Articles> PARSER =
@@ -2295,38 +2669,38 @@ public final class ArticlesProtos {
       return PARSER;
     }
 
-    // repeated .webcrawler.Article article = 1;
+    // repeated .metadata.Article article = 1;
     public static final int ARTICLE_FIELD_NUMBER = 1;
-    private java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> article_;
+    private java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article> article_;
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    public java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> getArticleList() {
+    public java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article> getArticleList() {
       return article_;
     }
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    public java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder> 
+    public java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder> 
         getArticleOrBuilderList() {
       return article_;
     }
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
     public int getArticleCount() {
       return article_.size();
     }
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article getArticle(int index) {
+    public edu.isi.usaid.pifi.metadata.ArticleProtos.Article getArticle(int index) {
       return article_.get(index);
     }
     /**
-     * <code>repeated .webcrawler.Article article = 1;</code>
+     * <code>repeated .metadata.Article article = 1;</code>
      */
-    public edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder getArticleOrBuilder(
+    public edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder getArticleOrBuilder(
         int index) {
       return article_.get(index);
     }
@@ -2380,53 +2754,53 @@ public final class ArticlesProtos {
       return super.writeReplace();
     }
 
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(byte[] data)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseDelimitedFrom(java.io.InputStream input)
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseDelimitedFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parseFrom(
+    public static edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2435,7 +2809,7 @@ public final class ArticlesProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles prototype) {
+    public static Builder newBuilder(edu.isi.usaid.pifi.metadata.ArticleProtos.Articles prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -2447,24 +2821,24 @@ public final class ArticlesProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code webcrawler.Articles}
+     * Protobuf type {@code metadata.Articles}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticlesOrBuilder {
+       implements edu.isi.usaid.pifi.metadata.ArticleProtos.ArticlesOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Articles_descriptor;
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Articles_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Articles_fieldAccessorTable
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Articles_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.class, edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.Builder.class);
+                edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.class, edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.Builder.class);
       }
 
-      // Construct using edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.newBuilder()
+      // Construct using edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2500,23 +2874,23 @@ public final class ArticlesProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.internal_static_webcrawler_Articles_descriptor;
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.internal_static_metadata_Articles_descriptor;
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles getDefaultInstanceForType() {
-        return edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.getDefaultInstance();
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Articles getDefaultInstanceForType() {
+        return edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.getDefaultInstance();
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles build() {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles result = buildPartial();
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Articles build() {
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Articles result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles buildPartial() {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles result = new edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles(this);
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Articles buildPartial() {
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Articles result = new edu.isi.usaid.pifi.metadata.ArticleProtos.Articles(this);
         int from_bitField0_ = bitField0_;
         if (articleBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -2532,16 +2906,16 @@ public final class ArticlesProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles) {
-          return mergeFrom((edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles)other);
+        if (other instanceof edu.isi.usaid.pifi.metadata.ArticleProtos.Articles) {
+          return mergeFrom((edu.isi.usaid.pifi.metadata.ArticleProtos.Articles)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles other) {
-        if (other == edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.isi.usaid.pifi.metadata.ArticleProtos.Articles other) {
+        if (other == edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.getDefaultInstance()) return this;
         if (articleBuilder_ == null) {
           if (!other.article_.isEmpty()) {
             if (article_.isEmpty()) {
@@ -2586,11 +2960,11 @@ public final class ArticlesProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles parsedMessage = null;
+        edu.isi.usaid.pifi.metadata.ArticleProtos.Articles parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (edu.isi.usaid.pifi.metadata.ArticlesProtos.Articles) e.getUnfinishedMessage();
+          parsedMessage = (edu.isi.usaid.pifi.metadata.ArticleProtos.Articles) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2601,23 +2975,23 @@ public final class ArticlesProtos {
       }
       private int bitField0_;
 
-      // repeated .webcrawler.Article article = 1;
-      private java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> article_ =
+      // repeated .metadata.Article article = 1;
+      private java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article> article_ =
         java.util.Collections.emptyList();
       private void ensureArticleIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          article_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article>(article_);
+          article_ = new java.util.ArrayList<edu.isi.usaid.pifi.metadata.ArticleProtos.Article>(article_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.isi.usaid.pifi.metadata.ArticlesProtos.Article, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder> articleBuilder_;
+          edu.isi.usaid.pifi.metadata.ArticleProtos.Article, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder> articleBuilder_;
 
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> getArticleList() {
+      public java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article> getArticleList() {
         if (articleBuilder_ == null) {
           return java.util.Collections.unmodifiableList(article_);
         } else {
@@ -2625,7 +2999,7 @@ public final class ArticlesProtos {
         }
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public int getArticleCount() {
         if (articleBuilder_ == null) {
@@ -2635,9 +3009,9 @@ public final class ArticlesProtos {
         }
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article getArticle(int index) {
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article getArticle(int index) {
         if (articleBuilder_ == null) {
           return article_.get(index);
         } else {
@@ -2645,10 +3019,10 @@ public final class ArticlesProtos {
         }
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder setArticle(
-          int index, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article value) {
+          int index, edu.isi.usaid.pifi.metadata.ArticleProtos.Article value) {
         if (articleBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2662,10 +3036,10 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder setArticle(
-          int index, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder builderForValue) {
+          int index, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder builderForValue) {
         if (articleBuilder_ == null) {
           ensureArticleIsMutable();
           article_.set(index, builderForValue.build());
@@ -2676,9 +3050,9 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public Builder addArticle(edu.isi.usaid.pifi.metadata.ArticlesProtos.Article value) {
+      public Builder addArticle(edu.isi.usaid.pifi.metadata.ArticleProtos.Article value) {
         if (articleBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2692,10 +3066,10 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder addArticle(
-          int index, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article value) {
+          int index, edu.isi.usaid.pifi.metadata.ArticleProtos.Article value) {
         if (articleBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2709,10 +3083,10 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder addArticle(
-          edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder builderForValue) {
+          edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder builderForValue) {
         if (articleBuilder_ == null) {
           ensureArticleIsMutable();
           article_.add(builderForValue.build());
@@ -2723,10 +3097,10 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder addArticle(
-          int index, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder builderForValue) {
+          int index, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder builderForValue) {
         if (articleBuilder_ == null) {
           ensureArticleIsMutable();
           article_.add(index, builderForValue.build());
@@ -2737,10 +3111,10 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder addAllArticle(
-          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.ArticlesProtos.Article> values) {
+          java.lang.Iterable<? extends edu.isi.usaid.pifi.metadata.ArticleProtos.Article> values) {
         if (articleBuilder_ == null) {
           ensureArticleIsMutable();
           super.addAll(values, article_);
@@ -2751,7 +3125,7 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder clearArticle() {
         if (articleBuilder_ == null) {
@@ -2764,7 +3138,7 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
       public Builder removeArticle(int index) {
         if (articleBuilder_ == null) {
@@ -2777,16 +3151,16 @@ public final class ArticlesProtos {
         return this;
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder getArticleBuilder(
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder getArticleBuilder(
           int index) {
         return getArticleFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder getArticleOrBuilder(
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder getArticleOrBuilder(
           int index) {
         if (articleBuilder_ == null) {
           return article_.get(index);  } else {
@@ -2794,9 +3168,9 @@ public final class ArticlesProtos {
         }
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder> 
+      public java.util.List<? extends edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder> 
            getArticleOrBuilderList() {
         if (articleBuilder_ != null) {
           return articleBuilder_.getMessageOrBuilderList();
@@ -2805,33 +3179,33 @@ public final class ArticlesProtos {
         }
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder addArticleBuilder() {
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder addArticleBuilder() {
         return getArticleFieldBuilder().addBuilder(
-            edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.getDefaultInstance());
+            edu.isi.usaid.pifi.metadata.ArticleProtos.Article.getDefaultInstance());
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder addArticleBuilder(
+      public edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder addArticleBuilder(
           int index) {
         return getArticleFieldBuilder().addBuilder(
-            index, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.getDefaultInstance());
+            index, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.getDefaultInstance());
       }
       /**
-       * <code>repeated .webcrawler.Article article = 1;</code>
+       * <code>repeated .metadata.Article article = 1;</code>
        */
-      public java.util.List<edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder> 
+      public java.util.List<edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder> 
            getArticleBuilderList() {
         return getArticleFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.isi.usaid.pifi.metadata.ArticlesProtos.Article, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder> 
+          edu.isi.usaid.pifi.metadata.ArticleProtos.Article, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder> 
           getArticleFieldBuilder() {
         if (articleBuilder_ == null) {
           articleBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              edu.isi.usaid.pifi.metadata.ArticlesProtos.Article, edu.isi.usaid.pifi.metadata.ArticlesProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticlesProtos.ArticleOrBuilder>(
+              edu.isi.usaid.pifi.metadata.ArticleProtos.Article, edu.isi.usaid.pifi.metadata.ArticleProtos.Article.Builder, edu.isi.usaid.pifi.metadata.ArticleProtos.ArticleOrBuilder>(
                   article_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -2841,7 +3215,7 @@ public final class ArticlesProtos {
         return articleBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:webcrawler.Articles)
+      // @@protoc_insertion_point(builder_scope:metadata.Articles)
     }
 
     static {
@@ -2849,19 +3223,19 @@ public final class ArticlesProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:webcrawler.Articles)
+    // @@protoc_insertion_point(class_scope:metadata.Articles)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_webcrawler_Article_descriptor;
+    internal_static_metadata_Article_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_webcrawler_Article_fieldAccessorTable;
+      internal_static_metadata_Article_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_webcrawler_Articles_descriptor;
+    internal_static_metadata_Articles_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_webcrawler_Articles_fieldAccessorTable;
+      internal_static_metadata_Articles_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2871,33 +3245,34 @@ public final class ArticlesProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rarticle.proto\022\nwebcrawler\"\362\001\n\007Article\022" +
-      "\020\n\010filename\030\001 \002(\t\022\016\n\006domain\030\002 \002(\t\022\013\n\003url" +
-      "\030\003 \002(\t\022\021\n\tdirection\030\004 \002(\t\022\017\n\007content\030\005 \002" +
-      "(\t\022\r\n\005title\030\006 \001(\t\022\021\n\tthumbnail\030\007 \001(\t\022\026\n\016" +
-      "date_published\030\010 \001(\t\022\024\n\014next_page_id\030\t \001" +
-      "(\005\022\023\n\013total_pages\030\n \001(\005\022\022\n\nword_count\030\013 " +
-      "\001(\005\022\016\n\006author\030\014 \001(\t\022\013\n\003dek\030\r \001(\t\"0\n\010Arti" +
-      "cles\022$\n\007article\030\001 \003(\0132\023.webcrawler.Artic" +
-      "leB-\n\033edu.isi.usaid.pifi.metadataB\016Artic" +
-      "lesProtos"
+      "\n\rarticle.proto\022\010metadata\032\rcomment.proto" +
+      "\"\227\002\n\007Article\022\020\n\010filename\030\001 \002(\t\022\016\n\006domain" +
+      "\030\002 \002(\t\022\013\n\003url\030\003 \002(\t\022\021\n\tdirection\030\004 \002(\t\022\017" +
+      "\n\007content\030\005 \002(\t\022\r\n\005title\030\006 \001(\t\022\021\n\tthumbn" +
+      "ail\030\007 \001(\t\022\026\n\016date_published\030\010 \001(\t\022\024\n\014nex" +
+      "t_page_id\030\t \001(\005\022\023\n\013total_pages\030\n \001(\005\022\022\n\n" +
+      "word_count\030\013 \001(\005\022\016\n\006author\030\014 \001(\t\022\013\n\003dek\030" +
+      "\r \001(\t\022#\n\010comments\030\016 \003(\0132\021.metadata.Comme" +
+      "nt\".\n\010Articles\022\"\n\007article\030\001 \003(\0132\021.metada" +
+      "ta.ArticleB,\n\033edu.isi.usaid.pifi.metadat",
+      "aB\rArticleProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_webcrawler_Article_descriptor =
+          internal_static_metadata_Article_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_webcrawler_Article_fieldAccessorTable = new
+          internal_static_metadata_Article_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_webcrawler_Article_descriptor,
-              new java.lang.String[] { "Filename", "Domain", "Url", "Direction", "Content", "Title", "Thumbnail", "DatePublished", "NextPageId", "TotalPages", "WordCount", "Author", "Dek", });
-          internal_static_webcrawler_Articles_descriptor =
+              internal_static_metadata_Article_descriptor,
+              new java.lang.String[] { "Filename", "Domain", "Url", "Direction", "Content", "Title", "Thumbnail", "DatePublished", "NextPageId", "TotalPages", "WordCount", "Author", "Dek", "Comments", });
+          internal_static_metadata_Articles_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_webcrawler_Articles_fieldAccessorTable = new
+          internal_static_metadata_Articles_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_webcrawler_Articles_descriptor,
+              internal_static_metadata_Articles_descriptor,
               new java.lang.String[] { "Article", });
           return null;
         }
@@ -2905,6 +3280,7 @@ public final class ArticlesProtos {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          edu.isi.usaid.pifi.metadata.CommentProtos.getDescriptor(),
         }, assigner);
   }
 

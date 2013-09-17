@@ -9,6 +9,8 @@ package edu.isi.usaid.pifi;
  */
 public class ExtraConstants {
 	
+	public static final String CONTENT = "content";
+	
 	public static final String TYPE = "type";
 	
 	public static final String PATH = "path";
@@ -19,14 +21,18 @@ public class ExtraConstants {
 	
 	public static final String DESCRIPTION = "description";
 	
-	public static final String COMMENTS = "comments";
-	
-	public static final String CATEGORY = "category";
+	public static final String AUTHOR = "author";
 	
 	public static final String POSITION = "position";
 	
 	public static final String TYPE_VIDEO = "video";
 	
 	public static final String TYPE_ARTICLE = "article";
+	
+	public static final String USER = "user";
+	
+	public static final String USER_COMMENT = "user_comment";
+	
+	public static final String DATE = "date";
 
 }
