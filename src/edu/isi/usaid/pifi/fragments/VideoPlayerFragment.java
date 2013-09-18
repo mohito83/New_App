@@ -33,6 +33,8 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     
     private String videoSource;
     
+    private int pausedPos = 0;
+    
     private static final int FULLSCREEN_ACTIVITY = 1011;
     
     public static final VideoPlayerFragment newInstance(String source, String title){
@@ -81,11 +83,31 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
         	
         });
         videoSurface.setVideoPath(videoSource);
-        videoSurface.start();
-        
+        if (savedInstanceState != null){
+	        int pos = savedInstanceState.getInt(ExtraConstants.POSITION, 0);
+	        videoSurface.seekTo(pos);
+        }
+
         return rootView;
     }
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+    	super.onSaveInstanceState(outState);
+    	outState.putInt(ExtraConstants.POSITION, getCurrentPosition());
+    }
 
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	pausedPos = videoSurface.getCurrentPosition();
+    }
+    
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	videoSurface.seekTo(pausedPos);
+    }
     
     @Override
     /**
