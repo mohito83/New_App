@@ -15,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
@@ -40,7 +39,7 @@ public class ContentViewerActivity extends FragmentActivity {
 	
 	private ViewPager pager;
 	
-	private PagerAdapter pagerAdapter;
+	private PageAdapter pagerAdapter;
 	
 	private File contentDirectory;
 	
@@ -94,7 +93,13 @@ public class ContentViewerActivity extends FragmentActivity {
 			}
 
 			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			public void onPageScrolled(int pos, float arg1, int arg2) {
+				// pause video
+				Fragment frag = pagerAdapter.getItem(pos);
+				if (frag instanceof VideoPlayerFragment){
+					VideoPlayerFragment vFrag = (VideoPlayerFragment)frag;
+					vFrag.pause();
+				}
 			}
 
 			@Override
