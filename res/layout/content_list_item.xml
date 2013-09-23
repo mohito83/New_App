@@ -31,7 +31,7 @@
 	    android:layout_marginTop="1dip"
 	    android:layout_below="@+id/contentTitle"
 	    android:layout_toRightOf="@+id/contentThumb" 
-	    android:background="@color/silver"
+	    android:background="@color/accent"
 	    android:singleLine="true" />
 	
 	<TextView

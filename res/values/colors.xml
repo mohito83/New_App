@@ -156,4 +156,16 @@
  <color name="DarkBlue">#00008B</color>
  <color name="Navy">#000080</color>
  <color name="Black">#000000</color>
+ 
+ <color name="schemeDarkBg">#003366</color>
+ <color name="schemeLightBg">#FFFAFA</color>
+ <color name="schemeMedium">#336699</color>
+ <color name="schemeAccent">#FFCC66</color>
+ <color name="schemeDarkText">#000000</color>
+ <color name="schemeLightText">#FFFFFF</color>
+ 
+ <color name="listStartColor">#f1f1f2</color>
+ <color name="listCenterColor">#e7e7e8</color>
+ <color name="listEndColor">@color/pressed_pifistyle</color>
+ <color name="accent">@color/pressed_pifistyle</color>
 </resources>
