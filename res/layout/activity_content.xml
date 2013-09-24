@@ -6,25 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- main content -->
+    <!-- main content listing -->
     <ListView
 	    android:id="@+id/listing"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:listSelector="@drawable/list_selector"
 	    android:dividerHeight="0dp"
-	    android:divider="@null"></ListView> 
+	    android:divider="@null" />
 
     <!-- sliding drawer menu -->
-<!-- 	<ListView
-		android:id="@+id/left_drawer"
-		android:layout_width="240dp"
-		android:layout_height="match_parent"
-		android:layout_gravity="start"
-		android:choiceMode="singleChoice"
-		android:divider="@drawable/drawer_divider"
-		android:background="@color/schemeMedium"/> -->
-		<ListView
+	<ListView
 		android:id="@+id/left_drawer"
 		android:layout_width="240dp"
 		android:layout_height="match_parent"

@@ -27,13 +27,13 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	
 	private File contentDirectory;
 	
-	private final Context context;
+//	private final Context context;
 	
 	private LruCache<String, Bitmap> bitmapCache;
 
 	public ContentListAdapter(Context context, List<Object> objects, String directory) {
 		super(context, R.layout.content_list_item, objects);
-		this.context = context;
+//		this.context = context;
 		
 		contentDirectory = new File(directory);
 		
@@ -64,7 +64,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		
 		// recycle views
 		if (convertView == null){
-			LayoutInflater inflater = (LayoutInflater) context
+			LayoutInflater inflater = (LayoutInflater) getContext()
 			        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.content_list_item, parent, false);
 			

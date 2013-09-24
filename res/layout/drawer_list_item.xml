@@ -1,20 +1,27 @@
-<!-- <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:textColor="@color/schemeLightText"
-    android:background="@drawable/drawer_item_box"
-    android:height="40dp"/> -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:textColor="@color/black"
-    android:background="@drawable/drawer_list_selector"
-    android:height="40dp"/>
+    android:layout_height="wrap_content" 
+    android:background="@drawable/drawer_list_selector">
+
+    <TextView
+	 android:id="@+id/drawerItemText"
+	 android:layout_width="wrap_content"
+	 android:layout_height="wrap_content"
+	 android:gravity="center_vertical|fill_horizontal"
+	 android:paddingLeft="16dp"
+	 android:paddingRight="5dp"
+	 android:textColor="@color/black"
+	 android:height="40dp"/>
+
+   	<ImageView 
+	    android:id="@+id/drawerItemCheck"
+	    android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_check"/>
+
+</RelativeLayout> 
+
