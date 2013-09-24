@@ -168,4 +168,5 @@
  <color name="listCenterColor">#e7e7e8</color>
  <color name="listEndColor">@color/pressed_pifistyle</color>
  <color name="accent">@color/pressed_pifistyle</color>
+ <color name="background">#336699</color>
 </resources>

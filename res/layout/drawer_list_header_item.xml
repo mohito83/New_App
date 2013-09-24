@@ -6,5 +6,5 @@
     android:paddingLeft="5dp"
     android:paddingRight="16dp"
     android:textColor="@color/white"
-    android:background="@color/accent"
+    android:background="@color/background"
     android:height="20dp"/>

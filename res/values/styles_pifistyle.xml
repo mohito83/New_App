@@ -17,10 +17,9 @@
      limitations under the License.
 -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Theme.Pifistyle" parent="@android:style/Theme.Holo.Light">
-        <item name="android:editTextStyle">@style/PiFiEditText</item>
         <item name="android:actionBarItemBackground">@drawable/selectable_background_pifistyle</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Pifistyle</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Pifistyle</item>
@@ -30,8 +29,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_pifistyle</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_pifistyle</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pifistyle</item>
-        
-        
+        <item name="android:editTextStyle">@style/EditText.Pifistyle</item>
     </style>
     
     <style name="ActionBar.Solid.Pifistyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
@@ -39,6 +37,16 @@
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_pifistyle</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_pifistyle</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Pifistyle</item>
+        <item name="android:titleTextStyle">@style/ActionBar.TitleTextStyle.Pifistyle</item>
+    </style>
+    
+    <style name="ActionBar.TitleTextStyle.Pifistyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+   		<item name="android:textColor">@color/white</item>
+   		
+  	</style>
+  	
+    <style name="EditText.Pifistyle" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/rectangle_text_box</item>
     </style>
 
     <style name="ActionBar.Transparent.Pifistyle" parent="@android:style/Widget.Holo.Light.ActionBar">
