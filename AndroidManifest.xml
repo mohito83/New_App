@@ -17,7 +17,9 @@
         android:theme="@style/Theme.Pifistyle" >
         <activity
             android:name="edu.isi.usaid.pifi.ContentListActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"  >
+            <!-- above code prevent onCreate being called when orientation changes -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

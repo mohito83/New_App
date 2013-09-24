@@ -19,7 +19,7 @@ import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -47,9 +47,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
  */
 public class ContentListActivity extends Activity {
 	
-	public static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-	
-	public static final String STATE_SELECTED_DRAWER_ITEM = "selected_drawer_item";
+	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 	
 	public static final String VIDEO_CONTENT = "Video";
 	
@@ -131,15 +129,6 @@ public class ContentListActivity extends Activity {
 			
 			// Set up the action bar to show a dropdown list for categories
 			final ActionBar actionBar = getActionBar();
-//			actionBar.setDisplayShowTitleEnabled(false);
-//			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-//			// Set up the dropdown list navigation in the action bar.
-//			actionBar.setListNavigationCallbacks(
-//			// Specify a SpinnerAdapter to populate the dropdown list.
-//					new ArrayAdapter<String>(this,
-//							android.R.layout.simple_list_item_1,
-//							android.R.id.text1, cats), this);
 			
 			// setup menu drawer
 			drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
@@ -239,15 +228,6 @@ public class ContentListActivity extends Activity {
 		return true;
 	}
 
-//	@Override
-//	public boolean onNavigationItemSelected(int index, long itemId) {
-//		
-//		// user selected a different category
-//		String cat = categories.get(index);
-//		applyListFilter(cat, selectedType);
-//		return true;
-//	}
-
 	@Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -260,16 +240,26 @@ public class ContentListActivity extends Activity {
         drawerToggle.onConfigurationChanged(newConfig);
     }
     
+    @Override
+	public void onSaveInstanceState(Bundle outState) {
+		// Serialize the current dropdown position.
+		SparseBooleanArray array = drawerList.getCheckedItemPositions();
+		ArrayList<Integer> sel = new ArrayList<Integer>();
+		for (int i = 0; i < array.size(); i++){
+			if (array.get(i))
+				sel.add(i);
+		}
+		outState.putIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS, sel);
+	}
+    
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously state
-		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-			getActionBar().setSelectedNavigationItem(
-					savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-		}
-		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEM)) {
-			drawerList.setSelection(
-					savedInstanceState.getInt(STATE_SELECTED_DRAWER_ITEM));
+		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEMS)) {
+			for (Integer i : savedInstanceState.getIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS)){
+				drawerList.setItemChecked(i, true);
+				drawerItems.get(i).setChecked(true);
+			}
 		}
 	}
 	
@@ -282,14 +272,6 @@ public class ContentListActivity extends Activity {
 		return true;
 	}
 	
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// Serialize the current dropdown position.
-		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
-				.getSelectedNavigationIndex());
-		outState.putInt(STATE_SELECTED_DRAWER_ITEM, drawerList.getSelectedItemPosition());
-	}
 	
 	@Override
 	protected void onResume(){

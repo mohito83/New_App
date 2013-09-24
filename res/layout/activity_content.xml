@@ -23,7 +23,7 @@
 		android:layout_gravity="start"
 		android:background="@color/white"
 		android:divider="@drawable/drawer_divider"
-		android:choiceMode="singleChoice"/>
+		android:choiceMode="multipleChoice"/>
 
     
 </android.support.v4.widget.DrawerLayout>
