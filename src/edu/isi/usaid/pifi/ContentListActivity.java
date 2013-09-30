@@ -19,12 +19,12 @@ import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
@@ -45,12 +45,13 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
  * TODO articles have no categories right now
  * 
  */
-public class ContentListActivity extends Activity implements
-ActionBar.OnNavigationListener {
+public class ContentListActivity extends Activity {
 	
-	public static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 	
-	public static final String STATE_SELECTED_DRAWER_ITEM = "selected_drawer_item";
+	public static final String VIDEO_CONTENT = "Video";
+	
+	public static final String WEB_CONTENT = "Web";
 	
 	private DrawerLayout drawerLayout;
 
@@ -58,7 +59,7 @@ ActionBar.OnNavigationListener {
 
     private ActionBarDrawerToggle drawerToggle;
 
-    private String[] drawerItems = new String[]{"All", "Videos", "Web"};
+    private ArrayList<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
 	
 	private File contentDirectory;
 	
@@ -83,7 +84,7 @@ ActionBar.OnNavigationListener {
 	private Object currentContent = null;
 	
 	private BroadcastReceiver broadcastReceiver;
-
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +119,6 @@ ActionBar.OnNavigationListener {
 			
 			// TODO need a better way to get the list of categories
 			categories = new ArrayList<String>();
-			categories.add("All");
 			for (Video video : videos){
 				String id = video.getSnippet().getCategoryId();
 				if (!categories.contains(id))
@@ -129,22 +129,23 @@ ActionBar.OnNavigationListener {
 			
 			// Set up the action bar to show a dropdown list for categories
 			final ActionBar actionBar = getActionBar();
-			actionBar.setDisplayShowTitleEnabled(false);
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-			// Set up the dropdown list navigation in the action bar.
-			actionBar.setListNavigationCallbacks(
-			// Specify a SpinnerAdapter to populate the dropdown list.
-					new ArrayAdapter<String>(this,
-							android.R.layout.simple_list_item_1,
-							android.R.id.text1, cats), this);
 			
 			// setup menu drawer
+			drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
+			drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
+			drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, false));
+			drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, false));
+			drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
+			drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
+			for (String cat : cats){
+				drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
+			}
+			
 			actionBar.setDisplayHomeAsUpEnabled(true);
 	        actionBar.setHomeButtonEnabled(true);
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			drawerList = (ListView) findViewById(R.id.left_drawer);
-			drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, drawerItems));
+			drawerList.setAdapter(new DrawerListAdapter(this, drawerItems));
 			drawerToggle = new ActionBarDrawerToggle(
 					this,
 					drawerLayout,
@@ -169,9 +170,16 @@ ActionBar.OnNavigationListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int pos, long id) {
-					applyListFilter(selectedCat, drawerItems[pos]);
-					
 					drawerList.setItemChecked(pos, true);
+					DrawerItem selItem = drawerItems.get(pos);
+					int type = selItem.getType();
+					for (DrawerItem item : drawerItems){
+						if (item != selItem && item.getType() == type){ // clear other checks of same type
+							item.setChecked(false);
+						}
+					}
+					selItem.setChecked(true);
+					applyListFilter(selItem);
 				    drawerLayout.closeDrawer(drawerList);
 				}
 				
@@ -221,15 +229,6 @@ ActionBar.OnNavigationListener {
 	}
 
 	@Override
-	public boolean onNavigationItemSelected(int index, long itemId) {
-		
-		// user selected a different category
-		String cat = categories.get(index);
-		applyListFilter(cat, selectedType);
-		return true;
-	}
-
-	@Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
@@ -241,16 +240,26 @@ ActionBar.OnNavigationListener {
         drawerToggle.onConfigurationChanged(newConfig);
     }
     
+    @Override
+	public void onSaveInstanceState(Bundle outState) {
+		// Serialize the current dropdown position.
+		SparseBooleanArray array = drawerList.getCheckedItemPositions();
+		ArrayList<Integer> sel = new ArrayList<Integer>();
+		for (int i = 0; i < array.size(); i++){
+			if (array.get(i))
+				sel.add(i);
+		}
+		outState.putIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS, sel);
+	}
+    
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously state
-		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-			getActionBar().setSelectedNavigationItem(
-					savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-		}
-		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEM)) {
-			drawerList.setSelection(
-					savedInstanceState.getInt(STATE_SELECTED_DRAWER_ITEM));
+		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEMS)) {
+			for (Integer i : savedInstanceState.getIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS)){
+				drawerList.setItemChecked(i, true);
+				drawerItems.get(i).setChecked(true);
+			}
 		}
 	}
 	
@@ -263,14 +272,6 @@ ActionBar.OnNavigationListener {
 		return true;
 	}
 	
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// Serialize the current dropdown position.
-		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
-				.getSelectedNavigationIndex());
-		outState.putInt(STATE_SELECTED_DRAWER_ITEM, drawerList.getSelectedItemPosition());
-	}
 	
 	@Override
 	protected void onResume(){
@@ -321,45 +322,60 @@ ActionBar.OnNavigationListener {
 			
 	}
 	
-	private void applyListFilter(String cat, String type){
-		if (type != selectedType || cat != selectedCat) { 
-			selectedType = type;
-			selectedCat = cat;
-			
-			contentListAdapter.clear();
-			
-			// TODO nothing being taken care of for web category
-			if (type.equals("All")){
-				if (cat.equals("All")){
-					contentListAdapter.addAll(metadata.getVideoList());
-					contentListAdapter.addAll(webMetadata.getArticleList());
-				}
-				else {
-					for (Video v : metadata.getVideoList()){
-						if (v.getSnippet().getCategoryId().equals(cat))
-						contentListAdapter.add(v);
-					}
-				}
-			}
-			else if (type.equals("Videos")){
-				if (cat.equals("All"))
-					contentListAdapter.addAll(metadata.getVideoList());
-				else {
-					for (Video v : metadata.getVideoList()){
-						if (v.getSnippet().getCategoryId().equals(cat))
-							contentListAdapter.add(v);
-					}
-				}
-			}
-			else if (type.equals("Web")){
-				if (cat.equals("All"))
-					contentListAdapter.addAll(webMetadata.getArticleList());
-			}
-			
-			
-			// update list
-			contentListAdapter.notifyDataSetChanged();
+	private void applyListFilter(DrawerItem item){
+		if (item.getType() == DrawerItem.HEADER)
+			return;
+		
+		if (item.getType() == DrawerItem.CONTENT_TYPE){
+			 String newType = item.getLabel();
+			 if (newType != selectedType){
+				 selectedType = newType;
+			 }
+			 else 
+				 return;
 		}
+		else if (item.getType() == DrawerItem.CATEGORY){
+			String newCat = item.getLabel();
+			if (newCat != selectedCat){
+				selectedCat = newCat;
+			}
+			else
+				return;
+		}
+			
+		contentListAdapter.clear();
+		
+		// TODO nothing being taken care of for web category
+		if (selectedType.equals("All")){
+			if (selectedCat.equals("All")){
+				contentListAdapter.addAll(metadata.getVideoList());
+				contentListAdapter.addAll(webMetadata.getArticleList());
+			}
+			else {
+				for (Video v : metadata.getVideoList()){
+					if (v.getSnippet().getCategoryId().equals(selectedCat))
+					contentListAdapter.add(v);
+				}
+			}
+		}
+		else if (selectedType.equals(VIDEO_CONTENT)){
+			if (selectedCat.equals("All"))
+				contentListAdapter.addAll(metadata.getVideoList());
+			else {
+				for (Video v : metadata.getVideoList()){
+					if (v.getSnippet().getCategoryId().equals(selectedCat))
+						contentListAdapter.add(v);
+				}
+			}
+		}
+		else if (selectedType.equals(WEB_CONTENT)){
+			if (selectedCat.equals("All"))
+				contentListAdapter.addAll(webMetadata.getArticleList());
+		}
+		
+		
+		// update list
+		contentListAdapter.notifyDataSetChanged();
 	}
 	
 	/**
