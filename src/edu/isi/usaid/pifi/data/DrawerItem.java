@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.isi.usaid.pifi;
+package edu.isi.usaid.pifi.data;
 
 import android.widget.Checkable;
 

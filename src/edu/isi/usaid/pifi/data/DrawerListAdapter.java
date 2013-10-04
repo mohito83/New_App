@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.isi.usaid.pifi;
+package edu.isi.usaid.pifi.data;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.isi.usaid.pifi.R;
 
 /**
  * @author jenniferchen

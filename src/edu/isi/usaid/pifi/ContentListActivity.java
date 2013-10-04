@@ -27,6 +27,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import edu.isi.usaid.pifi.data.BluetoothItem;
+import edu.isi.usaid.pifi.data.ContentListAdapter;
+import edu.isi.usaid.pifi.data.DrawerItem;
+import edu.isi.usaid.pifi.data.DrawerListAdapter;
+import edu.isi.usaid.pifi.dialogs.BluetoothListDialog;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
@@ -213,12 +218,14 @@ public class ContentListActivity extends Activity {
     	switch (item.getItemId()){
     	case R.id.action_refresh:
     		try {
-				reload();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+				  reload();
+			  } catch (FileNotFoundException e) {
+				  e.printStackTrace();
+			  } catch (IOException e) {
+				  e.printStackTrace();
+			  }
+    	case R.id.action_sync:
+    		sync();
     		break;
     	default:
     		break;
@@ -524,5 +531,22 @@ public class ContentListActivity extends Activity {
 		});
 		
 		t.start();
+	}
+	
+	// TODO
+	private void sync(){
+		// show a list of bt, use thread?
+		ArrayList<BluetoothItem> bts = new ArrayList<BluetoothItem>();
+		bts.add(new BluetoothItem("Known Devices", BluetoothItem.HEADER));
+		bts.add(new BluetoothItem("test 1", BluetoothItem.KNOWN_BT));
+		bts.add(new BluetoothItem("test 3", BluetoothItem.KNOWN_BT));
+		bts.add(new BluetoothItem("unKnown Devices", BluetoothItem.HEADER));
+		bts.add(new BluetoothItem("test 4", BluetoothItem.UNKNOWN_BT));
+		bts.add(new BluetoothItem("test 5", BluetoothItem.UNKNOWN_BT));
+		
+		BluetoothListDialog dialog = new BluetoothListDialog();
+		dialog.setList(bts);
+		dialog.show(getFragmentManager(), "BluetoothListDialog");
+		
 	}
 }
