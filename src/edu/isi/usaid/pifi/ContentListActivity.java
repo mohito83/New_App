@@ -101,7 +101,7 @@ public class ContentListActivity extends Activity {
 	
 	private BroadcastReceiver broadcastReceiver;
 	private ArrayList<BluetoothItem> bts;
-	
+	private BluetoothListDialog dialog;
 
 	private static final int REQUEST_ENABLE_BT = 3;
 	
@@ -591,7 +591,7 @@ public class ContentListActivity extends Activity {
 		
 		searchForBTDevices();
 		
-		BluetoothListDialog dialog = new BluetoothListDialog();
+		dialog = new BluetoothListDialog();
 		dialog.setList(bts);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
 		
