@@ -17,20 +17,26 @@ public class BluetoothItem {
 	
 	private String label;
 	
-	private int type;
+	private String address;
 	
+	private int type;
 	/**
 	 * 
 	 * @param label
 	 * @param type - HEADER or KNOWN_BT or UNKNOWN_BT
 	 */
-	public BluetoothItem(String label, int type){
+	public BluetoothItem(String label, String address, int type){
 		this.label = label;
+		this.address = address;
 		this.type = type;
 	}
 	
 	public String getLabel(){
 		return label;
+	}
+	
+	public String getAddress(){
+		return address;
 	}
 	
 	public int getType(){
