@@ -33,6 +33,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.data.BluetoothItem;
+import edu.isi.usaid.pifi.data.BluetoothListAdapter;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
@@ -564,6 +565,18 @@ public class ContentListActivity extends Activity {
 			return;
 		}
 		
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+			// TODO setup the bluetooth file transfer app
+		}
 		/*
 		 * create an Broadcast register and register the event that you are
 		 * interested in
@@ -581,21 +594,6 @@ public class ContentListActivity extends Activity {
 		BluetoothListDialog dialog = new BluetoothListDialog();
 		dialog.setList(bts);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
-		
-		/*if (!mBluetoothAdapter.isEnabled()) {
-			// make your device discoverable
-			Intent makeDiscoverable = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			makeDiscoverable.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
-		} else {
-			Log.d(TAG,
-					"Bluetooth is already enabled. Setting up the file transfer");
-			Toast.makeText(this, "Bluetooth is already enabled.",
-					Toast.LENGTH_LONG).show();
-			// TODO setup the bluetooth file transfer app
-		}*/
 		
 		
 		
@@ -646,7 +644,7 @@ public class ContentListActivity extends Activity {
 						// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
 						// + device.getAddress());
 						bts.add(new BluetoothItem(device.getName(), device.getAddress(), BluetoothItem.KNOWN_BT));
-
+						
 					}
 					// When discovery is finished, change the Activity title
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
