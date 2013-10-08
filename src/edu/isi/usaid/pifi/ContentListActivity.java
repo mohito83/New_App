@@ -100,18 +100,21 @@ public class ContentListActivity extends Activity {
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
 		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
-		if (!metaFile.exists()){ // TODO no metadata
-		}
+		ArrayList<Article> articles = new ArrayList<Article>();
+		ArrayList<Video> videos = new ArrayList<Video>();
 		try {
 			
-			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
-			ArrayList<Article> articles = new ArrayList<Article>();
+			if (webMetaFile.exists())
+				webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
+			else 
+				webMetadata = Articles.newBuilder().build();
 			articles.addAll(webMetadata.getArticleList());
 			
-			metadata = Videos.parseFrom(new FileInputStream(metaFile));
-			ArrayList<Video> videos = new ArrayList<Video>();
+			if (metaFile.exists())
+				metadata = Videos.parseFrom(new FileInputStream(metaFile));
+			else
+				metadata = Videos.newBuilder().build();
 			videos.addAll(metadata.getVideoList());
-			
 			
 			ArrayList<Object> allContents = new ArrayList<Object>();
 			allContents.addAll(videos);
