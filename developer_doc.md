@@ -8,11 +8,19 @@ Setup
 
 1. Download and install Android SDK bundle from http://developer.android.com/sdk/index.html. This bundle includes Eclipse IDE.
 2. Get the code from github. You need to sign up for Github account if you don't have one already. Go to https://github.com/ISI-code/PiFiMobile, click on 'fork', you will get your copy of the code in your repository. Then you can go to your repository and clone the code to your computer. 
-3. Import project into Eclipse. If you get compile errors, click on the Android SDK Manager icon on top and make sure you have the followings installed:  
-    * Android 4.2.2 (API 17) or higher 
-    * Extra/Google Support Library
+3. Import project into Eclipse. (If you get compile errors, check the next section for possible issues.)
 4. Get the content pacakges and put it on the test phone.  https://www.dropbox.com/s/dklqlsvuwjdhv30/PifiContent.zip. Extract PifiContent.zip and put the files on the phone under sdcard/PifiContent/. 
 5. Connect the phone to computer, from Eclipse, use Run as or Debug as on the project, then pick your phone from the list.
+
+Compile Errors
+--------------
+
+If you get compile errors, you might need to update your Android API. Click on the Android SDK Manager icon on top and make sure you have the followings installed:
+
+* Android 4.2.2 (API 17) or higher 
+* Extra/Google Support Library
+
+If you get compile error with the layout file res/layout/content_activity.xml, try the following. Right click on the project, select Android Tools > Add Support Library.
 
 Additional Setup
 ----------------
@@ -45,11 +53,9 @@ ContentListActivity
 
 This is the app’s main screen which lists all the contents in the content folder.
 
-> TODO Need category for web pages
-
-> TODO Need a better way to get the list of categories. Right now we have to go through the whole list of contents.
-
-> TODO Need to handle when PifiDirectory doesn't exist or empty.
+    TODO 
+    * Need category for web pages
+    * Need a better way to get the list of categories. Right now we have to go through the whole list of contents.
 
 ### `onCreate(Bundle)`
 * Gets the list of content by from the video and web metadata
@@ -148,7 +154,7 @@ DescriptionFragment
 
 Shows the individual content's description
 
-> TODO Need description for web pages
+    TODO Need description for web pages
 
 CommentFragment
 ---------------
