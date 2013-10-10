@@ -109,7 +109,7 @@ public class ContentListActivity extends Activity {
 
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private Set<BluetoothDevice> pairedDevices = null;
-	
+	private BluetoothListDialog dialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -593,6 +593,7 @@ public class ContentListActivity extends Activity {
 		
 		dialog = new BluetoothListDialog();
 		dialog.setList(bts);
+		dialog.setReceiver(mReceiver);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
 		
 		
@@ -643,13 +644,19 @@ public class ContentListActivity extends Activity {
 					if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
 						// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
 						// + device.getAddress());
+						if(device.getName().isEmpty()) {
+							Log.i("Empty device", device.getAddress());
+							return;
+						}					
 						bts.add(new BluetoothItem(device.getName(), device.getAddress(), BluetoothItem.KNOWN_BT));
+						dialog.redraw(bts);
 						
 					}
-					// When discovery is finished, change the Activity title
+					// When discovery is finished.
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 						.equals(action)) {
-					setProgressBarIndeterminateVisibility(false);
+					
+					//setProgressBarIndeterminateVisibility(false);
 					/*
 					 * setTitle(R.string.select_device); if
 					 * (mNewDevicesArrayAdapter.getCount() == 0) { String noDevices
