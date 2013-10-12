@@ -44,6 +44,7 @@
         </activity>
         <service android:name="edu.isi.usaid.pifi.service.BluetoothService"/>
         <service android:name="edu.isi.usaid.pifi.services.ConnectionService"/>
+        <service android:name="edu.isi.usaid.pifi.services.ListenerService"/>
     </application>
 
 </manifest>

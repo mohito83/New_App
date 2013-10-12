@@ -679,7 +679,7 @@ public class ContentListActivity extends Activity implements IDialogListener{
 		// TODO Auto-generated method stub
 		selectedBluetoothDevice = device;
 		dialog.dismiss();
-		Intent bluetoothServiceIntent = new Intent(getBaseContext(), BluetoothService.class);
+		Intent bluetoothServiceIntent = new Intent(getBaseContext(), ConnectionService.class);
 		bluetoothServiceIntent.putExtra("Device", device);
 		startService(bluetoothServiceIntent);
 	}

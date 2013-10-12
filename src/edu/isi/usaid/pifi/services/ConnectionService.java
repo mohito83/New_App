@@ -3,47 +3,36 @@
  */
 package edu.isi.usaid.pifi.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import edu.isi.usaid.pifi.Constants;
-import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
-import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
+import edu.isi.usaid.pifi.Constants;
+import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 
 /**
- * This class does all the work for setting up and managing Bluetooth
- * connections with other devices. It has a thread that listens for incoming
- * connections, a thread for connecting with a device, and a thread for
- * performing data transmissions when connected.
+ * This class is a service which initiates the connection to the remote server
  * 
- * @author mohit aggarwal
+ * @author mohit aggarwl
  * 
  */
 public class ConnectionService extends Service {
-
 	private static final String TAG = "ConnectionService";
 
 	// Name for the SDP record when creating server socket
@@ -51,49 +40,32 @@ public class ConnectionService extends Service {
 	private static final UUID MY_UUID = UUID
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 
-	// private Context context;
 	private BluetoothAdapter mAdapter;
-	private AcceptThread mAcceptThread;
-	private ConnectThread mConnectThread;
-	private ConnectedThread mConnectedThread;
-	private int mState;
+	private BluetoothSocket mmSocket;
+
+	private InputStream mmInStream;
+	private OutputStream mmOutStream;
+
 	private boolean isExtDrMounted;
 
-	private byte buffer[] = new byte[Short.MAX_VALUE];
+	private File path;
 
-	private File path, metaFile;
+	private File metaFile;
+	private List<Video> sendTo = new ArrayList<Video>();
+	private List<String> recvFrom = new ArrayList<String>();
 
-	// Constants that indicate the current connection state
-	public static final int STATE_NONE = 0; // we're doing nothing
-	public static final int STATE_LISTEN = 1; // now listening for incoming
-												// connections
-	public static final int STATE_CONNECTING = 2; // now initiating an outgoing
-													// connection
-	public static final int STATE_CONNECTED = 3; // now connected to a remote
-													// device
+	private int transcState = Constants.NO_DATA_META;
 
-	/**
-	 * For control messages during data communication over sockets
-	 */
-	private int dataState = Constants.NO_DATA_META;
+	@Override
+	public IBinder onBind(Intent arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * Consturctor for the class.
-	 * 
-	 * @param bluetoothFileTransferActivity
-	 * 
-	 * @param adapter
-	 */
 	public void onCreate() {
 		// context = bluetoothFileTransferActivity;
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 
-		// TODO make sure that bluetooth is turned on before coming to service
-		// apis
-		// TODO receive device to connect to from the main activity of the
-		// PiFiMobile app.
-
-		mState = STATE_NONE;
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
 		File sdr = Environment.getExternalStorageDirectory();
@@ -103,561 +75,127 @@ public class ConnectionService extends Service {
 		}
 		metaFile = new File(path, Constants.metaFileName);
 		if (!metaFile.exists()) {
-			PrintWriter writer;
-			try {
-				writer = new PrintWriter("the-file-name.txt", "UTF-8");
-				writer.println("Hello World!!");
-				writer.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			// TODO some dummy data to handle this condition
 		}
+		// TODO code for web content
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// start the server socket for listening the incoming connections
-		if (mAdapter != null && mAdapter.isEnabled()) {
-			start();
-			// if there is device to be connected.. then connect to it.
-			// TODO get this information from the intent passed to the service
-			// by main activity
-			Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
-			if (pairedDevices != null && !pairedDevices.isEmpty()) {
-				BluetoothDevice device = pairedDevices.iterator().next();
+		BluetoothDevice device = intent.getExtras().getParcelable("Device");
+		/*
+		 * Toast.makeText(this, device.getLabel() + " " + device.getAddress(),
+		 * Toast.LENGTH_LONG).show();
+		 */
 
-				if (device != null) {
-					connect(device);
-				}
-			}
-			// connect(null);
-		}
-		return START_STICKY;
-	}
-
-	/**
-	 * This thread runs while listening for incoming connections. It behaves
-	 * like a server-side client. It runs until a connection is accepted (or
-	 * until cancelled).
-	 */
-	private class AcceptThread extends Thread {
-		// The local server socket
-		private final BluetoothServerSocket mmServerSocket;
-
-		public AcceptThread() {
-			BluetoothServerSocket tmp = null;
-
-			// Create a new listening server socket
-			try {
-				tmp = mAdapter.listenUsingRfcommWithServiceRecord(FTP_SERVICE,
-						MY_UUID);
-			} catch (IOException e) {
-				Log.e(TAG, "AcceptThread: Socket listen() failed", e);
-			}
-			mmServerSocket = tmp;
-		}
-
-		public void run() {
-			Log.d(TAG, "BEGIN mAcceptThread" + this);
-
-			BluetoothSocket socket = null;
-
-			// Listen to the server socket if we're not connected
-			while (true/* mState != STATE_CONNECTED */) {
-				if (mmServerSocket != null) {
-					try {
-						// This is a blocking call and will only return on a
-						// successful connection or an exception
-						socket = mmServerSocket.accept();
-					} catch (IOException e) {
-						Log.e(TAG, "AcceptThread: accept() failed", e);
-						break;
-					}
-				}
-
-				// If a connection was accepted
-				if (socket != null) {
-					synchronized (ConnectionService.this) {
-						switch (mState) {
-						case STATE_LISTEN:
-						case STATE_CONNECTING:
-							// Situation normal. Start the connected thread.
-							connected(socket, socket.getRemoteDevice(), true);
-							break;
-						case STATE_NONE:
-						case STATE_CONNECTED:
-							// Either not ready or already connected. Terminate
-							// new socket.
-							try {
-								socket.close();
-							} catch (IOException e) {
-								Log.e(TAG,
-										"AcceptThread: Could not close unwanted socket",
-										e);
-							}
-							break;
-						}
-					}
-				}
-			}
-
-			Log.i(TAG, "END mAcceptThread");
-
-		}
-
-		public void cancel() {
-			Log.d(TAG, "AcceptThread: socket cancel " + this);
-			try {
-				mmServerSocket.close();
-			} catch (IOException e) {
-				Log.e(TAG, "AcceptThread: close() of server failed", e);
-			}
-		}
-	}
-
-	/**
-	 * This thread runs while attempting to make an outgoing connection with a
-	 * device. It runs straight through; the connection either succeeds or
-	 * fails.
-	 */
-	private class ConnectThread extends Thread {
-		private final BluetoothSocket mmSocket;
-		private final BluetoothDevice mmDevice;
-
-		public ConnectThread(BluetoothDevice device) {
-			mmDevice = device;
-			BluetoothSocket tmp = null;
-
-			// Get a BluetoothSocket for a connection with the
-			// given BluetoothDevice
-			try {
-				tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-			} catch (IOException e) {
-				Log.e(TAG, "ConnectThread: create() failed", e);
-			}
-			mmSocket = tmp;
-		}
-
-		public void run() {
-			Log.i(TAG, "ConnectThread: BEGIN mConnectThread ");
-
-			// Always cancel discovery because it will slow down a connection
-			mAdapter.cancelDiscovery();
-
-			// Make a connection to the BluetoothSocket
-			try {
-				// This is a blocking call and will only return on a
-				// successful connection or an exception
-				mmSocket.connect();
-			} catch (IOException e) {
-				// Close the socket
-				try {
-					mmSocket.close();
-				} catch (IOException e2) {
-					Log.e(TAG,
-							"unable to close() socket during connection failure",
-							e2);
-				}
-				connectionFailed();
-				return;
-			}
-
-			// Reset the ConnectThread because we're done
-			synchronized (ConnectionService.this) {
-				mConnectThread = null;
-			}
-
-			// Start the connected thread
-			connected(mmSocket, mmDevice, false);
-		}
-
-		public void cancel() {
+		try {
+			// get the socket from the device
+			mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+			mmSocket.connect();
+		} catch (IOException e) {
 			try {
 				mmSocket.close();
-			} catch (IOException e) {
-				Log.e(TAG, "ConnectThread: close() socket failed", e);
+			} catch (IOException e2) {
+				Log.e(TAG,
+						"unable to close() socket during connection failure",
+						e2);
 			}
 		}
-	}
 
-	/**
-	 * This thread runs during a connection with a remote device. It handles all
-	 * incoming and outgoing transmissions.
-	 */
-	private class ConnectedThread extends Thread {
-		private final BluetoothSocket mmSocket;
-		private final InputStream mmInStream;
-		private final OutputStream mmOutStream;
-		private final boolean isServer;
-		private final String devName;
-		private List<Video> sendTo = new ArrayList<Video>();
-		private List<Video> recvFrom = new ArrayList<Video>();
-
-		public ConnectedThread(BluetoothSocket socket, BluetoothDevice device,
-				boolean isServer) {
-			Log.d(TAG, "create ConnectedThread: ");
-			mmSocket = socket;
-			InputStream tmpIn = null;
-			OutputStream tmpOut = null;
-			this.isServer = isServer;
-			devName = (device.getName() != null && device.getName().trim()
-					.length() > 0) ? device.getName() : device.getAddress();
-
-			// Get the BluetoothSocket input and output streams
+		if (mmSocket != null) {
+			// Start point for data synchronnization
 			try {
-				tmpIn = socket.getInputStream();
-				tmpOut = socket.getOutputStream();
+				mmInStream = mmSocket.getInputStream();
+				mmOutStream = mmSocket.getOutputStream();
 			} catch (IOException e) {
-				Log.e(TAG, "temp sockets not created", e);
+				Log.e(TAG, "unable to get in/out put streams", e);
 			}
 
-			mmInStream = tmpIn;
-			mmOutStream = tmpOut;
-		}
+			boolean terminate = false;
+			while (!terminate) {
 
-		public void run() {
-			Log.i(TAG, "BEGIN mConnectedThread");
-			File xferFolder = new File(path,Constants.xferDirName+devName);
-			xferFolder.mkdir();
-
-			// Keep listening to the InputStream while connected
-			while (true) {
 				try {
-
+					DataInputStream din = new DataInputStream(mmInStream);
 					if (isExtDrMounted) {
-						// Read from the InputStream
-						DataInputStream din = new DataInputStream(mmInStream);
-						String fileName = din.readUTF();
-						long fileLen = din.readLong();
-						short state = din.readShort();
-						
-						switch(state){
-						case Constants.META_DATA_SENT:
-							getDelta(din,sendTo,recvFrom);
-							sendPackage(sendTo,Constants.DATA_FROM_MASTER);
-							break;
-							
-						case Constants.DATA_FROM_MASTER:
-							saveToDevice(din,fileName,fileLen);
-						}
+						switch (transcState) {
+						case Constants.NO_DATA_META:
+							// read meta data and send video package
+							// TODO along with each file send its metadata
+							// information
+							// Read from the InputStream
+							// get delta from reading meta data file from the
+							// slave
+							FileUtils.getDelta(din, metaFile, sendTo, recvFrom);
+							SocketUtils.sendVideoPackage(mmOutStream, sendTo);
 
+							transcState = Constants.META_DATA_RECEIVED;
+							break;
+
+						case Constants.META_DATA_RECEIVED:
+							// send list of files required by the master to
+							// slave
+							// TODO check this design: Whether we need to send
+							// the file requests in one go or 1 by 1. I didn't
+							// have the actual meta data and content set up when
+							// I was doing the POC, and my dummy data 
+							// didn't mimmick the actual data closely.
+							// If we decide to go for 1 by 1 file request and
+							// receive approach then we need to modify this
+							// case as well as the one following it.
+							ByteArrayOutputStream bos = new ByteArrayOutputStream();
+							ObjectOutput out = null;
+							try {
+								out = new ObjectOutputStream(bos);
+								out.writeObject(recvFrom);
+								byte[] yourBytes = bos.toByteArray();
+								SocketUtils.writeToSocket(mmOutStream,
+										yourBytes);
+							} finally {
+								out.close();
+								bos.close();
+							}
+							transcState = Constants.META_DATA_TO_SLAVE;
+							break;
+
+						case Constants.META_DATA_TO_SLAVE:
+							// receive data from the slave and write it to
+							// the file system
+							File xferDir = new File(path, Constants.xferDirName
+									+ "/" + device.getName());
+							SocketUtils.readFromSocket(xferDir, din);
+							transcState = Constants.DATA_FROM_SLAVE;
+							break;
+
+						case Constants.DATA_FROM_SLAVE:
+							// close the connection socket
+							terminate = true;
+							transcState = Constants.NO_DATA_META;
+							break;
+						}
 					}
 
 				} catch (IOException e) {
 					Log.e(TAG, "disconnected", e);
-					connectionLost();
 					break;
 				}
-			}
-		}
 
-		/**
-		 * This method saves the content on the file
-		 * @param din 
-		 * @param fileName
-		 * @param fileLen
-		 */
-		private void saveToDevice(DataInputStream din, String fileName, long fileLen){
-			try {
-				
-				OutputStream os = new FileOutputStream(metaFile);
-				while (fileLen > 0) {
-					fileLen -= din.read(buffer);
-					os.write(buffer);
-				}
-				os.close();
+			}
+
+			if (terminate) {
+				try {
+					mmInStream.close();
+					mmOutStream.close();
+					mmSocket.close();
 				} catch (IOException e) {
-				// Unable to create file, likely because external
-				// storage is
-				// not currently mounted.
-				Log.e("ExternalStorage", "Error writing "
-						+ metaFile, e);
-			}
-		}
-		/**
-		 * This method sends the package to the receiver
-		 * @param sendTo2
-		 */
-		private void sendPackage(List<Video> sendTo2, short state) {
-			for(Video v : sendTo2){
-				File f = new File(v.getFilepath());
-				write(buffer, v.getFilename(), f.length(), state);
-			}
-		}
-
-		/**
-		 * This method parses the meta data file and populates the delta lists
-		 * @param din data input stream to parse meta data into protobuf object
-		 * @param sendTo arraylist for storing data to be sent to server
-		 * @param recvFrom arraylist for list of files to be received form the slave
-		 * @throws FileNotFoundException 
-		 */
-		private void getDelta(DataInputStream din, List<Video> sendTo,
-				List<Video> recvFrom) throws FileNotFoundException,IOException {
-			FileInputStream fin = new FileInputStream(metaFile);
-			sendTo = Videos.parseFrom(fin).getVideoList();
-			Iterator<Video> local = sendTo.iterator();
-			fin.close();
-			// TODO Auto-generated method stub
-			recvFrom = Videos.parseFrom(din).getVideoList();
-			
-			while(local.hasNext()){
-				Iterator<Video> remote = recvFrom.iterator();
-				Video v = local.next();
-				while(remote.hasNext()){
-					Video rem = remote.next();
-					if(v.getFilename().equals(rem.getFilename())){
-						local.remove();
-						remote.remove();
-					}
+					Log.e(TAG, "Unable to disconnect socket", e);
 				}
 			}
 		}
-		
-		/**
-		 * Write to the connected OutStream.
-		 * 
-		 * @param buffer
-		 *            The bytes to write
-		 * @param nfName
-		 * @param len
-		 * @param state
+		// To stop the service
+		stopSelf();
+		/*
+		 * START_STICKY runs the service till we explicitly stop the service
 		 */
-		public void write(byte[] buffer, String nfName, long len, int state) {
-			try {
-				DataOutputStream dos = new DataOutputStream(mmOutStream);
-				dos.writeUTF(nfName); // for writing filename
-				dos.writeLong(len); // for sending number of bytes
-				dos.writeShort(state); // for sending data state to the receiver
-										// so
-										// that it can take appropriate actions
-				dos.write(buffer); // for sending actual content
-
-			} catch (IOException e) {
-				Log.e(TAG, "Exception during write", e);
-			}
-		}
-
-		public void cancel() {
-			try {
-				mmSocket.close();
-			} catch (IOException e) {
-				Log.e(TAG, "close() of connect socket failed", e);
-			}
-		}
-	}
-
-	/**
-	 * Set the current state of the chat connection
-	 * 
-	 * @param state
-	 *            An integer defining the current connection state
-	 */
-	private synchronized void setState(int state) {
-		Log.d(TAG, "setState() " + mState + " -> " + state);
-		mState = state;
-
-	}
-
-	/**
-	 * Return the current connection state.
-	 */
-	public synchronized int getState() {
-		return mState;
-	}
-
-	/**
-	 * Start the chat service. Specifically start AcceptThread to begin a
-	 * session in listening (server) mode. Called by the Activity onResume()
-	 */
-	public synchronized void start() {
-		Log.d(TAG, "start");
-
-		setState(STATE_LISTEN);
-
-		// Start the thread to listen on a BluetoothServerSocket
-		if (mAcceptThread == null) {
-			mAcceptThread = new AcceptThread();
-			mAcceptThread.start();
-		}
-	}
-
-	/**
-	 * Start the ConnectThread to initiate a connection to a remote device.
-	 * 
-	 * @param device
-	 *            The BluetoothDevice to connect
-	 * @param secure
-	 *            Socket Security type - Secure (true) , Insecure (false)
-	 */
-	private void connect(BluetoothDevice device) {
-		Log.d(TAG, "connect to: " + device);
-		// Start the thread to connect with the given device
-		mConnectThread = new ConnectThread(device);
-		mConnectThread.start();
-		setState(STATE_CONNECTING);
-	}
-
-	/**
-	 * Start the ConnectedThread to begin managing a Bluetooth connection
-	 * 
-	 * @param socket
-	 *            The BluetoothSocket on which the connection was made
-	 * @param device
-	 *            The BluetoothDevice that has been connected
-	 * @param isServer
-	 *            TODO
-	 */
-	public synchronized void connected(BluetoothSocket socket,
-			BluetoothDevice device, boolean isServer) {
-		Log.d(TAG, "connected");
-
-		// Start the thread to manage the connection and perform transmissions
-		mConnectedThread = new ConnectedThread(socket, device, isServer);
-		mConnectedThread.start();
-
-		setState(STATE_CONNECTED);
-		if (isServer) {
-			write();
-		}
-	}
-
-	/**
-	 * Stop all threads
-	 */
-	public synchronized void stop() {
-		Log.d(TAG, "stop");
-
-		if (mConnectThread != null) {
-			mConnectThread.cancel();
-			mConnectThread = null;
-		}
-
-		if (mConnectedThread != null) {
-			mConnectedThread.cancel();
-			mConnectedThread = null;
-		}
-
-		if (mAcceptThread != null) {
-			mAcceptThread.cancel();
-			mAcceptThread = null;
-		}
-
-		setState(STATE_NONE);
-	}
-
-	/**
-	 * Write to the ConnectedThread in an unsynchronized manner
-	 * 
-	 * @param out
-	 *            The bytes to write
-	 * @see ConnectedThread#write(byte[])
-	 */
-	public synchronized void write() {
-		// Create temporary object
-		ConnectedThread r;
-		// Synchronize a copy of the ConnectedThread
-		synchronized (this) {
-			if (mState != STATE_CONNECTED)
-				return;
-			r = mConnectedThread;
-		}
-		// Perform the write unsynchronized
-		// check for external storage device
-		if (isExtDrMounted) {
-			// check the data state and based on that take actions
-			switch (dataState) {
-			case Constants.NO_DATA_META:
-				// send meta data file to the requesting connection.
-				sendDataOverSocket(r, Constants.metaFileName,
-						Constants.NO_DATA_META);
-				dataState = Constants.META_DATA_SENT;
-				break;
-			
-			}
-
-		}
-		/* r.write(buffer, file.getName(), file.length()); */
-	}
-
-	private void sendDataOverSocket(ConnectedThread r, String fileName,
-			short state) {
-		// We can read and write the media
-		File file = new File(path, fileName);
-		long len = file.length();
-		long conLen = -1;
-
-		try {
-			path.mkdirs();
-
-			InputStream is = new FileInputStream(file);
-			while (len > 0) {
-				conLen = is.read(buffer);
-				r.write(buffer, fileName, conLen, state);
-				len -= conLen;
-			}
-			is.close();
-
-		} catch (IOException e) {
-			// Unable to create file, likely because external storage is
-			// not currently mounted.
-			Log.e("ExternalStorage", "Error writing " + file, e);
-		}
-	}
-
-	/**
-	 * Indicate that the connection attempt failed and notify the UI Activity.
-	 */
-	private void connectionFailed() {
-
-		// Start the service over to restart listening mode
-		ConnectionService.this.start();
-	}
-
-	/**
-	 * Indicate that the connection was lost and notify the UI Activity.
-	 */
-	private void connectionLost() {
-
-		// Start the service over to restart listening mode
-		ConnectionService.this.start();
-	}
-
-	/**
-	 * @return the dataState
-	 */
-	public synchronized int getDataState() {
-		return dataState;
-	}
-
-	/**
-	 * @param dataState
-	 *            the dataState to set
-	 */
-	public synchronized void setDataState(int dataState) {
-		this.dataState = dataState;
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onDestroy() {
-		if (mAdapter != null) {
-			mAdapter.cancelDiscovery();
-		}
-
-		if (mAcceptThread != null) {
-			mAcceptThread.cancel();
-			mAcceptThread = null;
-		}
-		super.onDestroy();
+		return START_NOT_STICKY;
 	}
 
 }
