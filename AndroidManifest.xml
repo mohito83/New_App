@@ -36,7 +36,8 @@
             android:name="edu.isi.usaid.pifi.FullscreenVideoActivity"
             android:label="@string/title_activity_fullscreen_video"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
     </application>
 

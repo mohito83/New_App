@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="edu/isi/usaid/pifi/TestVideoActivity.java" kind="src" path="src"/>
+	<classpathentry excluding="edu/isi/usaid/pifi/TestVideoActivity.java|edu/isi/usaid/pifi/ContentMonitor.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>

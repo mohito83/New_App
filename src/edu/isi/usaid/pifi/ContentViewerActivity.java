@@ -143,6 +143,7 @@ public class ContentViewerActivity extends FragmentActivity {
 						video.getSnippet().getTitle()));
 				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
 				f.add(CommentsFragment.newInstance(video.getCommentsList()));
+				setTitle(video.getSnippet().getTitle());
 			}
 			else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
 			
@@ -152,7 +153,7 @@ public class ContentViewerActivity extends FragmentActivity {
 				f.add(HtmlFragment.newInstance(uri.toString()));
 				f.add(DescriptionFragment.newInstance(article.getDatePublished(), "")); // TODO description for article
 				f.add(CommentsFragment.newInstance(article.getCommentsList()));
-				
+				setTitle(article.getTitle());
 			}
 		
 		} catch (InvalidProtocolBufferException e) {

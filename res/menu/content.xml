@@ -7,4 +7,11 @@
         android:title="Refresh"
         android:icon="@drawable/ic_action_refresh"/>
 
+    <item
+        android:id="@+id/action_sync"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_sync"
+        android:title="sync"/>
+
 </menu>
