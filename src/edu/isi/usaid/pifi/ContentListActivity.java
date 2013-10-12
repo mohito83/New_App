@@ -22,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -60,6 +61,8 @@ public class ContentListActivity extends Activity {
     private ActionBarDrawerToggle drawerToggle;
 
     private ArrayList<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
+    
+    private DrawerListAdapter drawerListAdapter;
 	
 	private File contentDirectory;
 	
@@ -74,6 +77,8 @@ public class ContentListActivity extends Activity {
 	private ListView contentList;
 	
 	private ArrayList<String> categories;
+	
+	private ArrayList<Object> contentItems = new ArrayList<Object>();
 	
 	private ContentListAdapter contentListAdapter;
 	
@@ -97,131 +102,91 @@ public class ContentListActivity extends Activity {
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
 		
-		// read meatadata
-		metaFile = new File(contentDirectory, Constants.metaFileName);
-		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
-		ArrayList<Article> articles = new ArrayList<Article>();
-		ArrayList<Video> videos = new ArrayList<Video>();
+		// Set up the action bar to show a dropdown list for categories
+		final ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+	    actionBar.setHomeButtonEnabled(true);
+	    
+	    drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		contentList = (ListView)findViewById(R.id.listing);
+
+		// reload content
 		try {
-			
-			if (webMetaFile.exists())
-				webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
-			else 
-				webMetadata = Articles.newBuilder().build();
-			articles.addAll(webMetadata.getArticleList());
-			
-			if (metaFile.exists())
-				metadata = Videos.parseFrom(new FileInputStream(metaFile));
-			else
-				metadata = Videos.newBuilder().build();
-			videos.addAll(metadata.getVideoList());
-			
-			ArrayList<Object> allContents = new ArrayList<Object>();
-			allContents.addAll(videos);
-			allContents.addAll(articles);
-			
-			// TODO need a better way to get the list of categories
-			categories = new ArrayList<String>();
-			for (Video video : videos){
-				String id = video.getSnippet().getCategoryId();
-				if (!categories.contains(id))
-					categories.add(id);
-			}
-			String[] cats = new String[categories.size()];
-			cats = categories.toArray(cats);
-			
-			// Set up the action bar to show a dropdown list for categories
-			final ActionBar actionBar = getActionBar();
-			
-			// setup menu drawer
-			drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
-			drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
-			drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, false));
-			drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, false));
-			drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
-			drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
-			for (String cat : cats){
-				drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
-			}
-			
-			actionBar.setDisplayHomeAsUpEnabled(true);
-	        actionBar.setHomeButtonEnabled(true);
-			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			drawerList = (ListView) findViewById(R.id.left_drawer);
-			drawerList.setAdapter(new DrawerListAdapter(this, drawerItems));
-			drawerToggle = new ActionBarDrawerToggle(
-					this,
-					drawerLayout,
-					R.drawable.ic_drawer,
-					R.string.open_drawer,
-					R.string.close_drawer){
-				public void onDrawerClosed(View view) {
-	                getActionBar().setTitle(getTitle());
-	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-	            }
-
-	            public void onDrawerOpened(View drawerView) {
-	                getActionBar().setTitle(getTitle());
-	                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-	            }
-			
-			};
-			drawerLayout.setDrawerListener(drawerToggle);		
-			
-			drawerList.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int pos, long id) {
-					drawerList.setItemChecked(pos, true);
-					DrawerItem selItem = drawerItems.get(pos);
-					int type = selItem.getType();
-					for (DrawerItem item : drawerItems){
-						if (item != selItem && item.getType() == type){ // clear other checks of same type
-							item.setChecked(false);
-						}
-					}
-					selItem.setChecked(true);
-					applyListFilter(selItem);
-				    drawerLayout.closeDrawer(drawerList);
-				}
-				
-			});
-			
-			
-			// list of content
-			contentList = (ListView)findViewById(R.id.listing);
-			contentListAdapter = new ContentListAdapter(this, allContents, contentDirectory.getAbsolutePath());
-			contentList.setAdapter(contentListAdapter);
-			contentList.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int pos, long id) {
-					
-					currentContent = contentListAdapter.getItem(pos);
-					Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
-					
-					// if selected a video
-					if (currentContent instanceof Video){
-						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
-						intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
-					}
-					else if (currentContent instanceof Article){
-						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-						intent.putExtra("content", ((Article)currentContent).toByteArray());
-					}
-					
-					startActivity(intent);
-					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-				}
-				
-			});
+			reload();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+			
+	    // setup menu drawer
+		drawerToggle = new ActionBarDrawerToggle(
+				this,
+				drawerLayout,
+				R.drawable.ic_drawer,
+				R.string.open_drawer,
+				R.string.close_drawer){
+			public void onDrawerClosed(View view) {
+                getActionBar().setTitle(getTitle());
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(getTitle());
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+		
+		};
+		drawerLayout.setDrawerListener(drawerToggle);		
+		
+		// menu drawer listener
+		drawerList.setOnItemClickListener(new OnItemClickListener(){
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int pos, long id) {
+				drawerList.setItemChecked(pos, true);
+				DrawerItem selItem = drawerItems.get(pos);
+				int type = selItem.getType();
+				for (DrawerItem item : drawerItems){
+					if (item != selItem && item.getType() == type){ // clear other checks of same type
+						item.setChecked(false);
+					}
+				}
+				selItem.setChecked(true);
+				applyListFilter(selItem);
+			    drawerLayout.closeDrawer(drawerList);
+			}
+			
+		});
+		
+			
+		// content list listener
+		contentList.setOnItemClickListener(new OnItemClickListener(){
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int pos, long id) {
+				
+				currentContent = contentListAdapter.getItem(pos);
+				Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
+				
+				// if selected a video
+				if (currentContent instanceof Video){
+					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
+					intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
+				}
+				else if (currentContent instanceof Article){
+					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
+					intent.putExtra("content", ((Article)currentContent).toByteArray());
+				}
+				
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			}
+			
+		});
 	}
 
 	@Override
@@ -241,6 +206,25 @@ public class ContentListActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()){
+    	case R.id.action_refresh:
+    		try {
+				reload();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		break;
+    	default:
+    		break;
+    	}
+    		
+    	return true;
     }
     
     @Override
@@ -292,21 +276,13 @@ public class ContentListActivity extends Activity {
 					addComment(user, date, comment);
 				}
 				if (i.getAction().equals(Constants.META_UPDATED_ACTION)){ // meta file updated
-					
-					// update adapter's list data
-					ArrayList<Article> articles = new ArrayList<Article>();
-					articles.addAll(webMetadata.getArticleList());
-					
-					ArrayList<Video> videos = new ArrayList<Video>();
-					videos.addAll(metadata.getVideoList());
-					
-					ArrayList<Object> allContents = new ArrayList<Object>();
-					allContents.addAll(videos);
-					allContents.addAll(articles);
-					
-					contentListAdapter.clear();
-					contentListAdapter.addAll(allContents);
-					contentListAdapter.notifyDataSetChanged();
+					try {
+						reload();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			
@@ -323,6 +299,78 @@ public class ContentListActivity extends Activity {
 			broadcastReceiver = null;
 		}
 			
+	}
+	
+	/**
+	 * reload metadata and refresh the list
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private void reload() throws FileNotFoundException, IOException{
+		
+		// read meatadata
+		metaFile = new File(contentDirectory, Constants.metaFileName);
+		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
+		ArrayList<Article> articles = new ArrayList<Article>();
+		ArrayList<Video> videos = new ArrayList<Video>();
+			
+		// content objects from metadata
+		if (webMetaFile.exists())
+			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
+		else 
+			webMetadata = Articles.newBuilder().build();
+		articles.addAll(webMetadata.getArticleList());
+		
+		if (metaFile.exists())
+			metadata = Videos.parseFrom(new FileInputStream(metaFile));
+		else
+			metadata = Videos.newBuilder().build();
+		videos.addAll(metadata.getVideoList());
+			
+		contentItems.clear();
+		contentItems.addAll(videos);
+		contentItems.addAll(articles);
+			
+		// get a list of categories
+		// TODO need a better way to get the list of categories
+		categories = new ArrayList<String>();
+		for (Video video : videos){
+			String id = video.getSnippet().getCategoryId();
+			if (!categories.contains(id))
+				categories.add(id);
+		}
+		String[] cats = new String[categories.size()];
+		cats = categories.toArray(cats);
+			
+		// setup menu drawer
+        drawerItems.clear();
+		drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
+		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, false));
+		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, false));
+		drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
+		for (String cat : cats){
+			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
+		}
+			
+			
+			
+		// update/init adapter
+		if (drawerListAdapter == null){ // first time
+			drawerListAdapter = new DrawerListAdapter(this, drawerItems); 
+			drawerList.setAdapter(drawerListAdapter);
+		}
+		else
+			drawerListAdapter.notifyDataSetChanged();
+		
+		if (contentListAdapter == null){
+			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath());
+			contentList.setAdapter(contentListAdapter);
+		}
+		else
+			contentListAdapter.notifyDataSetChanged();
+				
 	}
 	
 	private void applyListFilter(DrawerItem item){
@@ -423,8 +471,7 @@ public class ContentListActivity extends Activity {
 					// write new meta out and update metadata in memory
 					try {
 						FileOutputStream out = new FileOutputStream(metaFile);
-						metadata = newVideos.build(); // update metadata in memory
-						metadata.writeTo(out); // write out to file
+						newVideos.build().writeTo(out); // write out to file
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -460,8 +507,7 @@ public class ContentListActivity extends Activity {
 					// write new meta out and update metadata in memory
 					try {
 						FileOutputStream out = new FileOutputStream(webMetaFile);
-						webMetadata = newArticles.build(); // update metadata in memory
-						webMetadata.writeTo(out); // write out to file
+						newArticles.build().writeTo(out); // write out to file
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
