@@ -280,9 +280,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		}
 	};
 	
-	private CustomFileObserver customFileObserver = new CustomFileObserver(Environment.getExternalStorageDirectory() + "/" +
-																		  Constants.contentDirName);
-		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d("ContentListActivity", "Printing the startup message");
@@ -787,8 +784,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 							commentBuilder.setDate(date);
 							commentBuilder.setText(comment);
 
-							// modify the article by adding comment
 							articleBuilder.addComments(commentBuilder);
+							// modify the article by adding comment
 						}
 
 						newArticles.addArticle(articleBuilder);

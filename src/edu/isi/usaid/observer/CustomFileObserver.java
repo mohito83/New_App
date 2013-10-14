@@ -39,15 +39,24 @@ public class CustomFileObserver extends FileObserver
 			 */
 			if(!isDirectory(path)) 
 			{
-				copyFileToBaseDirectory(baseDirPath, path);
+				copyFileToBaseDirectory(path);			
 			}			
+			else if(isMetaDataFile(path))
+			{
+				
+			}
 		}
 	}
 
-	private void copyFileToBaseDirectory(String basedir, String sourceFilePath) 
+	private boolean isMetaDataFile(String path) 
+	{
+		return false;
+	}
+
+	private void copyFileToBaseDirectory(String sourceFilePath) 
 	{
 		File srcFile = new File(sourceFilePath);
-		File destDir = new File(basedir);
+		File destDir = new File(baseDirPath);
 		try 
 		{
 			FileUtils.copyFileToDirectory(srcFile, destDir);
@@ -55,7 +64,7 @@ public class CustomFileObserver extends FileObserver
 		catch (IOException e) 
 		{
 			Log.e(tagName, "Error occured when trying to copy a file from " + 
-							sourceFilePath + " to " + basedir, 
+							sourceFilePath + " to " + baseDirPath, 
 							e.getCause());
 		}
 	}
