@@ -33,16 +33,17 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.data.BluetoothItem;
-import edu.isi.usaid.pifi.data.BluetoothListAdapter;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
 import edu.isi.usaid.pifi.dialogs.BluetoothListDialog;
+import edu.isi.usaid.pifi.dialogs.IDialogListener;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
+import edu.isi.usaid.pifi.service.BluetoothService;
 
 /**
  * 
@@ -57,7 +58,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
  * TODO articles have no categories right now
  * 
  */
-public class ContentListActivity extends Activity {
+public class ContentListActivity extends Activity implements IDialogListener{
 	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 	
@@ -101,9 +102,10 @@ public class ContentListActivity extends Activity {
 	
 	private BroadcastReceiver broadcastReceiver;
 	private ArrayList<BluetoothItem> bts;
-	private BluetoothListDialog dialog;
+
 
 	private static final int REQUEST_ENABLE_BT = 3;
+  private BluetoothItem selectedBluetoothDevice;
 	
 	//private Button discoverBT;
 
@@ -565,6 +567,18 @@ public class ContentListActivity extends Activity {
 			return;
 		}
 		
+		/*
+		 * create an Broadcast register and register the event that you are
+		 * interested in
+		 */
+		// Register for broadcasts when a device is discovered
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		this.registerReceiver(mReceiver, filter);
+
+		// Register for broadcasts when discovery has finished
+		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		this.registerReceiver(mReceiver, filter);
+
 		if (!mBluetoothAdapter.isEnabled()) {
 			// make your device discoverable
 			Intent makeDiscoverable = new Intent(
@@ -577,17 +591,6 @@ public class ContentListActivity extends Activity {
 					"Bluetooth is already enabled. Setting up the file transfer");
 			// TODO setup the bluetooth file transfer app
 		}
-		/*
-		 * create an Broadcast register and register the event that you are
-		 * interested in
-		 */
-		// Register for broadcasts when a device is discovered
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		this.registerReceiver(mReceiver, filter);
-
-		// Register for broadcasts when discovery has finished
-		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-		this.registerReceiver(mReceiver, filter);
 		
 		searchForBTDevices();
 		
@@ -666,6 +669,16 @@ public class ContentListActivity extends Activity {
 				}
 			}
 		};
+	@Override
+	public void onReturnValue(BluetoothItem device) 
+	{
+		// TODO Auto-generated method stub
+		selectedBluetoothDevice = device;
+		dialog.dismiss();
+		Intent bluetoothServiceIntent = new Intent(getBaseContext(), BluetoothService.class);
+		bluetoothServiceIntent.putExtra("Device", device);
+		startService(bluetoothServiceIntent);
+	}
 }
 
 
