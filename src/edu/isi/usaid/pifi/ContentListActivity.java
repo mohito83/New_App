@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -27,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -43,6 +45,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
+import edu.isi.usaid.observer.CustomFileObserver;
+import edu.isi.usaid.observer.FileMonitorTask;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
@@ -71,6 +75,7 @@ import edu.isi.usaid.pifi.tasks.DownloadTask;
  *         TODO need categories for web articles
  * 
  */
+@SuppressLint("NewApi")
 public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	public static final String TAG = "ContentListActivity";
@@ -84,7 +89,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	public static final String STARRED_BOOKMARK = "Starred";
 	
 	private static final String SETTING_BOOKMARKS = "bookmarks";
-	
+
 	private DrawerLayout drawerLayout;
 
 	private ListView drawerList;
@@ -275,8 +280,14 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		}
 	};
 	
+	private CustomFileObserver customFileObserver = new CustomFileObserver(Environment.getExternalStorageDirectory() + "/" +
+																		  Constants.contentDirName);
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.d("ContentListActivity", "Printing the startup message");
+		Intent intent = new Intent("edu.isi.usaid.observer.FileMonitorTask");
+		startService(intent);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
 		

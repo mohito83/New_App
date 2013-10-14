@@ -53,6 +53,12 @@
         <service android:name="edu.isi.usaid.pifi.services.ConnectionService"/>
         <service android:name="edu.isi.usaid.pifi.services.ListenerService"
             android:process=":listener_process"/>
+        <service android:name="edu.isi.usaid.observer.FileMonitorTask">   
+           <intent-filter>
+           		<action android:name="edu.isi.usaid.observer.FileMonitorTask">
+           		</action>
+   		   </intent-filter>                
+        </service>
     </application>
 
 </manifest>
