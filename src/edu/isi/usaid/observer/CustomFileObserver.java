@@ -57,7 +57,23 @@ public class CustomFileObserver extends FileObserver
 				{
 					copyFileToBaseDirectory(path);								
 				}
+				propogateUpdatedMessage(path);
+				cleanupFile(path);
 			}			
+		}
+	}
+
+	private void propogateUpdatedMessage(String path) 
+	{
+		
+	}
+
+	private void cleanupFile(String path) 
+	{
+		File file = new File(path);
+		if(file.isFile())
+		{
+			file.delete();
 		}
 	}
 
