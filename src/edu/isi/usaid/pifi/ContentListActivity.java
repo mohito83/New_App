@@ -6,9 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +22,7 @@ import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
@@ -27,16 +31,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 import edu.isi.usaid.pifi.data.BluetoothItem;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
 import edu.isi.usaid.pifi.dialogs.BluetoothListDialog;
+import edu.isi.usaid.pifi.dialogs.IDialogListener;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
+import edu.isi.usaid.pifi.service.BluetoothService;
 
 /**
  * 
@@ -51,7 +58,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
  * TODO articles have no categories right now
  * 
  */
-public class ContentListActivity extends Activity {
+public class ContentListActivity extends Activity implements IDialogListener{
 	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 	
@@ -94,13 +101,22 @@ public class ContentListActivity extends Activity {
 	private Object currentContent = null;
 	
 	private BroadcastReceiver broadcastReceiver;
+	private ArrayList<BluetoothItem> bts;
+
+
+	private static final int REQUEST_ENABLE_BT = 3;
+  private BluetoothItem selectedBluetoothDevice;
 	
-	
+	//private Button discoverBT;
+
+	private BluetoothAdapter mBluetoothAdapter = null;
+	private Set<BluetoothDevice> pairedDevices = null;
+	private BluetoothListDialog dialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
-		
+		 bts = new ArrayList<BluetoothItem>();
 		// content directory
 		File sdDir = Environment.getExternalStorageDirectory();
 		contentDirectory = new File(sdDir, Constants.contentDirName);
@@ -536,17 +552,133 @@ public class ContentListActivity extends Activity {
 	// TODO
 	private void sync(){
 		// show a list of bt, use thread?
-		ArrayList<BluetoothItem> bts = new ArrayList<BluetoothItem>();
-		bts.add(new BluetoothItem("Known Devices", BluetoothItem.HEADER));
-		bts.add(new BluetoothItem("test 1", BluetoothItem.KNOWN_BT));
-		bts.add(new BluetoothItem("test 3", BluetoothItem.KNOWN_BT));
-		bts.add(new BluetoothItem("unKnown Devices", BluetoothItem.HEADER));
-		bts.add(new BluetoothItem("test 4", BluetoothItem.UNKNOWN_BT));
-		bts.add(new BluetoothItem("test 5", BluetoothItem.UNKNOWN_BT));
 		
-		BluetoothListDialog dialog = new BluetoothListDialog();
+		
+		bts.clear();
+		/* To check if the device has the bluetooth hardware */
+		String TAG = "BluetoothFileTransferActivity";
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothAdapter == null) {
+			Log.e(TAG,
+					"No bluetooth capabilities available on the device. Exiting!!");
+			Toast.makeText(this, "Bluetooth is not available",
+					Toast.LENGTH_LONG).show();
+			//finish();
+			return;
+		}
+		
+		/*
+		 * create an Broadcast register and register the event that you are
+		 * interested in
+		 */
+		// Register for broadcasts when a device is discovered
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		this.registerReceiver(mReceiver, filter);
+
+		// Register for broadcasts when discovery has finished
+		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		this.registerReceiver(mReceiver, filter);
+
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+			// TODO setup the bluetooth file transfer app
+		}
+		
+		searchForBTDevices();
+		
+		dialog = new BluetoothListDialog();
 		dialog.setList(bts);
+		dialog.setReceiver(mReceiver);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
 		
+		
+		
+		//bts.add(new BluetoothItem("test 1", BluetoothItem.KNOWN_BT));
+		//bts.add(new BluetoothItem("test 3", BluetoothItem.KNOWN_BT));
+		
+		//bts.add(new BluetoothItem("test 4", BluetoothItem.UNKNOWN_BT));
+		//bts.add(new BluetoothItem("test 5", BluetoothItem.UNKNOWN_BT));*/
+		
+		
+		
+	}
+	
+	private void searchForBTDevices() {
+		
+		// 1. get paired device list
+		bts.add(new BluetoothItem("Known Devices", null, BluetoothItem.HEADER));
+		pairedDevices = mBluetoothAdapter.getBondedDevices();
+		if (pairedDevices != null && pairedDevices.size() > 0) {
+			for (BluetoothDevice dev : pairedDevices) {
+				bts.add(new BluetoothItem(dev.getName(), dev.getAddress(), BluetoothItem.KNOWN_BT));
+			}
+		}
+
+		// 2. discover non-paired devices
+		bts.add(new BluetoothItem("Unknown Devices",null, BluetoothItem.HEADER));
+		mBluetoothAdapter.startDiscovery();
+
+		//setupConnection();
+
+	}
+	
+	// The BroadcastReceiver that listens for discovered devices and
+		// changes the title when discovery is finished
+		private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+
+				// When discovery finds a device
+				if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+					// Get the BluetoothDevice object from the Intent
+					BluetoothDevice device = intent
+							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+					// If it's already paired, skip it, because it's been listed
+					// already
+					if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
+						// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
+						// + device.getAddress());
+						if(device.getName().isEmpty()) {
+							Log.i("Empty device", device.getAddress());
+							return;
+						}					
+						bts.add(new BluetoothItem(device.getName(), device.getAddress(), BluetoothItem.KNOWN_BT));
+						dialog.redraw(bts);
+						
+					}
+					// When discovery is finished.
+				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
+						.equals(action)) {
+					
+					//setProgressBarIndeterminateVisibility(false);
+					/*
+					 * setTitle(R.string.select_device); if
+					 * (mNewDevicesArrayAdapter.getCount() == 0) { String noDevices
+					 * = getResources().getText(R.string.none_found).toString();
+					 * mNewDevicesArrayAdapter.add(noDevices); }
+					 */
+				}
+			}
+		};
+	@Override
+	public void onReturnValue(BluetoothItem device) 
+	{
+		// TODO Auto-generated method stub
+		selectedBluetoothDevice = device;
+		dialog.dismiss();
+		Intent bluetoothServiceIntent = new Intent(getBaseContext(), BluetoothService.class);
+		bluetoothServiceIntent.putExtra("Device", device);
+		startService(bluetoothServiceIntent);
 	}
 }
+
+

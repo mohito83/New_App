@@ -31,25 +31,25 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothItem> {
 
 	@Override
     public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		LayoutInflater inflater = (LayoutInflater) getContext()
 		        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		BluetoothItem item = getItem(position);
-		int type = item.getType();
-		
+	//	int type = item.getType();
+
 		View view;
-		if (type == BluetoothItem.HEADER){
-			view = inflater.inflate(R.layout.bluetooth_list_header_item, parent, false);
-			TextView textView = (TextView)view.findViewById(R.id.btHeaderText);
-			textView.setText(item.getLabel());
-		}
-		else {
+//		if (type == BluetoothItem.HEADER){
+//			view = inflater.inflate(R.layout.bluetooth_list_header_item, parent, false);
+//			TextView textView = (TextView)view.findViewById(R.id.btHeaderText);
+//			textView.setText(item.getLabel());
+//		}
+//		else {
 			view = inflater.inflate(R.layout.bluetooth_list_item, parent, false);
 			TextView textView = (TextView)view.findViewById(R.id.btItemText);
 			textView.setText(item.getLabel());
-		}
-		
+	//	}
+
         return view;
     }
 
