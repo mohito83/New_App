@@ -52,8 +52,8 @@ public class FileMonitorTask extends Service
 
 	@Override
 	@Deprecated
-	public void onStart(Intent intent, int startId) {
-		// TODO Auto-generated method stub
+	public void onStart(Intent intent, int startId) 
+	{
 		super.onStart(intent, startId);
 	}
 
