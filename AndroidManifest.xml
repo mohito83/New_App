@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="12"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -43,6 +43,8 @@
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
         <service android:name="edu.isi.usaid.pifi.service.BluetoothService"/>
+        <service android:name="edu.isi.usaid.pifi.services.ConnectionService"/>
+        <service android:name="edu.isi.usaid.pifi.services.ListenerService"/>
     </application>
 
 </manifest>

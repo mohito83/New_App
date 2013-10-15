@@ -44,6 +44,7 @@ import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.service.BluetoothService;
+import edu.isi.usaid.pifi.services.ConnectionService;
 
 /**
  * 
@@ -208,6 +209,9 @@ public class ContentListActivity extends Activity implements IDialogListener{
 			}
 			
 		});
+		
+		//start a service for file transfer
+		startService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 
 	@Override
@@ -321,7 +325,7 @@ public class ContentListActivity extends Activity implements IDialogListener{
 			LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
 			broadcastReceiver = null;
 		}
-			
+		stopService(new Intent(getBaseContext(), ConnectionService.class));	
 	}
 	
 	/**
@@ -675,7 +679,7 @@ public class ContentListActivity extends Activity implements IDialogListener{
 		// TODO Auto-generated method stub
 		selectedBluetoothDevice = device;
 		dialog.dismiss();
-		Intent bluetoothServiceIntent = new Intent(getBaseContext(), BluetoothService.class);
+		Intent bluetoothServiceIntent = new Intent(getBaseContext(), ConnectionService.class);
 		bluetoothServiceIntent.putExtra("Device", device);
 		startService(bluetoothServiceIntent);
 	}
