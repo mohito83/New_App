@@ -40,12 +40,17 @@ public class CustomFileObserver extends FileObserver
 	{
 		return path != null && path.contains("transfer");
 	}
-	
+
+
+  /*
+   * Listening to move_self event rather than create event, since it is not 
+   * possible in create to know if the file transfer has already been done
+   */  
 	@Override
 	public void onEvent(int event, String path) 
 	{
 		Log.d(tagName, "Got event for file with path: " + path);
-		if(event == FileObserver.CREATE)
+		if(event == FileObserver.MOVE_SELF)
 		{
 			if(isTransferDirectoryContent(path)) 
 			{
