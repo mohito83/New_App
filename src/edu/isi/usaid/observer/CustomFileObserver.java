@@ -17,8 +17,10 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos.Builder;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.os.FileObserver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class CustomFileObserver extends FileObserver
@@ -30,10 +32,13 @@ public class CustomFileObserver extends FileObserver
 	private static String tagName = "CustomFileObserver";
 	
 	private final String baseDirPath = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
+
+	private FileMonitorTask fileMonitorTask;
 	
-	public CustomFileObserver(String path) 
+	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask) 
 	{
 		super(path);
+		this.fileMonitorTask = fileMonitorTask;
 	}
 	
 	public boolean isTransferDirectoryContent(String path)
@@ -70,7 +75,9 @@ public class CustomFileObserver extends FileObserver
 
 	private void propogateUpdatedMessage(String path) 
 	{
-		
+		Intent messageIntent = new Intent();
+		messageIntent.setAction(Constants.META_UPDATED_ACTION);
+		LocalBroadcastManager.getInstance(fileMonitorTask).sendBroadcast(messageIntent);
 	}
 
 	private void cleanupFile(String path) 

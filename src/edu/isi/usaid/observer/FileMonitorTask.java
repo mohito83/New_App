@@ -13,7 +13,7 @@ public class FileMonitorTask extends Service
 	
 	private final String path = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
 	
-	private final CustomFileObserver customFileObserver = new CustomFileObserver(path);
+	private final CustomFileObserver customFileObserver = new CustomFileObserver(path, this);
 	
 	@Override
 	public IBinder onBind(Intent intent) 
