@@ -55,22 +55,19 @@ public class CustomFileObserver extends FileObserver
 	public void onEvent(int event, String path) 
 	{
 		Log.d(tagName, "Got event for file with path: " + path);
-		if(event == FileObserver.MOVE_SELF)
+		if(event == FileObserver.MOVE_SELF && isTransferDirectoryContent(path)) 
 		{
-			if(isTransferDirectoryContent(path)) 
+			if(isMetaDataFile(path))
 			{
-				if(isMetaDataFile(path))
-				{
-					appendContentToMainMetaFile(path);					
-				}
-				else
-				{
-					copyFileToBaseDirectory(path);								
-				}
+				appendContentToMainMetaFile(path);
 				propogateUpdatedMessage(path);
-				cleanupFile(path);
-			}			
-		}
+			}
+			else
+			{
+				copyFileToBaseDirectory(path);								
+			}
+			cleanupFile(path);
+		}			
 	}
 
 	private void propogateUpdatedMessage(String path) 
