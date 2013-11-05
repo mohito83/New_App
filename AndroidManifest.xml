@@ -42,9 +42,9 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
-        <service android:name="edu.isi.usaid.pifi.service.BluetoothService"/>
         <service android:name="edu.isi.usaid.pifi.services.ConnectionService"/>
-        <service android:name="edu.isi.usaid.pifi.services.ListenerService"/>
+        <service android:name="edu.isi.usaid.pifi.services.ListenerService"
+            android:process=":listener_process"/>
     </application>
 
 </manifest>
