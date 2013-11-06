@@ -29,10 +29,10 @@ public class SocketUtils {
 	private static final String TAG = "SocketUtils";
 	private static byte buffer[] = new byte[8 * 1024];
 
-	public static void writeToSocket(OutputStream os, byte[] buffer2) {
+	public static void writeToSocket(OutputStream os, byte[] buffer) {
 		try {
 			DataOutputStream dos = new DataOutputStream(os);
-			dos.write(buffer2);
+			dos.write(buffer);
 		} catch (IOException e) {
 			Log.e(TAG, "Exception during write", e);
 		}
@@ -41,41 +41,76 @@ public class SocketUtils {
 
 	public static void readFromSocket(File sdir, InputStream is) {
 		try {
+			// TODO need to handle multiple file transfers
 			// TODO append .tmp to the file when the down load starts and rename
 			// once file transfer is completed.
 			DataInputStream dis = new DataInputStream(is);
-			String fName = dis.readUTF();
-			long fLen = dis.readLong();
-			// create a file
-			File f = new File(sdir, fName);
-			FileOutputStream fos = new FileOutputStream(f);
-			while (dis.read(buffer) != -1) {
-				fos.write(buffer);
+			// reading number of file to be received
+			int no_of_files = dis.readUnsignedShort();
+			for (int i = 0; i < no_of_files; i++) {
+				String fName = dis.readUTF();
+				Log.i(TAG, "File name: " + fName);
+				long fLen = dis.readLong();
+				Log.i(TAG, "File size: " + fLen);
+				// create a file
+				Log.i(TAG, "Creating local file");
+				File f = new File(sdir, fName);
+				f.createNewFile();
+				FileOutputStream fos = new FileOutputStream(f);
+				//byte buffer[] = new byte[(int) fLen];
+				int bytesRead = 0;
+
+				while (bytesRead < fLen) { // read exactly fLen
+					/*
+					 * int read = dis .read(buffer, 0, ((int) fLen - bytesRead)
+					 * > buffer.length ? buffer.length : ((int) fLen -
+					 * bytesRead)); fos.write(buffer,0,((int) fLen - bytesRead)
+					 * > buffer.length ? buffer.length : ((int) fLen -
+					 * bytesRead));
+					 */
+					int read = dis.read(buffer, 0, Math.min((int) fLen
+							- bytesRead,buffer.length));
+					fos.write(buffer,0,read);
+					bytesRead += read;
+				}
+
+				//fos.write(buffer);
+				fos.close();
 			}
-			fos.close();
+
 		} catch (IOException e) {
 			Log.e(TAG, "Exception during write", e);
 		}
 	}
 
-	public static void sendVideoPackage(OutputStream os, List<Video> sendTo) {
-		for (Video v : sendTo) {
-			File f = new File(v.getFilepath());
-			// TODO Please check this code thoroughly
-			long len = 0L;
-			try {
+	public static void sendVideoPackage(File root, OutputStream os,
+			List<Video> sendTo) {
+		DataOutputStream dos = new DataOutputStream(os);
+
+		try {
+			// setting number of files to be sent
+			dos.writeShort(sendTo.size());
+			for (Video v : sendTo) {
+				File f = new File(root, v.getFilepath());
+
+				// TODO Please check this code thoroughly
+				int len = 0;
 				FileInputStream fin = new FileInputStream(f);
-				DataOutputStream dos = new DataOutputStream(os);
 				dos.writeUTF(f.getName());
 				dos.writeLong(f.length());
+				// byte buffer[] = new byte[(int) f.length()];
+				int totalBytesSent = 0;
 				while ((len = fin.read(buffer)) != -1) {
 					/* writeToSocket(os, buffer,, len); */
-					dos.write(buffer);
+					dos.write(buffer, 0, len);
+					totalBytesSent += len;
 				}
+				// dos.write(buffer);
 				fin.close();
-			} catch (IOException e) {
-				Log.e(TAG, "Exception while sending videos package", e);
+				Log.i(TAG, "Sent video " + totalBytesSent + " bytes");
 			}
+		} catch (IOException e) {
+			Log.e(TAG, "Exception while sending videos package", e);
 		}
 	}
 
