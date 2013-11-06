@@ -36,7 +36,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
-import edu.isi.usaid.pifi.data.BluetoothItem;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
@@ -166,7 +165,7 @@ public class ContentListActivity extends Activity {
 						Log.i("Empty device", device.getAddress());
 						return;
 					}					
-					bts.add(new BluetoothItem(device.getName(), device.getAddress(), BluetoothItem.KNOWN_BT));
+					bts.add(device);
 					dialog.redraw(bts);
 					
 //				}
@@ -185,7 +184,7 @@ public class ContentListActivity extends Activity {
 		}
 	};
 	
-	private ArrayList<BluetoothItem> bts;
+	private ArrayList<BluetoothDevice> bts;
 
 	private static final int REQUEST_ENABLE_BT = 3;
   
@@ -197,7 +196,7 @@ public class ContentListActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
-		 bts = new ArrayList<BluetoothItem>();
+		 bts = new ArrayList<BluetoothDevice>();
 		// content directory
 		File sdDir = Environment.getExternalStorageDirectory();
 		contentDirectory = new File(sdDir, Constants.contentDirName);
@@ -664,7 +663,7 @@ public class ContentListActivity extends Activity {
 		dialog.setHandler(new BluetoothListDialog.IHandler() {
 			
 			@Override
-			public void onReturnValue(BluetoothItem device) {
+			public void onReturnValue(BluetoothDevice device) {
 				dialog.dismiss();
 				mBluetoothAdapter.cancelDiscovery();
 				Intent bluetoothServiceIntent = new Intent(getBaseContext(), ConnectionService.class);

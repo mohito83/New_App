@@ -22,14 +22,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.ExtraConstants;
-import edu.isi.usaid.pifi.data.BluetoothItem;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 
 /**
@@ -60,7 +58,7 @@ public class ConnectionService extends Service {
 	private List<String> recvFrom = new ArrayList<String>();
 
 	private int transcState = Constants.NO_DATA_META;
-	BluetoothItem item;
+	BluetoothDevice item;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -92,7 +90,7 @@ public class ConnectionService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 //		Debug.waitForDebugger();
-		final BluetoothItem item = intent.getExtras().getParcelable("Device");
+		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
 
 		// use a seaparate thread for connection and data transfer
 		Thread t = new Thread(new Runnable() {
