@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -45,6 +47,7 @@ import edu.isi.usaid.pifi.metadata.CommentProtos.Comment;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
+import edu.isi.usaid.pifi.services.ListenerService;
 
 /**
  * 
@@ -287,8 +290,9 @@ public class ContentListActivity extends Activity {
 			
 		});
 		
-		//start a service for file transfer
-		startService(new Intent(getBaseContext(), ConnectionService.class));
+		// Start bluetooth listener service
+		if (!isListenerServiceRunning())
+			startService(new Intent(this, ListenerService.class));
 	}
 
 	@Override
@@ -679,6 +683,15 @@ public class ContentListActivity extends Activity {
 		mBluetoothAdapter.startDiscovery();
 	}
 	
+	private boolean isListenerServiceRunning() {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (ListenerService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 }
 
 
