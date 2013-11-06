@@ -69,7 +69,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-		Debug.waitForDebugger();
+//		Debug.waitForDebugger();
 
 		// context = bluetoothFileTransferActivity;
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
