@@ -34,5 +34,7 @@ public class ExtraConstants {
 	public static final String USER_COMMENT = "user_comment";
 	
 	public static final String DATE = "date";
+	
+	public static final String STATUS = "status";
 
 }

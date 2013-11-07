@@ -53,25 +53,39 @@ public class FileUtils {
 	 * @param recvFrom
 	 * @throws IOException
 	 */
-	public static void getDelta(DataInputStream din, File metaFile,
+	public static void getDelta(byte[] bytes, File metaFile,
 			List<Video> sendTo, List<String> recvFrom) throws IOException {
 		// TODO This code runs a risk of running into exception if the meta data
 		// file size is too big. Needs to fix this issue later on
 
 		FileInputStream fin = new FileInputStream(metaFile);
-		sendTo = Videos.parseFrom(fin).getVideoList();
-		Iterator<Video> local = sendTo.iterator();
+		
+		//create copies of actual list
+		for(Video vid : Videos.parseFrom(fin).getVideoList()){
+			sendTo.add(vid);
+		}
 		fin.close();
-		List<Video> recv = Videos.parseFrom(din).getVideoList();
+		
+		List<Video> recv = new ArrayList<Video>();
+		for(Video vid : Videos.parseFrom(bytes).getVideoList()){
+			recv.add(vid);
+		}
+		
+		fin = new FileInputStream(metaFile);
+		Iterator<Video> local = Videos.parseFrom(fin).getVideoList().iterator();
+		fin.close();
 
+		// for each local entry
 		while (local.hasNext()) {
-			Iterator<Video> remote = recv.iterator();
+			Iterator<Video> remote = Videos.parseFrom(bytes).getVideoList().iterator();
 			Video v = local.next();
+			// for each remote entry
 			while (remote.hasNext()) {
 				Video rem = remote.next();
+				// if local entry matches remote entry
 				if (v.getFilename().equals(rem.getFilename())) {
-					local.remove();
-					remote.remove();
+					sendTo.remove(v);
+					recv.remove(rem);
 				}
 			}
 		}
@@ -119,14 +133,16 @@ public class FileUtils {
 		if (paths != null) {
 			try {
 				FileInputStream fin = new FileInputStream(metafile);
-				vid = Videos.parseFrom(fin).getVideoList();
-				Iterator<Video> local = vid.iterator();
+				// get a list of local videos
+				List<Video> vidTmp = Videos.parseFrom(fin).getVideoList();
+				Iterator<Video> local = vidTmp.iterator();
 				fin.close();
 				while(local.hasNext()){
 					Video v = local.next();
 					String filePath = v.getFilepath();
-					if(!paths.contains(filePath)){
-						local.remove();
+					// add if this file is being requested
+					if(paths.contains(filePath)){
+						vid.add(v);
 					}
 				}
 			} catch (FileNotFoundException e) {

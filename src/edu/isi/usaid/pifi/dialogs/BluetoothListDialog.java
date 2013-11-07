@@ -5,25 +5,19 @@ package edu.isi.usaid.pifi.dialogs;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import edu.isi.usaid.pifi.ContentListActivity;
 import edu.isi.usaid.pifi.R;
-import edu.isi.usaid.pifi.data.BluetoothItem;
 import edu.isi.usaid.pifi.data.BluetoothListAdapter;
 
 /**
@@ -32,11 +26,21 @@ import edu.isi.usaid.pifi.data.BluetoothListAdapter;
  */
 public class BluetoothListDialog extends DialogFragment {
 	
-	private ArrayList<BluetoothItem> btItems;
+	private ArrayList<BluetoothDevice> btItems;
 	private BroadcastReceiver bluetoothReceiver;
 	private ListView listView;
-	private ArrayAdapter<BluetoothItem> adapter;
-	public void setList(ArrayList<BluetoothItem> items){
+	private ArrayAdapter<BluetoothDevice> adapter;
+	public static interface IHandler{
+		public void onReturnValue(BluetoothDevice device);
+	}
+	
+	private IHandler handler;
+	
+	public void setHandler(IHandler handler){
+		this.handler = handler;
+	}
+	
+	public void setList(ArrayList<BluetoothDevice> items){
 		btItems = items;
 	}
 	
@@ -64,8 +68,8 @@ public class BluetoothListDialog extends DialogFragment {
 		return builder.create();
 	}
 	
-	public void redraw(ArrayList<BluetoothItem> btItemss) {		
-		ArrayList<BluetoothItem> copy = new ArrayList<BluetoothItem>(btItemss);
+	public void redraw(ArrayList<BluetoothDevice> btItemss) {		
+		ArrayList<BluetoothDevice> copy = new ArrayList<BluetoothDevice>(btItemss);
 		adapter.clear();
 		adapter.addAll(copy);
 		adapter.notifyDataSetChanged();		
@@ -78,11 +82,10 @@ public class BluetoothListDialog extends DialogFragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,long arg3) 
 			{
-				BluetoothItem item  = (BluetoothItem)listView.getItemAtPosition(arg2);
+				BluetoothDevice item  = (BluetoothDevice)listView.getItemAtPosition(arg2);
 				if(item.getAddress() != null)
 				{
-					IDialogListener activity = (IDialogListener) getActivity();
-					activity.onReturnValue(item);
+					handler.onReturnValue(item);
 				}
 			}
 	    });

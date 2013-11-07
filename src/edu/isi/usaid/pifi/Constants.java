@@ -15,6 +15,8 @@ public class Constants {
 	
 	public static final String META_UPDATED_ACTION = "edu.isi.usaid.pifi.MetaUpdatedAction";
 	
+	public static final String BT_STATUS_ACTION = "edu.isi.usaid.pifi.BtStatusAction";
+	
 	public static final String contentDirName = "PifiContent";
 	
 	public static final String xferDirName = "xfer";
