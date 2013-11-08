@@ -49,15 +49,17 @@ public class SocketUtils {
 			int no_of_files = dis.readUnsignedShort();
 			for (int i = 0; i < no_of_files; i++) {
 				String fName = dis.readUTF();
+				String tmpFName = fName + ".tmp";
 				Log.i(TAG, "File name: " + fName);
 				long fLen = dis.readLong();
 				Log.i(TAG, "File size: " + fLen);
 				// create a file
 				Log.i(TAG, "Creating local file");
-				File f = new File(sdir, fName);
+				// append .tmp to the file name before the file transfer starts
+				File f = new File(sdir, tmpFName);
 				f.createNewFile();
 				FileOutputStream fos = new FileOutputStream(f);
-				//byte buffer[] = new byte[(int) fLen];
+				// byte buffer[] = new byte[(int) fLen];
 				int bytesRead = 0;
 
 				while (bytesRead < fLen) { // read exactly fLen
@@ -68,14 +70,24 @@ public class SocketUtils {
 					 * > buffer.length ? buffer.length : ((int) fLen -
 					 * bytesRead));
 					 */
-					int read = dis.read(buffer, 0, Math.min((int) fLen
-							- bytesRead,buffer.length));
-					fos.write(buffer,0,read);
+					int read = dis.read(buffer, 0,
+							Math.min((int) fLen - bytesRead, buffer.length));
+					fos.write(buffer, 0, read);
 					bytesRead += read;
 				}
 
-				//fos.write(buffer);
+				// fos.write(buffer);
 				fos.close();
+
+				// TODO Before renaming the file check the sanity of the
+				// transferred file using some checksum
+				
+				// after file transfer is complete then rename the file to drop
+				// .tmp
+				File finalFile = new File(sdir, fName);
+				// f.createNewFile();
+				boolean isSuccess = f.renameTo(finalFile);
+				Log.i(TAG, "File tranfer:" + isSuccess);
 			}
 
 		} catch (IOException e) {
