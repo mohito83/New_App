@@ -31,15 +31,20 @@ public class FileUtils {
 	private static final String TAG = "FileUtils";
 	private static byte buffer[] = new byte[8 * 1024];
 
-	public static void saveDataToFile() {
 
-	}
-
-	public static void readDataFromFile(byte[] buffer2, File f, long l)
+	/**
+	 * 
+	 * @param buffer2
+	 * @param f
+	 * @param l
+	 * @return
+	 * @throws IOException
+	 */
+	public static long readDataFromFile(byte[] buffer2, File f, long l)
 			throws IOException {
 		FileInputStream fin = new FileInputStream(f);
 		long buffSize = fin.read(buffer2);
-
+		return buffSize;
 	}
 
 	/**

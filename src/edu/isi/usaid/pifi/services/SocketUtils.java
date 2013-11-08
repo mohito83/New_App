@@ -16,6 +16,7 @@ import java.util.List;
 import android.util.Log;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
+import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 
 /**
  * This class defines utility methods for socket programming. Rename the
@@ -81,13 +82,33 @@ public class SocketUtils {
 
 				// TODO Before renaming the file check the sanity of the
 				// transferred file using some checksum
-				
+
 				// after file transfer is complete then rename the file to drop
 				// .tmp
 				File finalFile = new File(sdir, fName);
-				// f.createNewFile();
 				boolean isSuccess = f.renameTo(finalFile);
 				Log.i(TAG, "File tranfer:" + isSuccess);
+
+				// receive meta data file
+				/*Videos videos = Videos.parseFrom(is);*/
+				Videos videos = Videos.parseDelimitedFrom(is);
+				Video v = videos.getVideo(0);
+				if (v != null) {
+					String metaTempFile = fName + ".dat.tmp";
+					String metafile = fName + ".dat";
+					File metaTemp = new File(sdir, metaTempFile);
+					metaTemp.createNewFile();
+					fos = new FileOutputStream(metaTemp);
+					Videos.Builder builder = Videos.newBuilder(videos);
+					builder.build().writeTo(fos);
+
+					File finalMetaFile = new File(sdir, metafile);
+					isSuccess = metaTemp.renameTo(finalMetaFile);
+					Log.i(TAG, "MetadataFile tranfer:" + isSuccess);
+					Log.i(TAG, "Video Meta data file transfer is successfull");
+				} else {
+					Log.w(TAG, "Video Meta data file transfer fails");
+				}
 			}
 
 		} catch (IOException e) {
@@ -120,6 +141,9 @@ public class SocketUtils {
 				// dos.write(buffer);
 				fin.close();
 				Log.i(TAG, "Sent video " + totalBytesSent + " bytes");
+
+				sendProtoBufToReceiver(v, os);
+				Log.i(TAG, "Sent video meta data" + totalBytesSent + " bytes");
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "Exception while sending videos package", e);
@@ -137,4 +161,22 @@ public class SocketUtils {
 		// Should be similar to that
 	}
 
+	/**
+	 * TRhis function will send the corresponding protobuf as temp metdata file
+	 * to the receiver
+	 * 
+	 * @param v
+	 * @param oStream
+	 */
+	private static void sendProtoBufToReceiver(Video v, OutputStream oStream) {
+		Videos.Builder videos = Videos.newBuilder();
+		videos.addVideo(v);
+		try {
+/*			videos.build().writeTo(oStream);*/
+			videos.build().writeDelimitedTo(oStream);
+		} catch (IOException e) {
+			Log.e(TAG, "Exception while sending videos protobuf file", e);
+		}
+
+	}
 }
