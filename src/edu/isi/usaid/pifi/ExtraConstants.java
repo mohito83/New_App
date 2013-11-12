@@ -36,5 +36,11 @@ public class ExtraConstants {
 	public static final String DATE = "date";
 	
 	public static final String STATUS = "status";
+	
+	public static final String ID = "id";
+	
+	public static final String BOOKMARK = "bookmark";
+	
+	public static final String ON = "on";
 
 }

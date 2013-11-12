@@ -16,7 +16,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginTop="1dip"
-	    android:layout_toLeftOf="@+id/arrow"
+	    android:layout_toLeftOf="@+id/star"
 	    android:layout_toRightOf="@+id/contentThumb"
 	    android:textColor="#040404"
         android:typeface="sans"
@@ -43,16 +43,15 @@
         android:textSize="10sp"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/contentThumb" 
-        android:layout_toLeftOf="@+id/arrow"
-        android:singleLine="true"/>
-	
+        android:maxLines="3"/>
+        
 	<ImageView 
-	    android:id="@+id/arrow"
+	    android:id="@+id/star"
 	    android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/arrow"
+        android:src="@drawable/ic_fav_unselected"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="5dp"/>
 	
 </RelativeLayout>

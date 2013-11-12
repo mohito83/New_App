@@ -17,6 +17,8 @@ public class Constants {
 	
 	public static final String BT_STATUS_ACTION = "edu.isi.usaid.pifi.BtStatusAction";
 	
+	public static final String BOOKMARK_ACTION = "edu.isi.usaid.pifi.BookmarkAction";
+	
 	public static final String contentDirName = "PifiContent";
 	
 	public static final String xferDirName = "xfer";
