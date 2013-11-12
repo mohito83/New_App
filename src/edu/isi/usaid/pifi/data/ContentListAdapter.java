@@ -2,6 +2,7 @@ package edu.isi.usaid.pifi.data;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -32,10 +34,13 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 //	private final Context context;
 	
 	private LruCache<String, Bitmap> bitmapCache;
+	
+	private Set<String> bookmarks;
 
-	public ContentListAdapter(Context context, List<Object> objects, String directory) {
+	public ContentListAdapter(Context context, List<Object> objects, String directory, Set<String> bookmarks) {
 		super(context, R.layout.content_list_item, objects);
 //		this.context = context;
+		this.bookmarks = bookmarks;
 		
 		contentDirectory = new File(directory);
 		
@@ -62,7 +67,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	@Override
 	public View getView(int pos, View convertView, ViewGroup parent){
 
-		ViewHolder holder;
+		final ViewHolder holder;
 		
 		// recycle views
 		if (convertView == null){
@@ -75,6 +80,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.titleView = (TextView)convertView.findViewById(R.id.contentTitle);
 			holder.catView = (TextView)convertView.findViewById(R.id.contentCatagory);
 			holder.descView = (TextView)convertView.findViewById(R.id.contentDesc);
+			holder.starView = (ImageView)convertView.findViewById(R.id.star);
 			
 			convertView.setTag(holder);
 		}
@@ -85,7 +91,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		
 		Object content = getItem(pos);
 		if (content instanceof Video){
-			Video video = (Video)content;
+			final Video video = (Video)content;
 			String title = video.getSnippet().getTitle();
 			String id = video.getId();
 			String cat = video.getSnippet().getCategoryId();
@@ -104,15 +110,61 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 				BitmapTask task = BitmapTask.BitmapTaskByHeight(holder.imageView, getContext().getContentResolver(), holder.imageView.getLayoutParams().height, bitmapCache);
 				task.execute(uri);
 			}
+			
+			// bookmark
+			if (bookmarks.contains(video.getFilename()))
+				holder.starView.setImageResource(R.drawable.ic_fav_selected);
+			else
+				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+			
+			holder.starView.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View arg0) {
+					if (bookmarks.contains(video.getFilename())){
+						bookmarks.remove(video.getFilename());
+						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+					}
+					else {
+						bookmarks.add(video.getFilename());
+						holder.starView.setImageResource(R.drawable.ic_fav_selected);
+					}
+				}
+				
+			});
+			
 		}
 		else if (content instanceof Article){
-			Article article = (Article)content;
+			final Article article = (Article)content;
 			String title = article.getTitle();
 			holder.titleView.setText(title);
 			holder.catView.setText("news"); // TODO need category for articles
 			holder.descView.setText("");
 			holder.imageView.setImageBitmap(null);
+			
+			// bookmark
+			if (bookmarks.contains(article.getFilename()))
+				holder.starView.setImageResource(R.drawable.ic_fav_selected);
+			else
+				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+			
+			holder.starView.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View arg0) {
+					if (bookmarks.contains(article.getFilename())){
+						bookmarks.remove(article.getFilename());
+						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+					}
+					else {
+						bookmarks.add(article.getFilename());
+						holder.starView.setImageResource(R.drawable.ic_fav_selected);
+					}
+				}
+				
+			});
 		}
+		
 		return convertView;
 	}
 	
@@ -121,6 +173,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		public TextView titleView;
 		public TextView catView;
 		public TextView descView;
+		public ImageView starView;
 	}
 	
 }

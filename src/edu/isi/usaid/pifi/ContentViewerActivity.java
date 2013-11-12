@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +16,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -43,10 +46,20 @@ public class ContentViewerActivity extends FragmentActivity {
 	
 	private File contentDirectory;
 	
+	private Video video = null;
+	
+	private Article article = null;
+	
+	private boolean bookmark = false;
+	
+	private Menu menu;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content_viewer);
+		
+		bookmark = getIntent().getBooleanExtra(ExtraConstants.BOOKMARK, false);
 		
 		File sdDir = Environment.getExternalStorageDirectory();
 		contentDirectory = new File(sdDir, Constants.contentDirName);
@@ -117,9 +130,44 @@ public class ContentViewerActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.content_viewer, menu);
+		if (bookmark)
+			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_selected);
+		else
+			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_unselected);
 		return true;
+	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		
+		// user clicked on star
+    	if (item.getItemId() == R.id.action_star){
+    		
+    		// toggle bookmark
+    		bookmark = !bookmark;
+    		if (bookmark)
+    			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_selected);
+    		else
+    			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_unselected);
+    		
+    		// broadcast
+    		Intent i = new Intent();
+    		i.setAction(Constants.BOOKMARK_ACTION);
+    		if (video != null)
+    			i.putExtra(ExtraConstants.ID, video.getFilename());
+    		else
+    			i.putExtra(ExtraConstants.ID, article.getFilename());
+    		i.putExtra(ExtraConstants.ON, bookmark);
+    		LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+    		
+    		return true;
+    	}
+    	else 
+    		return super.onOptionsItemSelected(item);
+    		
 	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -137,7 +185,7 @@ public class ContentViewerActivity extends FragmentActivity {
 		
 			if (type.equals(ExtraConstants.TYPE_VIDEO)){
 			
-				Video video = Video.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
+				video = Video.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
 				f.add(VideoPlayerFragment.newInstance(
 						contentDirectory + "/" + video.getFilename(),
 						video.getSnippet().getTitle()));
@@ -147,7 +195,7 @@ public class ContentViewerActivity extends FragmentActivity {
 			}
 			else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
 			
-				Article article = Article.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
+				article = Article.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
 				File htmlFile = new File(contentDirectory + "/" + article.getFilename());
 				Uri uri = Uri.fromFile(htmlFile);
 				f.add(HtmlFragment.newInstance(uri.toString()));

@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -20,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,6 +71,8 @@ public class ContentListActivity extends Activity {
 	public static final String VIDEO_CONTENT = "Video";
 	
 	public static final String WEB_CONTENT = "Web";
+	
+	private static final String SETTING_BOOKMARKS = "bookmarks";
 	
 	private DrawerLayout drawerLayout;
 
@@ -139,6 +144,15 @@ public class ContentListActivity extends Activity {
 				if (!btStatusDialog.isShowing())
 					btStatusDialog.show();
 			}
+			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
+				String id = i.getStringExtra(ExtraConstants.ID);
+				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
+				if (on)
+					bookmarks.add(id);
+				else
+					bookmarks.remove(id);
+				contentListAdapter.notifyDataSetChanged();
+			}
 			
 		}
 		
@@ -192,11 +206,20 @@ public class ContentListActivity extends Activity {
 	
 	private BluetoothListDialog dialog;
 	
+	private SharedPreferences settings;
+	
+	private Set<String> bookmarks;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
-		 bts = new ArrayList<BluetoothDevice>();
+		
+		// restore user preferences
+		settings = getPreferences(MODE_PRIVATE);
+		bookmarks = settings.getStringSet(SETTING_BOOKMARKS, new HashSet<String>());
+		
+		bts = new ArrayList<BluetoothDevice>();
 		// content directory
 		File sdDir = Environment.getExternalStorageDirectory();
 		contentDirectory = new File(sdDir, Constants.contentDirName);
@@ -277,10 +300,12 @@ public class ContentListActivity extends Activity {
 				if (currentContent instanceof Video){
 					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
 					intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
+					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilename()));
 				}
 				else if (currentContent instanceof Article){
 					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
 					intent.putExtra("content", ((Article)currentContent).toByteArray());
+					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
 				}
 				
 				startActivity(intent);
@@ -292,6 +317,16 @@ public class ContentListActivity extends Activity {
 		// Start bluetooth listener service
 		if (!isListenerServiceRunning())
 			startService(new Intent(this, ListenerService.class));
+		
+		
+		// register broadcast receiver
+		// local messages
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.NEW_COMMENT_ACTION));
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.META_UPDATED_ACTION));
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.BOOKMARK_ACTION));
+				
+		// global messages (from other processes)
+		registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
 	}
 
 	@Override
@@ -315,24 +350,23 @@ public class ContentListActivity extends Activity {
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()){
-    	case R.id.action_refresh:
-    		try {
+    	if (item.getItemId() == R.id.action_refresh){
+			try {
 				  reload();
 			  } catch (FileNotFoundException e) {
 				  e.printStackTrace();
 			  } catch (IOException e) {
 				  e.printStackTrace();
 			  }
-    		break;
-    	case R.id.action_sync:
-    		sync();
-    		break;
-    	default:
-    		break;
+			return true;
     	}
+    	else if (item.getItemId() == R.id.action_sync){
+    		sync();
+    		return true;
+    	}
+    	else 
+    		return super.onOptionsItemSelected(item);
     		
-    	return true;
     }
     
     @Override
@@ -367,19 +401,6 @@ public class ContentListActivity extends Activity {
 		return true;
 	}
 	
-	
-	@Override
-	protected void onResume(){
-		super.onResume();
-		
-		// local messages
-		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.NEW_COMMENT_ACTION));
-		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(Constants.META_UPDATED_ACTION));
-	
-		// global messages (from other processes)
-		registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
-	}
-	
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
@@ -389,6 +410,16 @@ public class ContentListActivity extends Activity {
 			broadcastReceiver = null;
 		}
 		stopService(new Intent(getBaseContext(), ConnectionService.class));	
+	}
+	
+	@Override
+	protected void onStop(){
+		super.onStop();
+		
+		// save bookmarks
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
+		editor.commit();
 	}
 	
 	/**
@@ -455,7 +486,7 @@ public class ContentListActivity extends Activity {
 			drawerListAdapter.notifyDataSetChanged();
 		
 		if (contentListAdapter == null){
-			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath());
+			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath(), bookmarks);
 			contentList.setAdapter(contentListAdapter);
 		}
 		else
