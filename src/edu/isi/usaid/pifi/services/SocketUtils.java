@@ -40,7 +40,8 @@ public class SocketUtils {
 
 	}
 
-	public static void readFromSocket(File sdir, InputStream is) {
+	public static int readFromSocket(File sdir, InputStream is) {
+		int i=0;
 		try {
 			// TODO need to handle multiple file transfers
 			// TODO append .tmp to the file when the down load starts and rename
@@ -48,7 +49,7 @@ public class SocketUtils {
 			DataInputStream dis = new DataInputStream(is);
 			// reading number of file to be received
 			int no_of_files = dis.readUnsignedShort();
-			for (int i = 0; i < no_of_files; i++) {
+			for (i = 0; i < no_of_files; i++) {
 				String fName = dis.readUTF();
 				String tmpFName = fName + ".tmp";
 				Log.i(TAG, "File name: " + fName);
@@ -114,6 +115,7 @@ public class SocketUtils {
 		} catch (IOException e) {
 			Log.e(TAG, "Exception during write", e);
 		}
+		return i;
 	}
 
 	public static void sendVideoPackage(File root, OutputStream os,

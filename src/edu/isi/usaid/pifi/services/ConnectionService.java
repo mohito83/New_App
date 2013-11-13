@@ -22,7 +22,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -68,7 +67,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-		//Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 		// context = bluetoothFileTransferActivity;
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
@@ -90,7 +89,7 @@ public class ConnectionService extends Service {
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-//        Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
 
 		// use a seaparate thread for connection and data transfer
@@ -139,7 +138,8 @@ public class ConnectionService extends Service {
 					} else {
 						Intent i = new Intent();
 						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS, "Connection Failed");
+						i.putExtra(ExtraConstants.STATUS, "Connection with "
+								+ device.getName() + "Failed");
 						sendBroadcast(i);
 
 						try {
@@ -157,12 +157,12 @@ public class ConnectionService extends Service {
 
 				}
 
-
 				// connection established
 				Log.i(TAG, "Connection established");
 				Intent i = new Intent();
 				i.setAction(Constants.BT_STATUS_ACTION);
-				i.putExtra(ExtraConstants.STATUS, "Connected");
+				i.putExtra(ExtraConstants.STATUS, "Successfully connected to "
+						+ device.getName());
 				sendBroadcast(i);
 
 				DataInputStream dis;
@@ -177,7 +177,7 @@ public class ConnectionService extends Service {
 						i = new Intent();
 						i.setAction(Constants.BT_STATUS_ACTION);
 						i.putExtra(ExtraConstants.STATUS,
-								"Unable to get in/out streams");
+								"Error in initiating connection");
 						sendBroadcast(i);
 
 						return;
@@ -201,9 +201,9 @@ public class ConnectionService extends Service {
 									// slave
 
 									// wait until data arrives
-									/*while (dis.available() == 0) {
-									}
-									;*/
+									/*
+									 * while (dis.available() == 0) { } ;
+									 */
 
 									// get metadata file size
 									long byteCount = dis.readLong();
@@ -217,15 +217,17 @@ public class ConnectionService extends Service {
 									int bytesRead = 0;
 									while (bytesRead < byteCount) {
 										bytesRead += mmInStream.read(buf,
-												bytesRead, buf.length - bytesRead);
+												bytesRead, buf.length
+														- bytesRead);
 									}
 
-									i = new Intent();
-									i.setAction(Constants.BT_STATUS_ACTION);
-									i.putExtra(ExtraConstants.STATUS,
-											"metadata: " + bytesRead
-													+ " bytes received");
-									sendBroadcast(i);
+									/*
+									 * i = new Intent();
+									 * i.setAction(Constants.BT_STATUS_ACTION);
+									 * i.putExtra(ExtraConstants.STATUS,
+									 * "metadata: " + bytesRead +
+									 * " bytes received"); sendBroadcast(i);
+									 */
 
 									// get delta entries to send/request
 									FileUtils.getDelta(buf, metaFile, sendTo,
@@ -235,9 +237,10 @@ public class ConnectionService extends Service {
 									i.setAction(Constants.BT_STATUS_ACTION);
 									i.putExtra(
 											ExtraConstants.STATUS,
-											sendTo.size()
-													+ " entries to send, request "
-													+ recvFrom + " entries");
+											"Sending " + sendTo.size()
+													+ " entries to: "
+													+ device.getName());
+									// + recvFrom + " entries");
 									sendBroadcast(i);
 
 									Log.i(TAG, "Sending videos");
@@ -245,13 +248,14 @@ public class ConnectionService extends Service {
 											mmOutStream, sendTo);
 
 									Log.i(TAG, "Videos Sent");
-									
+
 									// wait until listener responds
 									// (listener has finished receiving)
 									byte[] buff = new byte[20];
 									mmInStream.read(buff);
-									Log.i(TAG, "Listener responded: " + new String(buff));
-									
+									Log.i(TAG, "Listener responded: "
+											+ new String(buff));
+
 									transcState = Constants.META_DATA_RECEIVED;
 									break;
 
@@ -272,23 +276,22 @@ public class ConnectionService extends Service {
 									// receive approach then we need to modify
 									// this
 									// case as well as the one following it.
-									
+
 									Log.i(TAG, "Sending file requests");
-									
-									 ByteArrayOutputStream bos = new
-									 ByteArrayOutputStream();
-									 ObjectOutput out = null;
-									 try {
-										 out = new ObjectOutputStream(bos);
-										 out.writeObject(recvFrom);
-										 byte[] yourBytes = bos.toByteArray();
-										 SocketUtils.writeToSocket(mmOutStream,
-										 yourBytes);
-									 } finally {
-//										 out.close();
-//										 bos.close();
-									 }
-									 
+
+									ByteArrayOutputStream bos = new ByteArrayOutputStream();
+									ObjectOutput out = null;
+									try {
+										out = new ObjectOutputStream(bos);
+										out.writeObject(recvFrom);
+										byte[] yourBytes = bos.toByteArray();
+										SocketUtils.writeToSocket(mmOutStream,
+												yourBytes);
+									} finally {
+										// out.close();
+										// bos.close();
+									}
+
 									Log.i(TAG, "Requests sent");
 									transcState = Constants.META_DATA_TO_SLAVE;
 									break;
@@ -297,15 +300,26 @@ public class ConnectionService extends Service {
 									// receive data from the slave and write it
 									// to
 									// the file system
-									
+
 									Log.i(TAG, "Receiving requested files");
 									File xferDir = new File(path,
 											Constants.xferDirName + "/"
 													+ device.getName());
 									xferDir.mkdirs();
-									SocketUtils.readFromSocket(xferDir, dis);
-									Log.i(TAG, "Finished receiving requested files");
-									
+									int noOfFile = SocketUtils.readFromSocket(
+											xferDir, dis);
+									Log.i(TAG,
+											"Finished receiving requested files");
+
+									i = new Intent();
+									i.setAction(Constants.BT_STATUS_ACTION);
+									i.putExtra(ExtraConstants.STATUS,
+											"Received " + noOfFile
+													+ " entries from: "
+													+ device.getName());
+									// + recvFrom + " entries");
+									sendBroadcast(i);
+
 									// tell listener finished
 									String str = "Success!!";
 									try {
@@ -314,7 +328,7 @@ public class ConnectionService extends Service {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
-									
+
 									transcState = Constants.DATA_FROM_SLAVE;
 									break;
 
@@ -330,7 +344,8 @@ public class ConnectionService extends Service {
 							Log.e(TAG, "disconnected", e);
 							i = new Intent();
 							i.setAction(Constants.BT_STATUS_ACTION);
-							i.putExtra(ExtraConstants.STATUS, "connected lost");
+							i.putExtra(ExtraConstants.STATUS,
+									"Connection lost with " + device.getName());
 							sendBroadcast(i);
 							break;
 						}
@@ -338,6 +353,11 @@ public class ConnectionService extends Service {
 					}
 
 					if (terminate) {
+						i = new Intent();
+						i.setAction(Constants.BT_STATUS_ACTION);
+						i.putExtra(ExtraConstants.STATUS,
+								"File sync is successful. Closing the session");
+						sendBroadcast(i);
 						try {
 							mmInStream.close();
 							mmOutStream.close();

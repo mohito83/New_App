@@ -20,7 +20,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
@@ -69,7 +68,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-//		Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 
 		// context = bluetoothFileTransferActivity;
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
@@ -208,7 +207,8 @@ public class ListenerService extends Service {
 
 				Intent i = new Intent();
 				i.setAction(Constants.BT_STATUS_ACTION);
-				i.putExtra(ExtraConstants.STATUS, "Connected");
+				i.putExtra(ExtraConstants.STATUS, "Successfully connected to "
+						+ commSock.getRemoteDevice().getName());
 				sendBroadcast(i);
 
 				DataInputStream din = new DataInputStream(mmInStream);
@@ -245,18 +245,12 @@ public class ListenerService extends Service {
 							int tb = 0;
 							int b = 0;
 							while (b < byteCount) {
-								b = fin.read(buffer, 0, Math.min((int) byteCount
-										- tb,buffer.length));
-								dos.write(buffer,0,b);
+								b = fin.read(buffer, 0, Math.min(
+										(int) byteCount - tb, buffer.length));
+								dos.write(buffer, 0, b);
 								tb += b;
 							}
 							dos.flush();
-							i = new Intent();
-							i.setAction(Constants.BT_STATUS_ACTION);
-							i.putExtra(ExtraConstants.STATUS, "Sent metadata: "
-									+ tb + " bytes");
-							sendBroadcast(i);
-
 							Log.i(TAG, "Sent metadata " + tb + " bytes");
 
 						} catch (FileNotFoundException e) {
@@ -289,13 +283,20 @@ public class ListenerService extends Service {
 						File xferDir = new File(path, Constants.xferDirName
 								+ "/" + commSock.getRemoteDevice().getName());
 						xferDir.mkdirs();
-						SocketUtils.readFromSocket(xferDir, din);
+						int noOfFiles = SocketUtils
+								.readFromSocket(xferDir, din);
+						i = new Intent();
+						i.setAction(Constants.BT_STATUS_ACTION);
+						i.putExtra(ExtraConstants.STATUS, "Received "
+								+ noOfFiles + " entries from: "
+								+ commSock.getRemoteDevice().getName());
+						sendBroadcast(i);
 
 						// once the data is received send some dummy message
 						// back to the sender so that it can come out of the
 						// read block and send us the list of files it wants
 						// from us.
-						//dos = new DataOutputStream(mmOutStream);
+						// dos = new DataOutputStream(mmOutStream);
 						String str = "Success!!";
 						try {
 							mmOutStream.write(str.getBytes());
@@ -303,7 +304,7 @@ public class ListenerService extends Service {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						//SocketUtils.writeToSocket(dos, str.getBytes());
+						// SocketUtils.writeToSocket(dos, str.getBytes());
 						// TODO just identified a bug.. this flow of
 						// control
 						// will only work this flow will only with
@@ -333,8 +334,16 @@ public class ListenerService extends Service {
 									paths);
 						}
 
+						i = new Intent();
+						i.setAction(Constants.BT_STATUS_ACTION);
+						i.putExtra(ExtraConstants.STATUS,
+								"Sending " + paths.size() + " entries to: "
+										+ commSock.getRemoteDevice().getName());
+						// + recvFrom + " entries");
+						sendBroadcast(i);
+
 						Log.i(TAG, "Local package sent");
-						
+
 						// wait until connector responds
 						// (connector has finished receiving)
 						byte[] buff = new byte[20];
@@ -362,6 +371,11 @@ public class ListenerService extends Service {
 
 				// close the socket
 				try {
+					i = new Intent();
+					i.setAction(Constants.BT_STATUS_ACTION);
+					i.putExtra(ExtraConstants.STATUS,
+							"File sync is successful. Closing the session");
+					sendBroadcast(i);
 					Log.i(TAG, "Close socket");
 					mmInStream.close();
 					mmOutStream.close();
