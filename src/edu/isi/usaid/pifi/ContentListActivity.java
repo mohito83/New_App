@@ -73,6 +73,8 @@ public class ContentListActivity extends Activity {
 
 	public static final String WEB_CONTENT = "Web";
 	
+	public static final String STARRED_BOOKMARK = "Starred";
+	
 	private static final String SETTING_BOOKMARKS = "bookmarks";
 	
 	private DrawerLayout drawerLayout;
@@ -106,7 +108,9 @@ public class ContentListActivity extends Activity {
 	private String selectedCat = "All";
 
 	private String selectedType = "All";
-
+	
+	private String selectedBookmark = "All";
+	
 	private Object currentContent = null;
 
 	private AlertDialog btStatusDialog;
@@ -127,7 +131,7 @@ public class ContentListActivity extends Activity {
 																				// file
 																				// updated
 				try {
-					reload();
+					reload(false);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -245,7 +249,7 @@ public class ContentListActivity extends Activity {
 
 		// reload content
 		try {
-			reload();
+			reload(true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -365,7 +369,7 @@ public class ContentListActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	if (item.getItemId() == R.id.action_refresh){
 			try {
-				  reload();
+				  reload(false);
 			  } catch (FileNotFoundException e) {
 				  e.printStackTrace();
 			  } catch (IOException e) {
@@ -443,8 +447,8 @@ public class ContentListActivity extends Activity {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	private void reload() throws FileNotFoundException, IOException {
-
+	private void reload(boolean firsttime) throws FileNotFoundException, IOException{
+		
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
 		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
@@ -480,20 +484,23 @@ public class ContentListActivity extends Activity {
 		cats = categories.toArray(cats);
 
 		// setup menu drawer
-		drawerItems.clear();
-		drawerItems
-				.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
-		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE,
-				false));
-		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE,
-				false));
+        drawerItems.clear();
+        drawerItems.add(new DrawerItem("Bookmarks", DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem("All", DrawerItem.BOOKMARKS, selectedBookmark.equals("All")));
+        drawerItems.add(new DrawerItem(STARRED_BOOKMARK, DrawerItem.BOOKMARKS, selectedBookmark.equals(STARRED_BOOKMARK)));
+		drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, selectedType.equals("All")));
+		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(VIDEO_CONTENT)));
+		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(WEB_CONTENT)));
 		drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
-		for (String cat : cats) {
-			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, selectedCat.equals("All")));
+		for (String cat : cats){
+			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
 		}
-
+		if (!firsttime)
+			applyListFilter();
+			
+			
 		// update/init adapter
 		if (drawerListAdapter == null) { // first time
 			drawerListAdapter = new DrawerListAdapter(this, drawerItems);
@@ -508,52 +515,92 @@ public class ContentListActivity extends Activity {
 			contentListAdapter.notifyDataSetChanged();
 
 	}
-
-	private void applyListFilter(DrawerItem item) {
-		if (item.getType() == DrawerItem.HEADER)
-			return;
-
-		if (item.getType() == DrawerItem.CONTENT_TYPE) {
-			String newType = item.getLabel();
-			if (newType != selectedType) {
-				selectedType = newType;
-			} else
+	
+	/**
+	 * no changes to filter, just re-apply to the list
+	 */
+	private void applyListFilter(){
+		applyListFilter(null);
+	}
+	
+	private void applyListFilter(DrawerItem item){
+		
+		// if something selected/de-selected
+		if (item != null){
+			if (item.getType() == DrawerItem.HEADER)
 				return;
-		} else if (item.getType() == DrawerItem.CATEGORY) {
-			String newCat = item.getLabel();
-			if (newCat != selectedCat) {
-				selectedCat = newCat;
-			} else
-				return;
+			
+			if (item.getType() == DrawerItem.BOOKMARKS){
+				String newBookmark = item.getLabel();
+				if (!newBookmark.equals(selectedBookmark))
+					selectedBookmark = newBookmark;
+				else
+					return;
+			}
+			
+			if (item.getType() == DrawerItem.CONTENT_TYPE){
+				 String newType = item.getLabel();
+				 if (!newType.equals(selectedType)){
+					 selectedType = newType;
+				 }
+				 else 
+					 return;
+			}
+			else if (item.getType() == DrawerItem.CATEGORY){
+				String newCat = item.getLabel();
+				if (!newCat.equals(selectedCat)){
+					selectedCat = newCat;
+				}
+				else
+					return;
+			}
 		}
-
+		
 		contentListAdapter.clear();
 
 		// TODO nothing being taken care of for web category
-		if (selectedType.equals("All")) {
-			if (selectedCat.equals("All")) {
-				contentListAdapter.addAll(metadata.getVideoList());
-				contentListAdapter.addAll(webMetadata.getArticleList());
-			} else {
-				for (Video v : metadata.getVideoList()) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		if (selectedType.equals("All")){
+			if (selectedCat.equals("All")){
+				list.addAll(metadata.getVideoList());
+				list.addAll(webMetadata.getArticleList());
+			}
+			else {
+				for (Video v : metadata.getVideoList()){
 					if (v.getSnippet().getCategoryId().equals(selectedCat))
-						contentListAdapter.add(v);
+						list.add(v);
 				}
 			}
 		} else if (selectedType.equals(VIDEO_CONTENT)) {
 			if (selectedCat.equals("All"))
-				contentListAdapter.addAll(metadata.getVideoList());
+				list.addAll(metadata.getVideoList());
 			else {
 				for (Video v : metadata.getVideoList()) {
 					if (v.getSnippet().getCategoryId().equals(selectedCat))
-						contentListAdapter.add(v);
+						list.add(v);
 				}
 			}
 		} else if (selectedType.equals(WEB_CONTENT)) {
 			if (selectedCat.equals("All"))
-				contentListAdapter.addAll(webMetadata.getArticleList());
+				list.addAll(webMetadata.getArticleList());
 		}
-
+		
+		
+		// if selected starred
+		if (selectedBookmark.equals("All"))
+			contentListAdapter.addAll(list);
+		else {
+			for (Object o : list){
+				String filename = null;
+				if (o instanceof Video)
+					filename = ((Video)o).getFilename();
+				else
+					filename = ((Article)o).getFilename();
+				if (bookmarks.contains(filename))
+					contentListAdapter.add(o);
+			}
+		}
+		
 		// update list
 		contentListAdapter.notifyDataSetChanged();
 	}
