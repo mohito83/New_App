@@ -3,7 +3,11 @@ package edu.isi.usaid.pifi.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -34,6 +38,10 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     private String videoSource;
     
     private int pausedPos = 0;
+    
+    private boolean resumePlay = false;
+    
+    private Bitmap preview = null;
     
     private static final int FULLSCREEN_ACTIVITY = 1011;
     
@@ -87,7 +95,16 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
 	        int pos = savedInstanceState.getInt(ExtraConstants.POSITION, 0);
 	        videoSurface.seekTo(pos);
         }
-
+        else {
+        	// initial preview
+        	preview = ThumbnailUtils.createVideoThumbnail(
+        			videoSource,
+        	        MediaStore.Images.Thumbnails.MINI_KIND);
+        	videoSurface.setBackground(new BitmapDrawable(getResources(), preview));
+        	controller.show();
+        	
+        }
+        
         return rootView;
     }
     
@@ -107,6 +124,9 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     public void onResume(){
     	super.onResume();
     	videoSurface.seekTo(pausedPos);
+    	if (resumePlay)
+    		videoSurface.start();
+    	resumePlay = false;
     }
     
     @Override
@@ -120,9 +140,8 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
       switch(requestCode) {
         case (FULLSCREEN_ACTIVITY) : {
           if (resultCode == Activity.RESULT_OK) {
-        	  int pos = data.getIntExtra(ExtraConstants.POSITION, 0);
-        	  videoSurface.seekTo(pos);
-        	  videoSurface.start();
+        	  pausedPos = data.getIntExtra(ExtraConstants.POSITION, 0);
+        	  resumePlay = data.getBooleanExtra(ExtraConstants.RESUME, false);
           }
           break;
         } 
@@ -178,6 +197,7 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
 
     @Override
     public void start() {
+    	videoSurface.setBackgroundResource(0);
         videoSurface.start();
     }
 
@@ -189,10 +209,12 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     @Override
     public void toggleFullScreen() {
     	int pos = videoSurface.getCurrentPosition();
+    	boolean isPlaying = videoSurface.isPlaying();
     	videoSurface.stopPlayback();
 		Intent i = new Intent(getActivity(), FullscreenVideoActivity.class);
 		i.putExtra(ExtraConstants.PATH, videoSource);
 		i.putExtra(ExtraConstants.POSITION, pos);
+		i.putExtra(ExtraConstants.RESUME, isPlaying);
 		startActivityForResult(i, FULLSCREEN_ACTIVITY);
     }
 
