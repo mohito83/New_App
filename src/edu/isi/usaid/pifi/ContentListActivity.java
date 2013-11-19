@@ -31,12 +31,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
@@ -221,7 +224,160 @@ public class ContentListActivity extends Activity {
 	
 	private Set<String> bookmarks;
 	
-
+	private Object rowActionMode = null;
+	
+	private Object selectedRowItem = null; 
+	
+	private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
+		
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+		
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			rowActionMode = null;
+			selectedRowItem = null;
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			MenuInflater inf = mode.getMenuInflater();
+			inf.inflate(R.menu.row_selection, menu);
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			switch(item.getItemId()){
+			
+			/* delete content
+			 * 1. video/article file
+			 * 2. thumbnail
+			 * 3. bookmark
+			 * 4. metadata entry
+			 */
+			case R.id.action_row_delete:
+				// TODO need to make sure not doing sync at the same time
+				if (selectedRowItem instanceof Video){
+					Video video = (Video)selectedRowItem;
+					
+					// delete file
+					File file = new File(contentDirectory, video.getFilepath());
+					file.delete();
+					
+					// delete thumbnail
+					File thumb = new File(contentDirectory, video.getId() + "_default.jpg");
+					thumb.delete();
+					
+					// delete from bookmark 
+					if (bookmarks.contains(video.getFilepath()))
+						bookmarks.remove(video.getFilepath());
+					
+					// build new metadata
+					// copy original video metadata except selected video
+					Videos.Builder newVideos = Videos.newBuilder();
+					for (Video v : metadata.getVideoList()){
+						
+						// if not selected video
+						if (!v.getId().equals(video.getId())){
+							
+							// copy from original
+							Video.Builder videoBuilder = Video.newBuilder();
+							videoBuilder.mergeFrom(v);
+							newVideos.addVideo(videoBuilder);
+						}
+					}
+					
+					// write new meta out and update metadata in memory
+					try {
+						FileOutputStream out = new FileOutputStream(metaFile);
+						newVideos.build().writeTo(out); // write out to file
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					Toast.makeText(ContentListActivity.this, 
+							"Delete " + ((Video)selectedRowItem).getSnippet().getTitle(), 
+							Toast.LENGTH_LONG).show();
+				}
+				else if (selectedRowItem instanceof Article){
+					Article article = (Article)selectedRowItem;
+					
+					// delete file
+					String path = article.getFilename();
+					File file = new File(contentDirectory, path);
+					String name = file.getName();
+					
+					// TODO delete thumbnail
+					
+					// delete assets 
+					// TODO update this code when meta description completed with asset list
+					String dirName = name.substring(0, name.indexOf("htm"));
+					File assetDir = new File(file.getParent(), dirName);
+					if (assetDir.exists()){
+						for (File f : assetDir.listFiles()){
+							f.delete();
+						}
+					}
+					
+					file.delete();
+					assetDir.delete();
+					
+					// delete from bookmark 
+					if (bookmarks.contains(path))
+						bookmarks.remove(path);
+					
+					// build new metadata
+					// copy original video metadata except selected article
+					Articles.Builder newArticles = Articles.newBuilder();
+					for (Article a : webMetadata.getArticleList()){
+						
+						// if not selected article
+						if (!a.getFilename().equals(article.getFilename())){
+							
+							// copy from original
+							Article.Builder articleBuilder = Article.newBuilder();
+							articleBuilder.mergeFrom(a);
+							newArticles.addArticle(articleBuilder);
+						}
+					}
+					
+					// write new meta out and update metadata in memory
+					try {
+						FileOutputStream out = new FileOutputStream(webMetaFile);
+						newArticles.build().writeTo(out); // write out to file
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					Toast.makeText(ContentListActivity.this, 
+							"Deleted " + ((Article)selectedRowItem).getTitle(), 
+							Toast.LENGTH_LONG).show();
+				}
+				
+				// reload list
+				try {
+					reload(false);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				mode.finish();
+				return true;
+			default:
+				return false;
+			}
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -330,7 +486,24 @@ public class ContentListActivity extends Activity {
 			}
 
 		});
+		
+		// long click on list item
+		contentList.setOnItemLongClickListener(new OnItemLongClickListener(){
 
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int pos, long id) {
+				if (rowActionMode != null)
+					return false;
+				
+				selectedRowItem = contentListAdapter.getItem(pos);
+				rowActionMode = startActionMode(rowActionCallback);
+				view.setSelected(true);
+				return true;
+			}
+			
+		});
+		
 		// Start bluetooth listener service
 		if (!isListenerServiceRunning())
 			startService(new Intent(this, ListenerService.class));
@@ -706,10 +879,9 @@ public class ContentListActivity extends Activity {
 
 		t.start();
 	}
-
-	// TODO
-	private void sync() {
-
+	
+	private void sync(){
+		
 		bts.clear();
 		/* To check if the device has the bluetooth hardware */
 		String TAG = "BluetoothFileTransferActivity";
