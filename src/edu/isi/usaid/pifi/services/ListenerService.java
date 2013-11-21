@@ -6,8 +6,6 @@ package edu.isi.usaid.pifi.services;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,12 +18,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import edu.isi.usaid.pifi.Constants;
-import edu.isi.usaid.pifi.ExtraConstants;
+import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 
 /**
@@ -49,13 +48,13 @@ public class ListenerService extends Service {
 	// private Context context;
 	private BluetoothAdapter mAdapter;
 	private BluetoothServerSocket mmServerSocket;
-	private boolean isExtDrMounted;
+	// private boolean isExtDrMounted;
 
-	private byte buffer[] = new byte[8 * 1024]; // optimal buffer size for
-												// transferring data using
-												// Android APIs
+	// private byte buffer[] = new byte[8 * 1024]; // optimal buffer size for
+	// transferring data using
+	// Android APIs
 
-	private File path, metaFile;
+	private File path, metaFile, webMetaFile;
 
 	/**
 	 * For control messages during data communication over sockets
@@ -68,22 +67,32 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-		// Debug.waitForDebugger();
+		Debug.waitForDebugger();
 
 		// context = bluetoothFileTransferActivity;
-		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
-				.getExternalStorageState());
+		/*
+		 * isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
+		 * .getExternalStorageState());
+		 */
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);
 		if (!path.exists()) {
 			path.mkdir();
 		}
 		metaFile = new File(path, Constants.metaFileName);
-		if (!metaFile.exists()) {
-			// TODO something to handle this case. Jennifer can you try pluging
-			// your fix here and seeif it works.
-		}
+		webMetaFile = new File(path, Constants.webMetaFileName);
+		try {
+			if (!webMetaFile.exists()) {
+				webMetaFile.createNewFile();
+			}
 
+			if (!metaFile.exists()) {
+				metaFile.createNewFile();
+			}
+		} catch (IOException e) {
+			Log.e(TAG,
+					"Unable to create a empty meta data file" + e.getMessage());
+		}
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -205,11 +214,9 @@ public class ListenerService extends Service {
 		public void run() {
 			if (commSock != null) {
 
-				Intent i = new Intent();
-				i.setAction(Constants.BT_STATUS_ACTION);
-				i.putExtra(ExtraConstants.STATUS, "Successfully connected to "
-						+ commSock.getRemoteDevice().getName());
-				sendBroadcast(i);
+				FileUtils.broadcastMessage(ListenerService.this,
+						"Successfully connected to "
+								+ commSock.getRemoteDevice().getName());
 
 				DataInputStream din = new DataInputStream(mmInStream);
 				DataOutputStream dos = new DataOutputStream(mmOutStream);
@@ -229,44 +236,8 @@ public class ListenerService extends Service {
 						// add
 						// similar code for web content
 
-						FileInputStream fin = null;
-						try {
-
-							Log.i(TAG, "Sending meta file size");
-
-							// 1. send metadata size
-							long byteCount = metaFile.length();
-							dos.writeLong(byteCount);
-
-							Log.i(TAG, "Sending meta file");
-
-							// 2. send metadata file
-							fin = new FileInputStream(metaFile);
-							int tb = 0;
-							int b = 0;
-							while (b < byteCount) {
-								b = fin.read(buffer, 0, Math.min(
-										(int) byteCount - tb, buffer.length));
-								dos.write(buffer, 0, b);
-								tb += b;
-							}
-							dos.flush();
-							Log.i(TAG, "Sent metadata " + tb + " bytes");
-
-						} catch (FileNotFoundException e) {
-							Log.e(TAG, "unable to open file input stream", e);
-						} catch (IOException e) {
-							Log.e(TAG, "unable to perform i/o on file: "
-									+ metaFile.getName(), e);
-						} finally {
-							try {
-								fin.close();
-							} catch (IOException e) {
-								Log.e(TAG,
-										"Exception while cloding the file input stream",
-										e);
-							}
-						}
+						SocketUtils.sendMetaData(metaFile, mmOutStream);
+						SocketUtils.sendMetaData(webMetaFile, mmOutStream);
 
 						transcState = Constants.META_TO_MASTER;
 						break;
@@ -283,14 +254,28 @@ public class ListenerService extends Service {
 						File xferDir = new File(path, Constants.xferDirName
 								+ "/" + commSock.getRemoteDevice().getName());
 						xferDir.mkdirs();
-						int noOfFiles = SocketUtils
-								.readFromSocket(xferDir, din);
-						i = new Intent();
-						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS, "Received "
-								+ noOfFiles + " entries from: "
-								+ commSock.getRemoteDevice().getName());
-						sendBroadcast(i);
+						int noOfFiles = SocketUtils.readVideoFromSocket(
+								xferDir, din);
+						FileUtils.broadcastMessage(ListenerService.this,
+								"Received " + noOfFiles + " video files from: "
+										+ commSock.getRemoteDevice().getName());
+						Log.i(TAG, "Successfully received Videos");
+
+						// send back some message to waiting client to send the
+						// web content
+						try {
+							dos.writeBytes("OK");
+						} catch (IOException e1) {
+							Log.e(TAG, "Error during stage: " + transcState);
+							Log.e(TAG, e1.getMessage());
+						}
+
+						noOfFiles = SocketUtils.readArticlesFromSocket(xferDir,
+								din);
+						FileUtils.broadcastMessage(ListenerService.this,
+								"Received " + noOfFiles
+										+ " web article files from: "
+										+ commSock.getRemoteDevice().getName());
 
 						// once the data is received send some dummy message
 						// back to the sender so that it can come out of the
@@ -325,22 +310,57 @@ public class ListenerService extends Service {
 
 						Log.i(TAG, "Sending local package");
 
-						List<Video> paths = new ArrayList<Video>();
+						List<Video> videoPaths = new ArrayList<Video>();
+						List<Article> webPaths = new ArrayList<Article>();
 
-						FileUtils.getMasterRequestList(din, metaFile, paths);
+						FileUtils.receiveMasterVideoList(din, metaFile,
+								videoPaths);
+						try {
+							dos.writeByte(100);
+						} catch (IOException e1) {
+							Log.e(TAG, e1.getMessage());
+						}
+						FileUtils.receiveMasterWebList(din, metaFile, webPaths);
 
-						if (paths != null) {
+						FileUtils.broadcastMessage(ListenerService.this,
+								"Sending video content");
+
+						if (videoPaths != null) {
 							SocketUtils.sendVideoPackage(path, mmOutStream,
-									paths);
+									videoPaths);
+							// wait for the reply before proceeding
+							try {
+								int nofiles = mmInStream.read();
+								FileUtils.broadcastMessage(
+										ListenerService.this, "Sent "
+												+ nofiles
+												+ " video files to device: "
+												+ commSock.getRemoteDevice()
+														.getName());
+
+							} catch (IOException e) {
+								Log.e(TAG, e.getMessage());
+							}
 						}
 
-						i = new Intent();
-						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS,
-								"Sending " + paths.size() + " entries to: "
-										+ commSock.getRemoteDevice().getName());
-						// + recvFrom + " entries");
-						sendBroadcast(i);
+						if (webPaths != null) {
+							SocketUtils.sendWebPackage(path, dos, webPaths);
+							// wait for the reply before proceeding
+							try {
+								int nofiles = mmInStream.read();
+								FileUtils
+										.broadcastMessage(
+												ListenerService.this,
+												"Sent "
+														+ nofiles
+														+ " web content files to device: "
+														+ commSock
+																.getRemoteDevice()
+																.getName());
+							} catch (IOException e) {
+								Log.e(TAG, e.getMessage());
+							}
+						}
 
 						Log.i(TAG, "Local package sent");
 
@@ -371,11 +391,8 @@ public class ListenerService extends Service {
 
 				// close the socket
 				try {
-					i = new Intent();
-					i.setAction(Constants.BT_STATUS_ACTION);
-					i.putExtra(ExtraConstants.STATUS,
+					FileUtils.broadcastMessage(ListenerService.this,
 							"File sync is successful. Closing the session");
-					sendBroadcast(i);
 					Log.i(TAG, "Close socket");
 					mmInStream.close();
 					mmOutStream.close();

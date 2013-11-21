@@ -22,12 +22,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 import edu.isi.usaid.pifi.Constants;
-import edu.isi.usaid.pifi.ExtraConstants;
+import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 
 /**
@@ -54,8 +54,11 @@ public class ConnectionService extends Service {
 	private File path;
 
 	private File metaFile;
-	private List<Video> sendTo = new ArrayList<Video>();
-	private List<String> recvFrom = new ArrayList<String>();
+	private File webMetaFile;
+	private List<Video> sendToVideos = new ArrayList<Video>();
+	private List<String> recvFromVideos = new ArrayList<String>();
+	private List<Article> sendToWeb = new ArrayList<Article>();
+	private List<String> recvFromWeb = new ArrayList<String>();
 
 	private int transcState = Constants.NO_DATA_META;
 	BluetoothDevice item;
@@ -78,13 +81,20 @@ public class ConnectionService extends Service {
 			path.mkdir();
 		}
 		metaFile = new File(path, Constants.metaFileName);
-		if (!metaFile.exists()) {
-			// TODO some dummy data to handle this condition
-			Toast.makeText(getApplicationContext(), "No meta data found!",
-					Toast.LENGTH_SHORT).show();
-			return;
+		webMetaFile = new File(path, Constants.webMetaFileName);
+		try {
+			if (!webMetaFile.exists()) {
+				webMetaFile.createNewFile();
+			}
+
+			if (!metaFile.exists()) {
+				metaFile.createNewFile();
+			}
+		} catch (IOException e) {
+			Log.e(TAG,
+					"Unable to create a empty meta data file" + e.getMessage());
 		}
-		// TODO code for web content
+
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -136,11 +146,9 @@ public class ConnectionService extends Service {
 							e1.printStackTrace();
 						}
 					} else {
-						Intent i = new Intent();
-						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS, "Connection with "
-								+ device.getName() + "Failed");
-						sendBroadcast(i);
+						FileUtils.broadcastMessage(ConnectionService.this,
+								"Connection with " + device.getName()
+										+ "Failed");
 
 						try {
 							Log.e(TAG, "unable to connect, closing socket");
@@ -159,11 +167,8 @@ public class ConnectionService extends Service {
 
 				// connection established
 				Log.i(TAG, "Connection established");
-				Intent i = new Intent();
-				i.setAction(Constants.BT_STATUS_ACTION);
-				i.putExtra(ExtraConstants.STATUS, "Successfully connected to "
-						+ device.getName());
-				sendBroadcast(i);
+				FileUtils.broadcastMessage(ConnectionService.this,
+						"Successfully connected to " + device.getName());
 
 				DataInputStream dis;
 				if (mmSocket != null) {
@@ -174,12 +179,8 @@ public class ConnectionService extends Service {
 						dis = new DataInputStream(mmInStream);
 					} catch (IOException e) {
 						Log.e(TAG, "unable to get in/out put streams", e);
-						i = new Intent();
-						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS,
+						FileUtils.broadcastMessage(ConnectionService.this,
 								"Error in initiating connection");
-						sendBroadcast(i);
-
 						return;
 					}
 
@@ -205,49 +206,44 @@ public class ConnectionService extends Service {
 									 * while (dis.available() == 0) { } ;
 									 */
 
-									// get metadata file size
-									long byteCount = dis.readLong();
-									Log.i(TAG, "expecting " + byteCount
-											+ " bytes");
-
-									// read metadata
-									byte[] buf = new byte[(int) byteCount];
-									// while(dis.available() < byteCount){} //
-									// wait until full file arrive
-									int bytesRead = 0;
-									while (bytesRead < byteCount) {
-										bytesRead += mmInStream.read(buf,
-												bytesRead, buf.length
-														- bytesRead);
-									}
-
-									/*
-									 * i = new Intent();
-									 * i.setAction(Constants.BT_STATUS_ACTION);
-									 * i.putExtra(ExtraConstants.STATUS,
-									 * "metadata: " + bytesRead +
-									 * " bytes received"); sendBroadcast(i);
-									 */
-
+									byte[] buf = SocketUtils
+											.receiveMetadataFile(metaFile,
+													mmInStream);
 									// get delta entries to send/request
-									FileUtils.getDelta(buf, metaFile, sendTo,
-											recvFrom);
+									FileUtils.getDeltaforVideos(buf, metaFile,
+											sendToVideos, recvFromVideos);
 
-									i = new Intent();
-									i.setAction(Constants.BT_STATUS_ACTION);
-									i.putExtra(
-											ExtraConstants.STATUS,
-											"Sending " + sendTo.size()
+									buf = SocketUtils.receiveMetadataFile(
+											metaFile, mmInStream);
+									FileUtils.getDeltaforWeb(buf, webMetaFile,
+											sendToWeb, recvFromWeb);
+
+									FileUtils.broadcastMessage(
+											ConnectionService.this,
+											"Sending " + sendToVideos.size()
 													+ " entries to: "
 													+ device.getName());
-									// + recvFrom + " entries");
-									sendBroadcast(i);
 
 									Log.i(TAG, "Sending videos");
 									SocketUtils.sendVideoPackage(path,
-											mmOutStream, sendTo);
-
+											mmOutStream, sendToVideos);
 									Log.i(TAG, "Videos Sent");
+
+									// Wait here till you receive a message from
+									// the Listener. Starts sending web content
+									// only after that.
+									dis.readByte();
+
+									Log.i(TAG, "Sending web content");
+									FileUtils.broadcastMessage(
+											ConnectionService.this,
+											"Sending " + sendToWeb.size()
+													+ " entries to: "
+													+ device.getName());
+
+									SocketUtils.sendWebPackage(path,
+											mmOutStream, sendToWeb);
+									Log.i(TAG, "Web content Sent");
 
 									// wait until listener responds
 									// (listener has finished receiving)
@@ -277,19 +273,29 @@ public class ConnectionService extends Service {
 									// this
 									// case as well as the one following it.
 
-									Log.i(TAG, "Sending file requests");
+									Log.i(TAG, "Sending video requests");
 
 									ByteArrayOutputStream bos = new ByteArrayOutputStream();
 									ObjectOutput out = null;
 									try {
 										out = new ObjectOutputStream(bos);
-										out.writeObject(recvFrom);
+										out.writeObject(recvFromVideos);
 										byte[] yourBytes = bos.toByteArray();
 										SocketUtils.writeToSocket(mmOutStream,
 												yourBytes);
+										out.close();
+										// wait for the reply from the receiver
+										dis.read();
+
+										// send the web content information
+										out = new ObjectOutputStream(bos);
+										out.writeObject(recvFromWeb);
+										yourBytes = bos.toByteArray();
+										SocketUtils.writeToSocket(mmOutStream,
+												yourBytes);
 									} finally {
-										// out.close();
-										// bos.close();
+										out.close();
+										bos.close();
 									}
 
 									Log.i(TAG, "Requests sent");
@@ -306,19 +312,32 @@ public class ConnectionService extends Service {
 											Constants.xferDirName + "/"
 													+ device.getName());
 									xferDir.mkdirs();
-									int noOfFile = SocketUtils.readFromSocket(
-											xferDir, dis);
+									int noOfFile = SocketUtils
+											.readVideoFromSocket(xferDir, dis);
 									Log.i(TAG,
 											"Finished receiving requested files");
 
-									i = new Intent();
-									i.setAction(Constants.BT_STATUS_ACTION);
-									i.putExtra(ExtraConstants.STATUS,
-											"Received " + noOfFile
-													+ " entries from: "
+									FileUtils.broadcastMessage(
+											ConnectionService.this, "Received "
+													+ noOfFile
+													+ " video files from: "
 													+ device.getName());
-									// + recvFrom + " entries");
-									sendBroadcast(i);
+
+									// send some beacon message to the sender
+									// waiting to send web content
+									mmOutStream.write(noOfFile);
+
+									// start receiving web content files
+									noOfFile = SocketUtils
+											.readArticlesFromSocket(xferDir,
+													dis);
+									FileUtils
+											.broadcastMessage(
+													ConnectionService.this,
+													"Received "
+															+ noOfFile
+															+ " web content files from: "
+															+ device.getName());
 
 									// tell listener finished
 									String str = "Success!!";
@@ -341,23 +360,16 @@ public class ConnectionService extends Service {
 							}
 
 						} catch (IOException e) {
-							Log.e(TAG, "disconnected", e);
-							i = new Intent();
-							i.setAction(Constants.BT_STATUS_ACTION);
-							i.putExtra(ExtraConstants.STATUS,
+							FileUtils.broadcastMessage(ConnectionService.this,
 									"Connection lost with " + device.getName());
-							sendBroadcast(i);
 							break;
 						}
 
 					}
 
 					if (terminate) {
-						i = new Intent();
-						i.setAction(Constants.BT_STATUS_ACTION);
-						i.putExtra(ExtraConstants.STATUS,
+						FileUtils.broadcastMessage(ConnectionService.this,
 								"File sync is successful. Closing the session");
-						sendBroadcast(i);
 						try {
 							mmInStream.close();
 							mmOutStream.close();
@@ -379,5 +391,4 @@ public class ConnectionService extends Service {
 		 */
 		return START_NOT_STICKY;
 	}
-
 }
