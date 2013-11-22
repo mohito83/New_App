@@ -180,13 +180,18 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		public ImageView starView;
 	}
 	
-	public void toggleSelection(int pos){
+	public boolean toggleSelection(int pos){
 		boolean value = !selected.get(pos);
-		if (value)
+		if (value){
 			selected.put(pos, value);
-		else
+			notifyDataSetChanged();
+			return true;
+		}
+		else{
 			selected.delete(pos);
-		notifyDataSetChanged();
+			notifyDataSetChanged();
+			return false;
+		}
 	}
 	
 	public void removeSelections(){

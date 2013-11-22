@@ -394,11 +394,13 @@ public class ContentListActivity extends Activity {
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
-				// if in editing mode, add to selection
+				// if in editing mode, add/remove selection
 				else {
-					selectedRowItems.add(contentListAdapter.getItem(pos));
-					contentListAdapter.toggleSelection(pos);
-					view.setSelected(true);
+					boolean select = contentListAdapter.toggleSelection(pos);
+					if (select)
+						selectedRowItems.add(contentListAdapter.getItem(pos));
+					else
+						selectedRowItems.remove(contentListAdapter.getItem(pos));
 				}
 			}
 
