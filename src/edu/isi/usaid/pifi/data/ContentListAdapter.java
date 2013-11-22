@@ -6,8 +6,10 @@ import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.LruCache;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,15 +33,14 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	
 	private File contentDirectory;
 	
-//	private final Context context;
-	
 	private LruCache<String, Bitmap> bitmapCache;
 	
 	private Set<String> bookmarks;
+	
+	private SparseBooleanArray selected = new SparseBooleanArray();
 
 	public ContentListAdapter(Context context, List<Object> objects, String directory, Set<String> bookmarks) {
 		super(context, R.layout.content_list_item, objects);
-//		this.context = context;
 		this.bookmarks = bookmarks;
 		
 		contentDirectory = new File(directory);
@@ -165,6 +166,9 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			});
 		}
 		
+		convertView.setBackgroundColor(selected.get(pos) ? 0x9934B5E4
+                : Color.TRANSPARENT);
+		
 		return convertView;
 	}
 	
@@ -174,6 +178,20 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		public TextView catView;
 		public TextView descView;
 		public ImageView starView;
+	}
+	
+	public void toggleSelection(int pos){
+		boolean value = !selected.get(pos);
+		if (value)
+			selected.put(pos, value);
+		else
+			selected.delete(pos);
+		notifyDataSetChanged();
+	}
+	
+	public void removeSelections(){
+		selected = new SparseBooleanArray();
+        notifyDataSetChanged();
 	}
 	
 }

@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -226,7 +227,7 @@ public class ContentListActivity extends Activity {
 	
 	private Object rowActionMode = null;
 	
-	private Object selectedRowItem = null; 
+	private ArrayList<Object> selectedRowItems = new ArrayList<Object>(); 
 	
 	private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
 		
@@ -238,7 +239,8 @@ public class ContentListActivity extends Activity {
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
 			rowActionMode = null;
-			selectedRowItem = null;
+			selectedRowItems.clear();
+			contentListAdapter.removeSelections();
 		}
 		
 		@Override
@@ -260,116 +262,24 @@ public class ContentListActivity extends Activity {
 			 */
 			case R.id.action_row_delete:
 				// TODO need to make sure not doing sync at the same time
-				if (selectedRowItem instanceof Video){
-					Video video = (Video)selectedRowItem;
-					
-					// delete file
-					File file = new File(contentDirectory, video.getFilepath());
-					file.delete();
-					
-					// delete thumbnail
-					File thumb = new File(contentDirectory, video.getId() + "_default.jpg");
-					thumb.delete();
-					
-					// delete from bookmark 
-					if (bookmarks.contains(video.getFilepath()))
-						bookmarks.remove(video.getFilepath());
-					
-					// build new metadata
-					// copy original video metadata except selected video
-					Videos.Builder newVideos = Videos.newBuilder();
-					for (Video v : metadata.getVideoList()){
-						
-						// if not selected video
-						if (!v.getId().equals(video.getId())){
-							
-							// copy from original
-							Video.Builder videoBuilder = Video.newBuilder();
-							videoBuilder.mergeFrom(v);
-							newVideos.addVideo(videoBuilder);
-						}
-					}
-					
-					// write new meta out and update metadata in memory
-					try {
-						FileOutputStream out = new FileOutputStream(metaFile);
-						newVideos.build().writeTo(out); // write out to file
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-					Toast.makeText(ContentListActivity.this, 
-							"Delete " + ((Video)selectedRowItem).getSnippet().getTitle(), 
-							Toast.LENGTH_LONG).show();
-				}
-				else if (selectedRowItem instanceof Article){
-					Article article = (Article)selectedRowItem;
-					
-					// delete file
-					String path = article.getFilename();
-					File file = new File(contentDirectory, path);
-					String name = file.getName();
-					
-					// TODO delete thumbnail
-					
-					// delete assets 
-					// TODO update this code when meta description completed with asset list
-					String dirName = name.substring(0, name.indexOf("htm"));
-					File assetDir = new File(file.getParent(), dirName);
-					if (assetDir.exists()){
-						for (File f : assetDir.listFiles()){
-							f.delete();
-						}
-					}
-					
-					file.delete();
-					assetDir.delete();
-					
-					// delete from bookmark 
-					if (bookmarks.contains(path))
-						bookmarks.remove(path);
-					
-					// build new metadata
-					// copy original video metadata except selected article
-					Articles.Builder newArticles = Articles.newBuilder();
-					for (Article a : webMetadata.getArticleList()){
-						
-						// if not selected article
-						if (!a.getFilename().equals(article.getFilename())){
-							
-							// copy from original
-							Article.Builder articleBuilder = Article.newBuilder();
-							articleBuilder.mergeFrom(a);
-							newArticles.addArticle(articleBuilder);
-						}
-					}
-					
-					// write new meta out and update metadata in memory
-					try {
-						FileOutputStream out = new FileOutputStream(webMetaFile);
-						newArticles.build().writeTo(out); // write out to file
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-					Toast.makeText(ContentListActivity.this, 
-							"Deleted " + ((Article)selectedRowItem).getTitle(), 
-							Toast.LENGTH_LONG).show();
-				}
 				
-				// reload list
-				try {
-					reload(false);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 				
+				final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
+				progress.setTitle("Deletion in Progress");
+				progress.setMessage("Deleting...");
+				progress.setCancelable(false);
+				progress.show();
+				DeleteContentTask task = new DeleteContentTask(
+						ContentListActivity.this,
+						contentDirectory, 
+						bookmarks, 
+						progress, 
+						metadata,
+						webMetadata, 
+						metaFile,
+						webMetaFile);
+				task.execute(selectedRowItems.toArray());
+
 				mode.finish();
 				return true;
 			default:
@@ -461,28 +371,35 @@ public class ContentListActivity extends Activity {
 		contentList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int pos,
-					long id) {
-
-				currentContent = contentListAdapter.getItem(pos);
-				Intent intent = new Intent(getApplicationContext(),
-						ContentViewerActivity.class);
-
-				// if selected a video
-				if (currentContent instanceof Video){
-					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
-					intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
-					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilename()));
-				}
-				else if (currentContent instanceof Article){
-					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-					intent.putExtra("content", ((Article)currentContent).toByteArray());
-					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
-				}
+			public void onItemClick(AdapterView<?> parent, View view,
+					int pos, long id) {
 				
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_right,
-						R.anim.slide_out_left);
+				// if not in editing mode, open the content
+				if (rowActionMode == null){ 
+					currentContent = contentListAdapter.getItem(pos);
+					Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
+					
+					// if selected a video
+					if (currentContent instanceof Video){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
+						intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
+						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilename()));
+					}
+					else if (currentContent instanceof Article){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
+						intent.putExtra("content", ((Article)currentContent).toByteArray());
+						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
+					}
+					
+					startActivity(intent);
+					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				}
+				// if in editing mode, add to selection
+				else {
+					selectedRowItems.add(contentListAdapter.getItem(pos));
+					contentListAdapter.toggleSelection(pos);
+					view.setSelected(true);
+				}
 			}
 
 		});
@@ -496,7 +413,8 @@ public class ContentListActivity extends Activity {
 				if (rowActionMode != null)
 					return false;
 				
-				selectedRowItem = contentListAdapter.getItem(pos);
+				selectedRowItems.add(contentListAdapter.getItem(pos));
+				contentListAdapter.toggleSelection(pos);
 				rowActionMode = startActionMode(rowActionCallback);
 				view.setSelected(true);
 				return true;
@@ -620,7 +538,7 @@ public class ContentListActivity extends Activity {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	private void reload(boolean firsttime) throws FileNotFoundException, IOException{
+	public void reload(boolean firsttime) throws FileNotFoundException, IOException{
 		
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
