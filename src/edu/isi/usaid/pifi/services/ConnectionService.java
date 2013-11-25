@@ -284,10 +284,12 @@ public class ConnectionService extends Service {
 										SocketUtils.writeToSocket(mmOutStream,
 												yourBytes);
 										out.close();
+										bos.close();
 										// wait for the reply from the receiver
-										dis.read();
+										mmInStream.read();
 
 										// send the web content information
+										bos = new ByteArrayOutputStream();
 										out = new ObjectOutputStream(bos);
 										out.writeObject(recvFromWeb);
 										yourBytes = bos.toByteArray();

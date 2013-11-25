@@ -67,14 +67,11 @@ public class SocketUtils {
 		FileInputStream fin = new FileInputStream(f);
 		dos.writeUTF(f.getName());
 		dos.writeLong(f.length());
-		// byte buffer[] = new byte[(int) f.length()];
 		int totalBytesSent = 0;
 		while ((len = fin.read(buffer)) != -1) {
-			/* writeToSocket(os, buffer,, len); */
 			dos.write(buffer, 0, len);
 			totalBytesSent += len;
 		}
-		// dos.write(buffer);
 		fin.close();
 		return totalBytesSent;
 	}
@@ -212,9 +209,9 @@ public class SocketUtils {
 	public static int readArticlesFromSocket(File sdir, InputStream is) {
 
 		int i = 0;
+		int no_of_files = 0;
 		try {
 			DataInputStream dis = new DataInputStream(is);
-			int no_of_files = 0;
 
 			while ((no_of_files = dis.readInt()) != Integer.MAX_VALUE) {
 				String fName = dis.readUTF();
@@ -226,8 +223,9 @@ public class SocketUtils {
 				for (int j = 0; j < no_of_files; j++) {
 					fName = dis.readUTF();
 					readFromSocket(dis, sdir, fName);
+					i++;
 				}
-
+				i++;
 			}
 
 		} catch (IOException e) {
@@ -420,6 +418,7 @@ public class SocketUtils {
 			// if complete.
 			// E.g. use code = 200 to proceed
 			dos.writeInt(Integer.MAX_VALUE);
+			dos.flush();
 
 		} catch (IOException e) {
 			Log.e(TAG, "Exception while sending web package", e);

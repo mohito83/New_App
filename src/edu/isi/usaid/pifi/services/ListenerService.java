@@ -67,7 +67,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-		Debug.waitForDebugger();
+//		Debug.waitForDebugger();
 
 		// context = bluetoothFileTransferActivity;
 		/*
@@ -316,7 +316,7 @@ public class ListenerService extends Service {
 						FileUtils.receiveMasterVideoList(din, metaFile,
 								videoPaths);
 						try {
-							dos.writeByte(100);
+							mmOutStream.write(100);
 						} catch (IOException e1) {
 							Log.e(TAG, e1.getMessage());
 						}
