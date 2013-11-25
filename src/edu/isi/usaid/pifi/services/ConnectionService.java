@@ -3,13 +3,11 @@
  */
 package edu.isi.usaid.pifi.services;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -55,10 +53,10 @@ public class ConnectionService extends Service {
 
 	private File metaFile;
 	private File webMetaFile;
-	private List<Video> sendToVideos = new ArrayList<Video>();
-	private List<String> recvFromVideos = new ArrayList<String>();
-	private List<Article> sendToWeb = new ArrayList<Article>();
-	private List<String> recvFromWeb = new ArrayList<String>();
+	// private List<Video> sendToVideos = new ArrayList<Video>();
+	// private List<String> recvFromVideos = new ArrayList<String>();
+	// private List<Article> sendToWeb = new ArrayList<Article>();
+	// private List<String> recvFromWeb = new ArrayList<String>();
 
 	private int transcState = Constants.NO_DATA_META;
 	BluetoothDevice item;
@@ -70,7 +68,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-		// Debug.waitForDebugger();
+		 Debug.waitForDebugger();
 		// context = bluetoothFileTransferActivity;
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
@@ -104,6 +102,8 @@ public class ConnectionService extends Service {
 
 		// use a seaparate thread for connection and data transfer
 		Thread t = new Thread(new Runnable() {
+			private List<Video> sendToVideos = new ArrayList<Video>();
+			private List<Article> sendToWeb = new ArrayList<Article>();
 
 			@Override
 			public void run() {
@@ -171,12 +171,14 @@ public class ConnectionService extends Service {
 						"Successfully connected to " + device.getName());
 
 				DataInputStream dis;
+				DataOutputStream dos;
 				if (mmSocket != null) {
 					// Start point for data synchronnization
 					try {
 						mmInStream = mmSocket.getInputStream();
 						mmOutStream = mmSocket.getOutputStream();
 						dis = new DataInputStream(mmInStream);
+						dos = new DataOutputStream(mmOutStream);
 					} catch (IOException e) {
 						Log.e(TAG, "unable to get in/out put streams", e);
 						FileUtils.broadcastMessage(ConnectionService.this,
@@ -209,19 +211,26 @@ public class ConnectionService extends Service {
 									byte[] buf = SocketUtils
 											.receiveMetadataFile(metaFile,
 													mmInStream);
+									Log.i(TAG, "Received videos meta data file");
 									// get delta entries to send/request
+									Log.i(TAG, "Calculating delta for videos");
 									FileUtils.getDeltaforVideos(buf, metaFile,
-											sendToVideos, recvFromVideos);
+											sendToVideos);
 
 									buf = SocketUtils.receiveMetadataFile(
 											metaFile, mmInStream);
+									Log.i(TAG,
+											"Received web articles meta data file");
+									// get delta entries to send/request
+									Log.i(TAG,
+											"Calculating delta for web articles");
 									FileUtils.getDeltaforWeb(buf, webMetaFile,
-											sendToWeb, recvFromWeb);
+											sendToWeb);
 
 									FileUtils.broadcastMessage(
 											ConnectionService.this,
 											"Sending " + sendToVideos.size()
-													+ " entries to: "
+													+ " videos to: "
 													+ device.getName());
 
 									Log.i(TAG, "Sending videos");
@@ -232,25 +241,25 @@ public class ConnectionService extends Service {
 									// Wait here till you receive a message from
 									// the Listener. Starts sending web content
 									// only after that.
-									dis.readByte();
+									short resp = dis.readShort();
+									Log.i(TAG, "Listener responded:" + resp);
 
-									Log.i(TAG, "Sending web content");
+									// sending web content
 									FileUtils.broadcastMessage(
 											ConnectionService.this,
 											"Sending " + sendToWeb.size()
 													+ " entries to: "
 													+ device.getName());
 
+									Log.i(TAG, "Sending web articles");
 									SocketUtils.sendWebPackage(path,
 											mmOutStream, sendToWeb);
-									Log.i(TAG, "Web content Sent");
+									Log.i(TAG, "Web Acticles Sent");
 
 									// wait until listener responds
 									// (listener has finished receiving)
-									byte[] buff = new byte[20];
-									mmInStream.read(buff);
-									Log.i(TAG, "Listener responded: "
-											+ new String(buff));
+									resp = dis.readShort();
+									Log.i(TAG, "Listener responded: " + resp);
 
 									transcState = Constants.META_DATA_RECEIVED;
 									break;
@@ -273,34 +282,37 @@ public class ConnectionService extends Service {
 									// this
 									// case as well as the one following it.
 
-									Log.i(TAG, "Sending video requests");
+									Log.i(TAG, "Sending meta data for videos");
 
-									ByteArrayOutputStream bos = new ByteArrayOutputStream();
-									ObjectOutput out = null;
-									try {
-										out = new ObjectOutputStream(bos);
-										out.writeObject(recvFromVideos);
-										byte[] yourBytes = bos.toByteArray();
-										SocketUtils.writeToSocket(mmOutStream,
-												yourBytes);
-										out.close();
-										bos.close();
-										// wait for the reply from the receiver
-										mmInStream.read();
+									/*
+									 * ByteArrayOutputStream bos = new
+									 * ByteArrayOutputStream(); ObjectOutput out
+									 * = null; try { out = new
+									 * ObjectOutputStream(bos);
+									 * out.writeObject(recvFromVideos); byte[]
+									 * yourBytes = bos.toByteArray();
+									 * SocketUtils.writeToSocket(mmOutStream,
+									 * yourBytes); out.close(); bos.close(); //
+									 * wait for the reply from the receiver
+									 * mmInStream.read();
+									 * 
+									 * // send the web content information bos =
+									 * new ByteArrayOutputStream(); out = new
+									 * ObjectOutputStream(bos);
+									 * out.writeObject(recvFromWeb); yourBytes =
+									 * bos.toByteArray();
+									 * SocketUtils.writeToSocket(mmOutStream,
+									 * yourBytes); } finally { out.close();
+									 * bos.close(); }
+									 */
+									SocketUtils.sendMetaData(metaFile,
+											mmOutStream);
+									Log.i(TAG,
+											"Sending meta data for web articles");
+									SocketUtils.sendMetaData(webMetaFile,
+											mmOutStream);
 
-										// send the web content information
-										bos = new ByteArrayOutputStream();
-										out = new ObjectOutputStream(bos);
-										out.writeObject(recvFromWeb);
-										yourBytes = bos.toByteArray();
-										SocketUtils.writeToSocket(mmOutStream,
-												yourBytes);
-									} finally {
-										out.close();
-										bos.close();
-									}
-
-									Log.i(TAG, "Requests sent");
+									// Log.i(TAG, "Requests sent");
 									transcState = Constants.META_DATA_TO_SLAVE;
 									break;
 
@@ -309,30 +321,31 @@ public class ConnectionService extends Service {
 									// to
 									// the file system
 
-									Log.i(TAG, "Receiving requested files");
 									File xferDir = new File(path,
 											Constants.xferDirName + "/"
 													+ device.getName());
 									xferDir.mkdirs();
+									Log.i(TAG, "Receiving Videos");
 									int noOfFile = SocketUtils
 											.readVideoFromSocket(xferDir, dis);
-									Log.i(TAG,
-											"Finished receiving requested files");
-
 									FileUtils.broadcastMessage(
 											ConnectionService.this, "Received "
 													+ noOfFile
 													+ " video files from: "
 													+ device.getName());
+									Log.i(TAG, "Successfully received Videos");
 
 									// send some beacon message to the sender
 									// waiting to send web content
-									mmOutStream.write(noOfFile);
+									dos.writeShort(Constants.OK_RESPONSE);
 
 									// start receiving web content files
+									Log.i(TAG, "Receiving Web articles");
 									noOfFile = SocketUtils
 											.readArticlesFromSocket(xferDir,
 													dis);
+									Log.i(TAG,
+											"Successfully received Web articles");
 									FileUtils
 											.broadcastMessage(
 													ConnectionService.this,
@@ -341,14 +354,17 @@ public class ConnectionService extends Service {
 															+ " web content files from: "
 															+ device.getName());
 
-									// tell listener finished
-									String str = "Success!!";
-									try {
-										mmOutStream.write(str.getBytes());
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+									/*
+									 * // tell listener finished String str =
+									 * "Success!!"; try {
+									 * mmOutStream.write(str.getBytes()); }
+									 * catch (IOException e) { // TODO
+									 * Auto-generated catch block
+									 * e.printStackTrace(); }
+									 */
+									Log.i(TAG,
+											"Replying back with status message");
+									dos.writeShort(Constants.OK_RESPONSE);
 
 									transcState = Constants.DATA_FROM_SLAVE;
 									break;

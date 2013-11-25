@@ -58,15 +58,14 @@ public class FileUtils {
 	 * Find the delta after comparing local meta data file with remote. TODO
 	 * this is only for videos only need to extend this functionality for web
 	 * content also
-	 * 
-	 * @param din
 	 * @param metaFile
 	 * @param sendTo
-	 * @param recvFrom
+	 * @param din
+	 * 
 	 * @throws IOException
 	 */
 	public static void getDeltaforVideos(byte[] bytes, File metaFile,
-			List<Video> sendTo, List<String> recvFrom) throws IOException {
+			List<Video> sendTo) throws IOException {
 		// TODO This code runs a risk of running into exception if the meta data
 		// file size is too big. Needs to fix this issue later on
 
@@ -103,10 +102,10 @@ public class FileUtils {
 			}
 		}
 
-		Iterator<Video> iter = recv.iterator();
+		/*Iterator<Video> iter = recv.iterator();
 		while (iter.hasNext()) {
 			recvFrom.add(iter.next().getFilepath());
-		}
+		}*/
 
 	}
 
@@ -169,7 +168,7 @@ public class FileUtils {
 	}
 
 	public static void getDeltaforWeb(byte[] bytes, File metaFile,
-			List<Article> sendTo, List<String> recvFrom) throws IOException {
+			List<Article> sendTo) throws IOException {
 
 		// TODO This code runs a risk of running into exception if the meta data
 		// file size is too big. Needs to fix this issue later on
@@ -208,11 +207,11 @@ public class FileUtils {
 			}
 		}
 
-		Iterator<Article> iter = recv.iterator();
+/*		Iterator<Article> iter = recv.iterator();
 		while (iter.hasNext()) {
 			recvFrom.add(iter.next().getFilename());
 		}
-
+*/
 	}
 
 	/**

@@ -18,7 +18,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
@@ -67,7 +66,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-//		Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 
 		// context = bluetoothFileTransferActivity;
 		/*
@@ -236,7 +235,9 @@ public class ListenerService extends Service {
 						// add
 						// similar code for web content
 
+						Log.i(TAG, "Sending meta data for videos");
 						SocketUtils.sendMetaData(metaFile, mmOutStream);
+						Log.i(TAG, "Sending meta data for web articles");
 						SocketUtils.sendMetaData(webMetaFile, mmOutStream);
 
 						transcState = Constants.META_TO_MASTER;
@@ -254,6 +255,7 @@ public class ListenerService extends Service {
 						File xferDir = new File(path, Constants.xferDirName
 								+ "/" + commSock.getRemoteDevice().getName());
 						xferDir.mkdirs();
+						Log.i(TAG, "Receiving Videos");
 						int noOfFiles = SocketUtils.readVideoFromSocket(
 								xferDir, din);
 						FileUtils.broadcastMessage(ListenerService.this,
@@ -264,14 +266,20 @@ public class ListenerService extends Service {
 						// send back some message to waiting client to send the
 						// web content
 						try {
-							dos.writeBytes("OK");
+							Log.i(TAG, "Replying back with status message");
+							dos.writeShort(Constants.OK_RESPONSE);
 						} catch (IOException e1) {
-							Log.e(TAG, "Error during stage: " + transcState);
+							Log.e(TAG,
+									"Tansaction state: "
+											+ transcState
+											+ ": Error replying back with status message");
 							Log.e(TAG, e1.getMessage());
 						}
 
+						Log.i(TAG, "Receiving Web articles");
 						noOfFiles = SocketUtils.readArticlesFromSocket(xferDir,
 								din);
+						Log.i(TAG, "Successfully received Web articles");
 						FileUtils.broadcastMessage(ListenerService.this,
 								"Received " + noOfFiles
 										+ " web article files from: "
@@ -282,12 +290,15 @@ public class ListenerService extends Service {
 						// read block and send us the list of files it wants
 						// from us.
 						// dos = new DataOutputStream(mmOutStream);
-						String str = "Success!!";
 						try {
-							mmOutStream.write(str.getBytes());
+							Log.i(TAG, "Replying back with status message");
+							dos.writeShort(Constants.OK_RESPONSE);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							Log.e(TAG,
+									"Tansaction state: "
+											+ transcState
+											+ ": Error replying back with status message");
+							Log.e(TAG, e.getMessage());
 						}
 						// SocketUtils.writeToSocket(dos, str.getBytes());
 						// TODO just identified a bug.. this flow of
@@ -298,8 +309,6 @@ public class ListenerService extends Service {
 						// issue
 						// some time on monday 10/14.
 
-						Log.i(TAG, "Video files received");
-
 						transcState = Constants.DATA_FROM_MASTER;
 						break;
 
@@ -308,71 +317,94 @@ public class ListenerService extends Service {
 						// and send
 						// the packages data back to master.
 
-						Log.i(TAG, "Sending local package");
-
 						List<Video> videoPaths = new ArrayList<Video>();
 						List<Article> webPaths = new ArrayList<Article>();
 
-						FileUtils.receiveMasterVideoList(din, metaFile,
-								videoPaths);
+						/*
+						 * FileUtils.receiveMasterVideoList(din, metaFile,
+						 * videoPaths); try { mmOutStream.write(100); } catch
+						 * (IOException e1) { Log.e(TAG, e1.getMessage()); }
+						 * FileUtils.receiveMasterWebList(din, metaFile,
+						 * webPaths);
+						 */
 						try {
-							mmOutStream.write(100);
+							byte[] buf = SocketUtils.receiveMetadataFile(
+									metaFile, mmInStream);
+							Log.i(TAG, "Received videos meta data file");
+							// get delta entries to send/request
+							Log.i(TAG, "Calculating delta for videos");
+							FileUtils.getDeltaforVideos(buf, metaFile,
+									videoPaths);
+
+							buf = SocketUtils.receiveMetadataFile(metaFile,
+									mmInStream);
+							Log.i(TAG, "Received web articles meta data file");
+							Log.i(TAG, "Calculating delta for web articles");
+							FileUtils
+									.getDeltaforWeb(buf, webMetaFile, webPaths);
 						} catch (IOException e1) {
+							Log.e(TAG, "Tansaction state: " + transcState
+									+ ": Error receiving status message");
 							Log.e(TAG, e1.getMessage());
 						}
-						FileUtils.receiveMasterWebList(din, metaFile, webPaths);
-
-						FileUtils.broadcastMessage(ListenerService.this,
-								"Sending video content");
 
 						if (videoPaths != null) {
+							FileUtils.broadcastMessage(ListenerService.this,
+									"Sending "
+											+ videoPaths.size()
+											+ " videos to: "
+											+ commSock.getRemoteDevice()
+													.getName());
+
+							Log.i(TAG, "Sending videos");
 							SocketUtils.sendVideoPackage(path, mmOutStream,
 									videoPaths);
+							Log.i(TAG, "Videos Sent");
+
 							// wait for the reply before proceeding
 							try {
-								int nofiles = mmInStream.read();
-								FileUtils.broadcastMessage(
-										ListenerService.this, "Sent "
-												+ nofiles
-												+ " video files to device: "
-												+ commSock.getRemoteDevice()
-														.getName());
-
+								int resp = din.readShort();
+								Log.i(TAG, "Listener responded:" + resp);
 							} catch (IOException e) {
+								Log.e(TAG, "Tansaction state: " + transcState
+										+ ": Error receiving status message");
 								Log.e(TAG, e.getMessage());
 							}
 						}
 
 						if (webPaths != null) {
+							FileUtils.broadcastMessage(ListenerService.this,
+									"Sending "
+											+ webPaths.size()
+											+ " entries to: "
+											+ commSock.getRemoteDevice()
+													.getName());
+
+							Log.i(TAG, "Sending web articles");
 							SocketUtils.sendWebPackage(path, dos, webPaths);
+							Log.i(TAG, "Web Acticles Sent");
+							
 							// wait for the reply before proceeding
 							try {
-								int nofiles = mmInStream.read();
-								FileUtils
-										.broadcastMessage(
-												ListenerService.this,
-												"Sent "
-														+ nofiles
-														+ " web content files to device: "
-														+ commSock
-																.getRemoteDevice()
-																.getName());
+								short resp = din.readShort();
+								Log.i(TAG, "Listener responded: " + resp);
 							} catch (IOException e) {
+								Log.e(TAG, "Tansaction state: " + transcState
+										+ ": Error receiving status message");
 								Log.e(TAG, e.getMessage());
 							}
 						}
 
-						Log.i(TAG, "Local package sent");
 
 						// wait until connector responds
 						// (connector has finished receiving)
-						byte[] buff = new byte[20];
+						/*byte[] buff = new byte[20];
 						try {
 							mmInStream.read(buff);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						Log.i(TAG, "Connector responded: " + new String(buff));
+						Log.i(TAG, "Connector responded: " + new String(buff));*/
 
 						transcState = Constants.DATA_TO_MASTER;
 						break;

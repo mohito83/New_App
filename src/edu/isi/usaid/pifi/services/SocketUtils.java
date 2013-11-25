@@ -46,6 +46,7 @@ public class SocketUtils {
 		try {
 			DataOutputStream dos = new DataOutputStream(os);
 			dos.write(buffer);
+			dos.flush();
 		} catch (IOException e) {
 			Log.e(TAG, "Exception during write", e);
 		}
@@ -73,6 +74,7 @@ public class SocketUtils {
 			totalBytesSent += len;
 		}
 		fin.close();
+		dos.flush();
 		return totalBytesSent;
 	}
 
