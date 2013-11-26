@@ -20,7 +20,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -53,10 +52,6 @@ public class ConnectionService extends Service {
 
 	private File metaFile;
 	private File webMetaFile;
-	// private List<Video> sendToVideos = new ArrayList<Video>();
-	// private List<String> recvFromVideos = new ArrayList<String>();
-	// private List<Article> sendToWeb = new ArrayList<Article>();
-	// private List<String> recvFromWeb = new ArrayList<String>();
 
 	private int transcState = Constants.NO_DATA_META;
 	BluetoothDevice item;
@@ -68,8 +63,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-		 Debug.waitForDebugger();
-		// context = bluetoothFileTransferActivity;
+		// Debug.waitForDebugger();
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
@@ -118,10 +112,6 @@ public class ConnectionService extends Service {
 					Log.i(TAG, "Connecting");
 					mmSocket = device
 							.createRfcommSocketToServiceRecord(MY_UUID);
-					// Method m =
-					// device.getClass().getMethod("createRfcommSocket", new
-					// Class[] {int.class});
-					// mmSocket = (BluetoothSocket) m.invoke(device, 1);
 					mAdapter.cancelDiscovery();
 					mmSocket.connect();
 				} catch (IOException e) {
@@ -195,18 +185,10 @@ public class ConnectionService extends Service {
 								switch (transcState) {
 								case Constants.NO_DATA_META:
 									// read meta data and send video package
-									// TODO along with each file send its
-									// metadata
-									// information
-									// Read from the InputStream
-									// get delta from reading meta data file
-									// from the
-									// slave
-
-									// wait until data arrives
-									/*
-									 * while (dis.available() == 0) { } ;
-									 */
+									// along with each file send its
+									// metadata information Read from the
+									// InputStream get delta from reading meta
+									// data file from the slave
 
 									byte[] buf = SocketUtils
 											.receiveMetadataFile(metaFile,
@@ -266,45 +248,10 @@ public class ConnectionService extends Service {
 
 								case Constants.META_DATA_RECEIVED:
 									// send list of files required by the master
-									// to
-									// slave
-									// TODO check this design: Whether we need
-									// to send
-									// the file requests in one go or 1 by 1. I
-									// didn't
-									// have the actual meta data and content set
-									// up when
-									// I was doing the POC, and my dummy data
-									// didn't mimmick the actual data closely.
-									// If we decide to go for 1 by 1 file
-									// request and
-									// receive approach then we need to modify
-									// this
-									// case as well as the one following it.
+									// to slave
 
 									Log.i(TAG, "Sending meta data for videos");
 
-									/*
-									 * ByteArrayOutputStream bos = new
-									 * ByteArrayOutputStream(); ObjectOutput out
-									 * = null; try { out = new
-									 * ObjectOutputStream(bos);
-									 * out.writeObject(recvFromVideos); byte[]
-									 * yourBytes = bos.toByteArray();
-									 * SocketUtils.writeToSocket(mmOutStream,
-									 * yourBytes); out.close(); bos.close(); //
-									 * wait for the reply from the receiver
-									 * mmInStream.read();
-									 * 
-									 * // send the web content information bos =
-									 * new ByteArrayOutputStream(); out = new
-									 * ObjectOutputStream(bos);
-									 * out.writeObject(recvFromWeb); yourBytes =
-									 * bos.toByteArray();
-									 * SocketUtils.writeToSocket(mmOutStream,
-									 * yourBytes); } finally { out.close();
-									 * bos.close(); }
-									 */
 									SocketUtils.sendMetaData(metaFile,
 											mmOutStream);
 									Log.i(TAG,
@@ -312,14 +259,12 @@ public class ConnectionService extends Service {
 									SocketUtils.sendMetaData(webMetaFile,
 											mmOutStream);
 
-									// Log.i(TAG, "Requests sent");
 									transcState = Constants.META_DATA_TO_SLAVE;
 									break;
 
 								case Constants.META_DATA_TO_SLAVE:
 									// receive data from the slave and write it
-									// to
-									// the file system
+									// to the file system
 
 									File xferDir = new File(path,
 											Constants.xferDirName + "/"
@@ -354,14 +299,6 @@ public class ConnectionService extends Service {
 															+ " web content files from: "
 															+ device.getName());
 
-									/*
-									 * // tell listener finished String str =
-									 * "Success!!"; try {
-									 * mmOutStream.write(str.getBytes()); }
-									 * catch (IOException e) { // TODO
-									 * Auto-generated catch block
-									 * e.printStackTrace(); }
-									 */
 									Log.i(TAG,
 											"Replying back with status message");
 									dos.writeShort(Constants.OK_RESPONSE);

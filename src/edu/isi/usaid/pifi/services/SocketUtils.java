@@ -366,8 +366,6 @@ public class SocketUtils {
 
 		// read metadata
 		byte[] buf = new byte[(int) byteCount];
-		// while(dis.available() < byteCount){} //
-		// wait until full file arrive
 		int bytesRead = 0;
 		while (bytesRead < byteCount) {
 			bytesRead += mmInStream

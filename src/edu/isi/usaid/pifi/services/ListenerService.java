@@ -44,14 +44,8 @@ public class ListenerService extends Service {
 	private static final UUID MY_UUID = UUID
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 
-	// private Context context;
 	private BluetoothAdapter mAdapter;
 	private BluetoothServerSocket mmServerSocket;
-	// private boolean isExtDrMounted;
-
-	// private byte buffer[] = new byte[8 * 1024]; // optimal buffer size for
-	// transferring data using
-	// Android APIs
 
 	private File path, metaFile, webMetaFile;
 
@@ -68,11 +62,6 @@ public class ListenerService extends Service {
 	public void onCreate() {
 		// Debug.waitForDebugger();
 
-		// context = bluetoothFileTransferActivity;
-		/*
-		 * isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
-		 * .getExternalStorageState());
-		 */
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);
 		if (!path.exists()) {
@@ -102,29 +91,14 @@ public class ListenerService extends Service {
 
 			@Override
 			public void run() {
-				/*
-				 * Notification notification = new Notification.Builder(
-				 * ListenerService.this).setContentTitle("Pifi Sync")
-				 * .setContentText("Pifi Sync Service")
-				 * .setSmallIcon(R.drawable.ic_action_sync) .getNotification();
-				 * startForeground(7456, notification);
-				 */
 
 				Looper.prepare();
 				// start the server socket for listening the incoming
 				// connections
 				mAdapter = BluetoothAdapter.getDefaultAdapter();
 				if (mAdapter != null && mAdapter.isEnabled()) {
-					// TODO we need to keep listening for bluetooth events, when
-					// it is
-					// turned on and off. based on that information we need to
-					// start or
-					// stop our BluetoothServerSocket. Other use cases like
-					// connection
-					// state/data persistent caused by this
-					// functionality can be taken care after the demo.
 
-					while (true) { // TODO && bluetooth radio is running
+					while (true) {
 
 						// create server socket if not created
 						if (mmServerSocket == null) {
@@ -227,14 +201,6 @@ public class ListenerService extends Service {
 
 						// send meta data file to the connecting
 						// device(master)
-						// TODO this done only for videos content,
-						// web
-						// content implementation is similar. Once
-						// video
-						// content functionality is tested properly
-						// add
-						// similar code for web content
-
 						Log.i(TAG, "Sending meta data for videos");
 						SocketUtils.sendMetaData(metaFile, mmOutStream);
 						Log.i(TAG, "Sending meta data for web articles");
@@ -248,10 +214,6 @@ public class ListenerService extends Service {
 						Log.i(TAG, "Receiving video files ");
 
 						// receive package from the master.
-						// TODO first write to a .tmp file and once
-						// while is
-						// completely transferred rename it to
-						// remove .tmp
 						File xferDir = new File(path, Constants.xferDirName
 								+ "/" + commSock.getRemoteDevice().getName());
 						xferDir.mkdirs();
@@ -289,7 +251,6 @@ public class ListenerService extends Service {
 						// back to the sender so that it can come out of the
 						// read block and send us the list of files it wants
 						// from us.
-						// dos = new DataOutputStream(mmOutStream);
 						try {
 							Log.i(TAG, "Replying back with status message");
 							dos.writeShort(Constants.OK_RESPONSE);
@@ -300,33 +261,17 @@ public class ListenerService extends Service {
 											+ ": Error replying back with status message");
 							Log.e(TAG, e.getMessage());
 						}
-						// SocketUtils.writeToSocket(dos, str.getBytes());
-						// TODO just identified a bug.. this flow of
-						// control
-						// will only work this flow will only with
-						// the
-						// packages having one file. will fix this
-						// issue
-						// some time on monday 10/14.
 
 						transcState = Constants.DATA_FROM_MASTER;
 						break;
 
 					case Constants.DATA_FROM_MASTER:
 						// read the requested file from the master
-						// and send
-						// the packages data back to master.
+						// and send the packages data back to master.
 
 						List<Video> videoPaths = new ArrayList<Video>();
 						List<Article> webPaths = new ArrayList<Article>();
 
-						/*
-						 * FileUtils.receiveMasterVideoList(din, metaFile,
-						 * videoPaths); try { mmOutStream.write(100); } catch
-						 * (IOException e1) { Log.e(TAG, e1.getMessage()); }
-						 * FileUtils.receiveMasterWebList(din, metaFile,
-						 * webPaths);
-						 */
 						try {
 							byte[] buf = SocketUtils.receiveMetadataFile(
 									metaFile, mmInStream);
@@ -383,7 +328,7 @@ public class ListenerService extends Service {
 							Log.i(TAG, "Sending web articles");
 							SocketUtils.sendWebPackage(path, dos, webPaths);
 							Log.i(TAG, "Web Acticles Sent");
-							
+
 							// wait for the reply before proceeding
 							try {
 								short resp = din.readShort();
@@ -394,17 +339,6 @@ public class ListenerService extends Service {
 								Log.e(TAG, e.getMessage());
 							}
 						}
-
-
-						// wait until connector responds
-						// (connector has finished receiving)
-						/*byte[] buff = new byte[20];
-						try {
-							mmInStream.read(buff);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						Log.i(TAG, "Connector responded: " + new String(buff));*/
 
 						transcState = Constants.DATA_TO_MASTER;
 						break;
