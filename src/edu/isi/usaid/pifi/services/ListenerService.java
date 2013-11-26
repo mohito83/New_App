@@ -321,7 +321,7 @@ public class ListenerService extends Service {
 							FileUtils.broadcastMessage(ListenerService.this,
 									"Sending "
 											+ webPaths.size()
-											+ " entries to: "
+											+ " web articles to: "
 											+ commSock.getRemoteDevice()
 													.getName());
 

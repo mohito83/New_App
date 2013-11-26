@@ -219,12 +219,19 @@ public class SocketUtils {
 				String fName = dis.readUTF();
 				readFromSocket(dis, sdir, fName);
 				readTmpMetaDataFromSocket(dis, sdir, fName, false);
-				
-				//read each image file
 
+				// save the images in the folder whose name can be obtained by
+				// truncating .html from the news article file.
+				//1. create the folder
+				String folderName =fName.substring(0, fName.indexOf(".html"));
+				File imgFolder = new File(sdir,folderName);
+				if(!imgFolder.exists()){
+					imgFolder.mkdir();
+				}
+				// read each image file
 				for (int j = 0; j < no_of_files; j++) {
 					fName = dis.readUTF();
-					readFromSocket(dis, sdir, fName);
+					readFromSocket(dis, imgFolder, fName);
 					i++;
 				}
 				i++;
