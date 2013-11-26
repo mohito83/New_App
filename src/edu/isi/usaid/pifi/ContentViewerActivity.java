@@ -157,7 +157,7 @@ public class ContentViewerActivity extends FragmentActivity {
     		Intent i = new Intent();
     		i.setAction(Constants.BOOKMARK_ACTION);
     		if (video != null)
-    			i.putExtra(ExtraConstants.ID, video.getFilename());
+    			i.putExtra(ExtraConstants.ID, video.getFilepath());
     		else
     			i.putExtra(ExtraConstants.ID, article.getFilename());
     		i.putExtra(ExtraConstants.ON, bookmark);
@@ -187,7 +187,7 @@ public class ContentViewerActivity extends FragmentActivity {
 			
 				video = Video.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
 				f.add(VideoPlayerFragment.newInstance(
-						contentDirectory + "/" + video.getFilename(),
+						contentDirectory + "/" + video.getFilepath(),
 						video.getSnippet().getTitle()));
 				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
 				f.add(CommentsFragment.newInstance(video.getCommentsList()));

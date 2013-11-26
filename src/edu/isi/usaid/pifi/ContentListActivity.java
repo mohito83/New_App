@@ -383,7 +383,7 @@ public class ContentListActivity extends Activity {
 					if (currentContent instanceof Video){
 						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
 						intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
-						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilename()));
+						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilepath()));
 					}
 					else if (currentContent instanceof Article){
 						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
@@ -686,7 +686,7 @@ public class ContentListActivity extends Activity {
 			for (Object o : list){
 				String filename = null;
 				if (o instanceof Video)
-					filename = ((Video)o).getFilename();
+					filename = ((Video)o).getFilepath();
 				else
 					filename = ((Article)o).getFilename();
 				if (bookmarks.contains(filename))

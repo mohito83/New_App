@@ -120,7 +120,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			}
 			
 			// bookmark
-			if (bookmarks.contains(video.getFilename()))
+			if (bookmarks.contains(video.getFilepath()))
 				holder.starView.setImageResource(R.drawable.ic_fav_selected);
 			else
 				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
@@ -129,12 +129,12 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
 				@Override
 				public void onClick(View arg0) {
-					if (bookmarks.contains(video.getFilename())){
-						bookmarks.remove(video.getFilename());
+					if (bookmarks.contains(video.getFilepath())){
+						bookmarks.remove(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						bookmarks.add(video.getFilename());
+						bookmarks.add(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}
