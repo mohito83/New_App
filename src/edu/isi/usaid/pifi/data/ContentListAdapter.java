@@ -1,11 +1,13 @@
 package edu.isi.usaid.pifi.data;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.LruCache;
@@ -38,6 +40,8 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	private Set<String> bookmarks;
 	
 	private SparseBooleanArray selected = new SparseBooleanArray();
+	
+	private Bitmap defaultBitmap;
 
 	public ContentListAdapter(Context context, List<Object> objects, String directory, Set<String> bookmarks) {
 		super(context, R.layout.content_list_item, objects);
@@ -54,6 +58,9 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 				return bitmap.getByteCount() / 1024; 
 			}
 		};
+		
+		// default bitmap
+		defaultBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.news);
 	}
 	
 	public void addBitmapToCache(String key, Bitmap bitmap){
@@ -141,7 +148,39 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.titleView.setText(title);
 			holder.catView.setText("news"); // TODO need category for articles
 			holder.descView.setText("");
-			holder.imageView.setImageBitmap(null);
+			
+			// TODO need thumbnail for articles
+			// right now randomly pick one from image folder
+			// try to find the image from cache first
+			Bitmap bitmap = null;
+			String name = article.getFilename();
+			String assetsPath = name.substring(0, name.indexOf(".htm"));
+			File assetDir = new File(contentDirectory, assetsPath);
+			if (assetDir.exists()){
+				File[] files = assetDir.listFiles();
+				Arrays.sort(files);
+				for (File f : assetDir.listFiles()){
+					String fileName = f.getName();
+					if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG") || fileName.endsWith(".png") || fileName.endsWith(".PNG")){
+						Uri uri = Uri.fromFile(f);
+						bitmap = getBitmapFromCache(uri.getPath());
+						if (bitmap == null){
+							BitmapTask task = new BitmapTask(
+									holder.imageView, 
+									getContext().getContentResolver(), 
+									holder.imageView.getLayoutParams().width,
+									holder.imageView.getLayoutParams().height,
+									bitmapCache);
+							task.execute(Uri.fromFile(f));
+						}
+						break;
+					}
+				}
+			}
+			
+			if (bitmap == null)
+				bitmap = defaultBitmap;
+			holder.imageView.setImageBitmap(bitmap);
 			
 			// bookmark
 			if (bookmarks.contains(article.getFilename()))
