@@ -58,4 +58,6 @@ public class Constants {
 	public static final short FAIL_RESPONSE = 400;
 	
 
+	public static final String VIDEO_THUMBNAIL_ID = "_default.jpg";
+	
 }

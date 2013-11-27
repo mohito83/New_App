@@ -19,6 +19,7 @@ import java.util.List;
 import com.google.protobuf.GeneratedMessage;
 
 import android.util.Log;
+import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
@@ -191,6 +192,9 @@ public class SocketUtils {
 			for (i = 0; i < no_of_files; i++) {
 				String fName = dis.readUTF();
 				readFromSocket(dis, sdir, fName);
+				//Read the thumb nail image
+				String tName = dis.readUTF();
+				readFromSocket(dis, sdir, tName);
 				readTmpMetaDataFromSocket(dis, sdir, fName, true);
 			}
 
@@ -265,6 +269,12 @@ public class SocketUtils {
 
 				Log.i(TAG, "Sent video " + totalBytesSent + " bytes");
 
+				//send the thumb nail associated with the video file
+				String thumbnail = v.getId()+Constants.VIDEO_THUMBNAIL_ID;
+				File thumbNailFile = new File(root, thumbnail);
+				writeToSocket(dos, thumbNailFile);
+				
+				//send temp protobuf file for the video
 				sendProtoBufToReceiver(v, os);
 				Log.i(TAG, "Sent video meta data" + totalBytesSent + " bytes");
 			}
