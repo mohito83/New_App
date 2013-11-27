@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -28,8 +27,6 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	
 	private File contentDirectory;
 	
-	private Set<String> bookmarks;
-	
 	private ProgressDialog dialog;
 	
 	private Videos vMeta;
@@ -41,7 +38,6 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	public DeleteContentTask(
 			ContentListActivity parent,
 			File contentDir, 
-			Set<String> bookmarks, 
 			ProgressDialog dialog, 
 			Videos vMeta, 
 			Articles aMeta, 
@@ -49,7 +45,6 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 			File aFile){
 		this.parent = parent;
 		contentDirectory = contentDir;
-		this.bookmarks = bookmarks;
 		this.dialog = dialog;
 		this.vMeta = vMeta;
 		this.aMeta = aMeta;
@@ -78,8 +73,8 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				thumb.delete();
 				
 				// delete from bookmark 
-				if (bookmarks.contains(video.getFilepath()))
-					bookmarks.remove(video.getFilepath());
+				if (parent.isBookmarked(video.getFilepath()))
+					parent.removeBookmark(video.getFilepath());
 			}
 			else if (o instanceof Article){
 				Article article = (Article)o;
@@ -105,8 +100,8 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				assetDir.delete();
 				
 				// delete from bookmark 
-				if (bookmarks.contains(path))
-					bookmarks.remove(path);
+				if (parent.isBookmarked(path))
+					parent.removeBookmark(path);
 			}
 			
 //			publishProgress((int) ((i / (float) count) * 100));

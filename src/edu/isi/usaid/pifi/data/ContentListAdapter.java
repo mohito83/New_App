@@ -3,7 +3,6 @@ package edu.isi.usaid.pifi.data;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.isi.usaid.pifi.BitmapTask;
+import edu.isi.usaid.pifi.ContentListActivity;
 import edu.isi.usaid.pifi.R;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
@@ -33,20 +33,20 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
  */
 public class ContentListAdapter extends ArrayAdapter<Object> {
 	
+	private ContentListActivity context;
+	
 	private File contentDirectory;
 	
 	private LruCache<String, Bitmap> bitmapCache;
-	
-	private Set<String> bookmarks;
 	
 	private SparseBooleanArray selected = new SparseBooleanArray();
 	
 	private Bitmap defaultBitmap;
 
-	public ContentListAdapter(Context context, List<Object> objects, String directory, Set<String> bookmarks) {
+	public ContentListAdapter(ContentListActivity context, List<Object> objects, String directory) {
 		super(context, R.layout.content_list_item, objects);
-		this.bookmarks = bookmarks;
 		
+		this.context = context;
 		contentDirectory = new File(directory);
 		
 		// create a cache for bitmaps
@@ -120,7 +120,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			}
 			
 			// bookmark
-			if (bookmarks.contains(video.getFilepath()))
+			if (context.isBookmarked(video.getFilepath()))
 				holder.starView.setImageResource(R.drawable.ic_fav_selected);
 			else
 				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
@@ -129,12 +129,12 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
 				@Override
 				public void onClick(View arg0) {
-					if (bookmarks.contains(video.getFilepath())){
-						bookmarks.remove(video.getFilepath());
+					if (context.isBookmarked(video.getFilepath())){
+						context.removeBookmark(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						bookmarks.add(video.getFilepath());
+						context.addBookmark(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}
@@ -183,7 +183,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.imageView.setImageBitmap(bitmap);
 			
 			// bookmark
-			if (bookmarks.contains(article.getFilename()))
+			if (context.isBookmarked(article.getFilename()))
 				holder.starView.setImageResource(R.drawable.ic_fav_selected);
 			else
 				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
@@ -192,12 +192,12 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
 				@Override
 				public void onClick(View arg0) {
-					if (bookmarks.contains(article.getFilename())){
-						bookmarks.remove(article.getFilename());
+					if (context.isBookmarked(article.getFilename())){
+						context.removeBookmark(article.getFilename());
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						bookmarks.add(article.getFilename());
+						context.addBookmark(article.getFilename());
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}

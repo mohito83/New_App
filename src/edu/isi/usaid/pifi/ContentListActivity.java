@@ -19,8 +19,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -69,8 +67,8 @@ import edu.isi.usaid.pifi.services.ListenerService;
  *         TODO articles have no categories right now
  * 
  */
-public class ContentListActivity extends Activity {
-
+public class ContentListActivity extends Activity implements BookmarkManager{
+	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
 	public static final String VIDEO_CONTENT = "Video";
@@ -163,9 +161,9 @@ public class ContentListActivity extends Activity {
 				String id = i.getStringExtra(ExtraConstants.ID);
 				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
 				if (on)
-					bookmarks.add(id);
+					addBookmark(id);
 				else
-					bookmarks.remove(id);
+					removeBookmark(id);
 				contentListAdapter.notifyDataSetChanged();
 			}
 			
@@ -272,7 +270,6 @@ public class ContentListActivity extends Activity {
 				DeleteContentTask task = new DeleteContentTask(
 						ContentListActivity.this,
 						contentDirectory, 
-						bookmarks, 
 						progress, 
 						metadata,
 						webMetadata, 
@@ -524,16 +521,6 @@ public class ContentListActivity extends Activity {
 		stopService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 	
-	@Override
-	protected void onStop(){
-		super.onStop();
-		
-		// save bookmarks
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
-		editor.commit();
-	}
-	
 	/**
 	 * reload metadata and refresh the list
 	 * 
@@ -602,7 +589,7 @@ public class ContentListActivity extends Activity {
 			drawerListAdapter.notifyDataSetChanged();
 		
 		if (contentListAdapter == null){
-			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath(), bookmarks);
+			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath());
 			contentList.setAdapter(contentListAdapter);
 		} else
 			contentListAdapter.notifyDataSetChanged();
@@ -876,5 +863,44 @@ public class ContentListActivity extends Activity {
 			}
 		}
 		return false;
+	}
+	
+	private void saveBookmarks(){
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
+		editor.commit();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#addBookmark(java.lang.String)
+	 */
+	@Override
+	public void addBookmark(String id) {
+		if (!bookmarks.contains(id)){
+			bookmarks.add(id);
+			saveBookmarks();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#removeBookmark(java.lang.String)
+	 */
+	@Override
+	public void removeBookmark(String id) {
+		if (bookmarks.contains(id)){
+			bookmarks.remove(id);
+			saveBookmarks();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#isBookmarked(java.lang.String)
+	 */
+	@Override
+	public boolean isBookmarked(String id) {
+		if (bookmarks.contains(id))
+			return true;
+		else
+			return false;
 	}
 }
