@@ -1,15 +1,19 @@
 package edu.isi.usaid.pifi;
 
-import edu.isi.usaid.pifi.fragments.VideoPlayerFragment;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
+import edu.isi.usaid.pifi.fragments.VideoPlayerFragment;
 /**
  * 
  * @author jenniferchen
@@ -34,13 +38,24 @@ public class FullscreenVideoActivity extends Activity implements VideoController
 		videoSource = getIntent().getStringExtra(ExtraConstants.PATH);
 		videoView.setVideoPath(videoSource);
 		int pos = getIntent().getIntExtra(ExtraConstants.POSITION, 0);
+		boolean resume = getIntent().getBooleanExtra(ExtraConstants.RESUME, false);
 		videoView.seekTo(pos); // start where left off
 		
 		controller = new VideoControllerView(this);
         controller.setMediaPlayer(this);
         controller.setAnchorView((FrameLayout) findViewById(R.id.fullVideoSurfaceContainer));
         
-		videoView.start();
+        // if never started the video
+        // show preview
+        if (pos == 0 && !resume){
+        	Bitmap preview = ThumbnailUtils.createVideoThumbnail(
+        			videoSource,
+        	        MediaStore.Images.Thumbnails.MINI_KIND);
+        	videoView.setBackground(new BitmapDrawable(getResources(), preview));
+        }
+        
+		if (resume)
+			videoView.start();
 		
 		videoView.setOnCompletionListener(new OnCompletionListener(){
 
@@ -113,6 +128,7 @@ public class FullscreenVideoActivity extends Activity implements VideoController
 
     @Override
     public void start() {
+    	videoView.setBackgroundResource(0);
     	videoView.start();
     }
 
@@ -124,9 +140,11 @@ public class FullscreenVideoActivity extends Activity implements VideoController
     @Override
     public void toggleFullScreen() {
     	int pos = videoView.getCurrentPosition();
+    	boolean isPlaying = videoView.isPlaying();
     	videoView.stopPlayback();
 		Intent i = new Intent(getApplicationContext(), VideoPlayerFragment.class);
 		i.putExtra(ExtraConstants.POSITION, pos);
+		i.putExtra(ExtraConstants.RESUME, isPlaying);
 		setResult(RESULT_OK, i);
 		finish();
     }

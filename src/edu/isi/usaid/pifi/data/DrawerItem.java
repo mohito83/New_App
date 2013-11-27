@@ -17,6 +17,8 @@ public class DrawerItem implements Checkable{
 	
 	public static final int CATEGORY = 2;
 	
+	public static final int BOOKMARKS = 3;
+	
 	private String label;
 	
 	private int type;

@@ -1,13 +1,16 @@
 package edu.isi.usaid.pifi.data;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.LruCache;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.isi.usaid.pifi.BitmapTask;
+import edu.isi.usaid.pifi.ContentListActivity;
 import edu.isi.usaid.pifi.R;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
@@ -29,19 +33,20 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
  */
 public class ContentListAdapter extends ArrayAdapter<Object> {
 	
-	private File contentDirectory;
+	private ContentListActivity context;
 	
-//	private final Context context;
+	private File contentDirectory;
 	
 	private LruCache<String, Bitmap> bitmapCache;
 	
-	private Set<String> bookmarks;
+	private SparseBooleanArray selected = new SparseBooleanArray();
+	
+	private Bitmap defaultBitmap;
 
-	public ContentListAdapter(Context context, List<Object> objects, String directory, Set<String> bookmarks) {
+	public ContentListAdapter(ContentListActivity context, List<Object> objects, String directory) {
 		super(context, R.layout.content_list_item, objects);
-//		this.context = context;
-		this.bookmarks = bookmarks;
 		
+		this.context = context;
 		contentDirectory = new File(directory);
 		
 		// create a cache for bitmaps
@@ -53,6 +58,9 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 				return bitmap.getByteCount() / 1024; 
 			}
 		};
+		
+		// default bitmap
+		defaultBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.news);
 	}
 	
 	public void addBitmapToCache(String key, Bitmap bitmap){
@@ -112,7 +120,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			}
 			
 			// bookmark
-			if (bookmarks.contains(video.getFilename()))
+			if (context.isBookmarked(video.getFilepath()))
 				holder.starView.setImageResource(R.drawable.ic_fav_selected);
 			else
 				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
@@ -121,12 +129,12 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
 				@Override
 				public void onClick(View arg0) {
-					if (bookmarks.contains(video.getFilename())){
-						bookmarks.remove(video.getFilename());
+					if (context.isBookmarked(video.getFilepath())){
+						context.removeBookmark(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						bookmarks.add(video.getFilename());
+						context.addBookmark(video.getFilepath());
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}
@@ -140,10 +148,42 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.titleView.setText(title);
 			holder.catView.setText("news"); // TODO need category for articles
 			holder.descView.setText("");
-			holder.imageView.setImageBitmap(null);
+			
+			// TODO need thumbnail for articles
+			// right now randomly pick one from image folder
+			// try to find the image from cache first
+			Bitmap bitmap = null;
+			String name = article.getFilename();
+			String assetsPath = name.substring(0, name.indexOf(".htm"));
+			File assetDir = new File(contentDirectory, assetsPath);
+			if (assetDir.exists()){
+				File[] files = assetDir.listFiles();
+				Arrays.sort(files);
+				for (File f : assetDir.listFiles()){
+					String fileName = f.getName();
+					if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG") || fileName.endsWith(".png") || fileName.endsWith(".PNG")){
+						Uri uri = Uri.fromFile(f);
+						bitmap = getBitmapFromCache(uri.getPath());
+						if (bitmap == null){
+							BitmapTask task = new BitmapTask(
+									holder.imageView, 
+									getContext().getContentResolver(), 
+									holder.imageView.getLayoutParams().width,
+									holder.imageView.getLayoutParams().height,
+									bitmapCache);
+							task.execute(Uri.fromFile(f));
+						}
+						break;
+					}
+				}
+			}
+			
+			if (bitmap == null)
+				bitmap = defaultBitmap;
+			holder.imageView.setImageBitmap(bitmap);
 			
 			// bookmark
-			if (bookmarks.contains(article.getFilename()))
+			if (context.isBookmarked(article.getFilename()))
 				holder.starView.setImageResource(R.drawable.ic_fav_selected);
 			else
 				holder.starView.setImageResource(R.drawable.ic_fav_unselected);
@@ -152,18 +192,21 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
 				@Override
 				public void onClick(View arg0) {
-					if (bookmarks.contains(article.getFilename())){
-						bookmarks.remove(article.getFilename());
+					if (context.isBookmarked(article.getFilename())){
+						context.removeBookmark(article.getFilename());
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						bookmarks.add(article.getFilename());
+						context.addBookmark(article.getFilename());
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}
 				
 			});
 		}
+		
+		convertView.setBackgroundColor(selected.get(pos) ? 0x9934B5E4
+                : Color.TRANSPARENT);
 		
 		return convertView;
 	}
@@ -174,6 +217,25 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 		public TextView catView;
 		public TextView descView;
 		public ImageView starView;
+	}
+	
+	public boolean toggleSelection(int pos){
+		boolean value = !selected.get(pos);
+		if (value){
+			selected.put(pos, value);
+			notifyDataSetChanged();
+			return true;
+		}
+		else{
+			selected.delete(pos);
+			notifyDataSetChanged();
+			return false;
+		}
+	}
+	
+	public void removeSelections(){
+		selected = new SparseBooleanArray();
+        notifyDataSetChanged();
 	}
 	
 }

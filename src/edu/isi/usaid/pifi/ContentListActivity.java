@@ -14,12 +14,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -31,12 +30,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
@@ -65,13 +67,15 @@ import edu.isi.usaid.pifi.services.ListenerService;
  *         TODO articles have no categories right now
  * 
  */
-public class ContentListActivity extends Activity {
-
+public class ContentListActivity extends Activity implements BookmarkManager{
+	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
 	public static final String VIDEO_CONTENT = "Video";
 
 	public static final String WEB_CONTENT = "Web";
+	
+	public static final String STARRED_BOOKMARK = "Starred";
 	
 	private static final String SETTING_BOOKMARKS = "bookmarks";
 	
@@ -106,7 +110,9 @@ public class ContentListActivity extends Activity {
 	private String selectedCat = "All";
 
 	private String selectedType = "All";
-
+	
+	private String selectedBookmark = "All";
+	
 	private Object currentContent = null;
 
 	private AlertDialog btStatusDialog;
@@ -127,7 +133,7 @@ public class ContentListActivity extends Activity {
 																				// file
 																				// updated
 				try {
-					reload();
+					reload(false);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -155,9 +161,9 @@ public class ContentListActivity extends Activity {
 				String id = i.getStringExtra(ExtraConstants.ID);
 				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
 				if (on)
-					bookmarks.add(id);
+					addBookmark(id);
 				else
-					bookmarks.remove(id);
+					removeBookmark(id);
 				contentListAdapter.notifyDataSetChanged();
 			}
 			
@@ -217,7 +223,68 @@ public class ContentListActivity extends Activity {
 	
 	private Set<String> bookmarks;
 	
+	private Object rowActionMode = null;
+	
+	private ArrayList<Object> selectedRowItems = new ArrayList<Object>(); 
+	
+	private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
+		
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+		
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			rowActionMode = null;
+			selectedRowItems.clear();
+			contentListAdapter.removeSelections();
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			MenuInflater inf = mode.getMenuInflater();
+			inf.inflate(R.menu.row_selection, menu);
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			switch(item.getItemId()){
+			
+			/* delete content
+			 * 1. video/article file
+			 * 2. thumbnail
+			 * 3. bookmark
+			 * 4. metadata entry
+			 */
+			case R.id.action_row_delete:
+				// TODO need to make sure not doing sync at the same time
+				
+				
+				final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
+				progress.setTitle("Deletion in Progress");
+				progress.setMessage("Deleting...");
+				progress.setCancelable(false);
+				progress.show();
+				DeleteContentTask task = new DeleteContentTask(
+						ContentListActivity.this,
+						contentDirectory, 
+						progress, 
+						metadata,
+						webMetadata, 
+						metaFile,
+						webMetaFile);
+				task.execute(selectedRowItems.toArray());
 
+				mode.finish();
+				return true;
+			default:
+				return false;
+			}
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -245,7 +312,7 @@ public class ContentListActivity extends Activity {
 
 		// reload content
 		try {
-			reload();
+			reload(true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -301,32 +368,59 @@ public class ContentListActivity extends Activity {
 		contentList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int pos,
-					long id) {
-
-				currentContent = contentListAdapter.getItem(pos);
-				Intent intent = new Intent(getApplicationContext(),
-						ContentViewerActivity.class);
-
-				// if selected a video
-				if (currentContent instanceof Video){
-					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
-					intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
-					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilename()));
-				}
-				else if (currentContent instanceof Article){
-					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-					intent.putExtra("content", ((Article)currentContent).toByteArray());
-					intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
-				}
+			public void onItemClick(AdapterView<?> parent, View view,
+					int pos, long id) {
 				
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_right,
-						R.anim.slide_out_left);
+				// if not in editing mode, open the content
+				if (rowActionMode == null){ 
+					currentContent = contentListAdapter.getItem(pos);
+					Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
+					
+					// if selected a video
+					if (currentContent instanceof Video){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
+						intent.putExtra(ExtraConstants.CONTENT, ((Video)currentContent).toByteArray());
+						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Video)currentContent).getFilepath()));
+					}
+					else if (currentContent instanceof Article){
+						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
+						intent.putExtra("content", ((Article)currentContent).toByteArray());
+						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
+					}
+					
+					startActivity(intent);
+					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				}
+				// if in editing mode, add/remove selection
+				else {
+					boolean select = contentListAdapter.toggleSelection(pos);
+					if (select)
+						selectedRowItems.add(contentListAdapter.getItem(pos));
+					else
+						selectedRowItems.remove(contentListAdapter.getItem(pos));
+				}
 			}
 
 		});
+		
+		// long click on list item
+		contentList.setOnItemLongClickListener(new OnItemLongClickListener(){
 
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int pos, long id) {
+				if (rowActionMode != null)
+					return false;
+				
+				selectedRowItems.add(contentListAdapter.getItem(pos));
+				contentListAdapter.toggleSelection(pos);
+				rowActionMode = startActionMode(rowActionCallback);
+				view.setSelected(true);
+				return true;
+			}
+			
+		});
+		
 		// Start bluetooth listener service
 		if (!isListenerServiceRunning())
 			startService(new Intent(this, ListenerService.class));
@@ -346,7 +440,7 @@ public class ContentListActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.content, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -365,7 +459,7 @@ public class ContentListActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	if (item.getItemId() == R.id.action_refresh){
 			try {
-				  reload();
+				  reload(false);
 			  } catch (FileNotFoundException e) {
 				  e.printStackTrace();
 			  } catch (IOException e) {
@@ -427,24 +521,14 @@ public class ContentListActivity extends Activity {
 		stopService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 	
-	@Override
-	protected void onStop(){
-		super.onStop();
-		
-		// save bookmarks
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
-		editor.commit();
-	}
-	
 	/**
 	 * reload metadata and refresh the list
 	 * 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	private void reload() throws FileNotFoundException, IOException {
-
+	public void reload(boolean firsttime) throws FileNotFoundException, IOException{
+		
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
 		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
@@ -480,20 +564,23 @@ public class ContentListActivity extends Activity {
 		cats = categories.toArray(cats);
 
 		// setup menu drawer
-		drawerItems.clear();
-		drawerItems
-				.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
-		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE,
-				false));
-		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE,
-				false));
+        drawerItems.clear();
+        drawerItems.add(new DrawerItem("Bookmarks", DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem("All", DrawerItem.BOOKMARKS, selectedBookmark.equals("All")));
+        drawerItems.add(new DrawerItem(STARRED_BOOKMARK, DrawerItem.BOOKMARKS, selectedBookmark.equals(STARRED_BOOKMARK)));
+		drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, selectedType.equals("All")));
+		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(VIDEO_CONTENT)));
+		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(WEB_CONTENT)));
 		drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
-		for (String cat : cats) {
-			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
+		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, selectedCat.equals("All")));
+		for (String cat : cats){
+			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
 		}
-
+		if (!firsttime)
+			applyListFilter();
+			
+			
 		// update/init adapter
 		if (drawerListAdapter == null) { // first time
 			drawerListAdapter = new DrawerListAdapter(this, drawerItems);
@@ -502,58 +589,98 @@ public class ContentListActivity extends Activity {
 			drawerListAdapter.notifyDataSetChanged();
 		
 		if (contentListAdapter == null){
-			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath(), bookmarks);
+			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath());
 			contentList.setAdapter(contentListAdapter);
 		} else
 			contentListAdapter.notifyDataSetChanged();
 
 	}
-
-	private void applyListFilter(DrawerItem item) {
-		if (item.getType() == DrawerItem.HEADER)
-			return;
-
-		if (item.getType() == DrawerItem.CONTENT_TYPE) {
-			String newType = item.getLabel();
-			if (newType != selectedType) {
-				selectedType = newType;
-			} else
+	
+	/**
+	 * no changes to filter, just re-apply to the list
+	 */
+	private void applyListFilter(){
+		applyListFilter(null);
+	}
+	
+	private void applyListFilter(DrawerItem item){
+		
+		// if something selected/de-selected
+		if (item != null){
+			if (item.getType() == DrawerItem.HEADER)
 				return;
-		} else if (item.getType() == DrawerItem.CATEGORY) {
-			String newCat = item.getLabel();
-			if (newCat != selectedCat) {
-				selectedCat = newCat;
-			} else
-				return;
+			
+			if (item.getType() == DrawerItem.BOOKMARKS){
+				String newBookmark = item.getLabel();
+				if (!newBookmark.equals(selectedBookmark))
+					selectedBookmark = newBookmark;
+				else
+					return;
+			}
+			
+			if (item.getType() == DrawerItem.CONTENT_TYPE){
+				 String newType = item.getLabel();
+				 if (!newType.equals(selectedType)){
+					 selectedType = newType;
+				 }
+				 else 
+					 return;
+			}
+			else if (item.getType() == DrawerItem.CATEGORY){
+				String newCat = item.getLabel();
+				if (!newCat.equals(selectedCat)){
+					selectedCat = newCat;
+				}
+				else
+					return;
+			}
 		}
-
+		
 		contentListAdapter.clear();
 
 		// TODO nothing being taken care of for web category
-		if (selectedType.equals("All")) {
-			if (selectedCat.equals("All")) {
-				contentListAdapter.addAll(metadata.getVideoList());
-				contentListAdapter.addAll(webMetadata.getArticleList());
-			} else {
-				for (Video v : metadata.getVideoList()) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		if (selectedType.equals("All")){
+			if (selectedCat.equals("All")){
+				list.addAll(metadata.getVideoList());
+				list.addAll(webMetadata.getArticleList());
+			}
+			else {
+				for (Video v : metadata.getVideoList()){
 					if (v.getSnippet().getCategoryId().equals(selectedCat))
-						contentListAdapter.add(v);
+						list.add(v);
 				}
 			}
 		} else if (selectedType.equals(VIDEO_CONTENT)) {
 			if (selectedCat.equals("All"))
-				contentListAdapter.addAll(metadata.getVideoList());
+				list.addAll(metadata.getVideoList());
 			else {
 				for (Video v : metadata.getVideoList()) {
 					if (v.getSnippet().getCategoryId().equals(selectedCat))
-						contentListAdapter.add(v);
+						list.add(v);
 				}
 			}
 		} else if (selectedType.equals(WEB_CONTENT)) {
 			if (selectedCat.equals("All"))
-				contentListAdapter.addAll(webMetadata.getArticleList());
+				list.addAll(webMetadata.getArticleList());
 		}
-
+		
+		
+		// if selected starred
+		if (selectedBookmark.equals("All"))
+			contentListAdapter.addAll(list);
+		else {
+			for (Object o : list){
+				String filename = null;
+				if (o instanceof Video)
+					filename = ((Video)o).getFilepath();
+				else
+					filename = ((Article)o).getFilename();
+				if (bookmarks.contains(filename))
+					contentListAdapter.add(o);
+			}
+		}
+		
 		// update list
 		contentListAdapter.notifyDataSetChanged();
 	}
@@ -659,10 +786,9 @@ public class ContentListActivity extends Activity {
 
 		t.start();
 	}
-
-	// TODO
-	private void sync() {
-
+	
+	private void sync(){
+		
 		bts.clear();
 		/* To check if the device has the bluetooth hardware */
 		String TAG = "BluetoothFileTransferActivity";
@@ -737,5 +863,44 @@ public class ContentListActivity extends Activity {
 			}
 		}
 		return false;
+	}
+	
+	private void saveBookmarks(){
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
+		editor.commit();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#addBookmark(java.lang.String)
+	 */
+	@Override
+	public void addBookmark(String id) {
+		if (!bookmarks.contains(id)){
+			bookmarks.add(id);
+			saveBookmarks();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#removeBookmark(java.lang.String)
+	 */
+	@Override
+	public void removeBookmark(String id) {
+		if (bookmarks.contains(id)){
+			bookmarks.remove(id);
+			saveBookmarks();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#isBookmarked(java.lang.String)
+	 */
+	@Override
+	public boolean isBookmarked(String id) {
+		if (bookmarks.contains(id))
+			return true;
+		else
+			return false;
 	}
 }
