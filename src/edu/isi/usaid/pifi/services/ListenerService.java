@@ -6,8 +6,6 @@ package edu.isi.usaid.pifi.services;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,13 +18,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import edu.isi.usaid.pifi.Constants;
-import edu.isi.usaid.pifi.ExtraConstants;
+import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 
 /**
@@ -47,16 +44,10 @@ public class ListenerService extends Service {
 	private static final UUID MY_UUID = UUID
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 
-	// private Context context;
 	private BluetoothAdapter mAdapter;
 	private BluetoothServerSocket mmServerSocket;
-	private boolean isExtDrMounted;
 
-	private byte buffer[] = new byte[8 * 1024]; // optimal buffer size for
-												// transferring data using
-												// Android APIs
-
-	private File path, metaFile;
+	private File path, metaFile, webMetaFile;
 
 	/**
 	 * For control messages during data communication over sockets
@@ -69,22 +60,27 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-//		Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 
-		// context = bluetoothFileTransferActivity;
-		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
-				.getExternalStorageState());
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);
 		if (!path.exists()) {
 			path.mkdir();
 		}
 		metaFile = new File(path, Constants.metaFileName);
-		if (!metaFile.exists()) {
-			// TODO something to handle this case. Jennifer can you try pluging
-			// your fix here and seeif it works.
-		}
+		webMetaFile = new File(path, Constants.webMetaFileName);
+		try {
+			if (!webMetaFile.exists()) {
+				webMetaFile.createNewFile();
+			}
 
+			if (!metaFile.exists()) {
+				metaFile.createNewFile();
+			}
+		} catch (IOException e) {
+			Log.e(TAG,
+					"Unable to create a empty meta data file" + e.getMessage());
+		}
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -95,29 +91,14 @@ public class ListenerService extends Service {
 
 			@Override
 			public void run() {
-				/*
-				 * Notification notification = new Notification.Builder(
-				 * ListenerService.this).setContentTitle("Pifi Sync")
-				 * .setContentText("Pifi Sync Service")
-				 * .setSmallIcon(R.drawable.ic_action_sync) .getNotification();
-				 * startForeground(7456, notification);
-				 */
 
 				Looper.prepare();
 				// start the server socket for listening the incoming
 				// connections
 				mAdapter = BluetoothAdapter.getDefaultAdapter();
 				if (mAdapter != null && mAdapter.isEnabled()) {
-					// TODO we need to keep listening for bluetooth events, when
-					// it is
-					// turned on and off. based on that information we need to
-					// start or
-					// stop our BluetoothServerSocket. Other use cases like
-					// connection
-					// state/data persistent caused by this
-					// functionality can be taken care after the demo.
 
-					while (true) { // TODO && bluetooth radio is running
+					while (true) {
 
 						// create server socket if not created
 						if (mmServerSocket == null) {
@@ -206,10 +187,9 @@ public class ListenerService extends Service {
 		public void run() {
 			if (commSock != null) {
 
-				Intent i = new Intent();
-				i.setAction(Constants.BT_STATUS_ACTION);
-				i.putExtra(ExtraConstants.STATUS, "Connected");
-				sendBroadcast(i);
+				FileUtils.broadcastMessage(ListenerService.this,
+						"Successfully connected to "
+								+ commSock.getRemoteDevice().getName());
 
 				DataInputStream din = new DataInputStream(mmInStream);
 				DataOutputStream dos = new DataOutputStream(mmOutStream);
@@ -221,58 +201,10 @@ public class ListenerService extends Service {
 
 						// send meta data file to the connecting
 						// device(master)
-						// TODO this done only for videos content,
-						// web
-						// content implementation is similar. Once
-						// video
-						// content functionality is tested properly
-						// add
-						// similar code for web content
-
-						FileInputStream fin = null;
-						try {
-
-							Log.i(TAG, "Sending meta file size");
-
-							// 1. send metadata size
-							long byteCount = metaFile.length();
-							dos.writeLong(byteCount);
-
-							Log.i(TAG, "Sending meta file");
-
-							// 2. send metadata file
-							fin = new FileInputStream(metaFile);
-							int tb = 0;
-							int b = 0;
-							while (b < byteCount) {
-								b = fin.read(buffer, 0, Math.min((int) byteCount
-										- tb,buffer.length));
-								dos.write(buffer,0,b);
-								tb += b;
-							}
-							dos.flush();
-							i = new Intent();
-							i.setAction(Constants.BT_STATUS_ACTION);
-							i.putExtra(ExtraConstants.STATUS, "Sent metadata: "
-									+ tb + " bytes");
-							sendBroadcast(i);
-
-							Log.i(TAG, "Sent metadata " + tb + " bytes");
-
-						} catch (FileNotFoundException e) {
-							Log.e(TAG, "unable to open file input stream", e);
-						} catch (IOException e) {
-							Log.e(TAG, "unable to perform i/o on file: "
-									+ metaFile.getName(), e);
-						} finally {
-							try {
-								fin.close();
-							} catch (IOException e) {
-								Log.e(TAG,
-										"Exception while cloding the file input stream",
-										e);
-							}
-						}
+						Log.i(TAG, "Sending meta data for videos");
+						SocketUtils.sendMetaData(metaFile, mmOutStream);
+						Log.i(TAG, "Sending meta data for web articles");
+						SocketUtils.sendMetaData(webMetaFile, mmOutStream);
 
 						transcState = Constants.META_TO_MASTER;
 						break;
@@ -282,68 +214,131 @@ public class ListenerService extends Service {
 						Log.i(TAG, "Receiving video files ");
 
 						// receive package from the master.
-						// TODO first write to a .tmp file and once
-						// while is
-						// completely transferred rename it to
-						// remove .tmp
 						File xferDir = new File(path, Constants.xferDirName
 								+ "/" + commSock.getRemoteDevice().getName());
 						xferDir.mkdirs();
-						SocketUtils.readFromSocket(xferDir, din);
+						Log.i(TAG, "Receiving Videos");
+						int noOfFiles = SocketUtils.readVideoFromSocket(
+								xferDir, din);
+						FileUtils.broadcastMessage(ListenerService.this,
+								"Received " + noOfFiles + " video files from: "
+										+ commSock.getRemoteDevice().getName());
+						Log.i(TAG, "Successfully received Videos");
+
+						// send back some message to waiting client to send the
+						// web content
+						try {
+							Log.i(TAG, "Replying back with status message");
+							dos.writeShort(Constants.OK_RESPONSE);
+						} catch (IOException e1) {
+							Log.e(TAG,
+									"Tansaction state: "
+											+ transcState
+											+ ": Error replying back with status message");
+							Log.e(TAG, e1.getMessage());
+						}
+
+						Log.i(TAG, "Receiving Web articles");
+						noOfFiles = SocketUtils.readArticlesFromSocket(xferDir,
+								din);
+						Log.i(TAG, "Successfully received Web articles");
+						FileUtils.broadcastMessage(ListenerService.this,
+								"Received " + noOfFiles
+										+ " web article files from: "
+										+ commSock.getRemoteDevice().getName());
 
 						// once the data is received send some dummy message
 						// back to the sender so that it can come out of the
 						// read block and send us the list of files it wants
 						// from us.
-						//dos = new DataOutputStream(mmOutStream);
-						String str = "Success!!";
 						try {
-							mmOutStream.write(str.getBytes());
+							Log.i(TAG, "Replying back with status message");
+							dos.writeShort(Constants.OK_RESPONSE);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							Log.e(TAG,
+									"Tansaction state: "
+											+ transcState
+											+ ": Error replying back with status message");
+							Log.e(TAG, e.getMessage());
 						}
-						//SocketUtils.writeToSocket(dos, str.getBytes());
-						// TODO just identified a bug.. this flow of
-						// control
-						// will only work this flow will only with
-						// the
-						// packages having one file. will fix this
-						// issue
-						// some time on monday 10/14.
-
-						Log.i(TAG, "Video files received");
 
 						transcState = Constants.DATA_FROM_MASTER;
 						break;
 
 					case Constants.DATA_FROM_MASTER:
 						// read the requested file from the master
-						// and send
-						// the packages data back to master.
+						// and send the packages data back to master.
 
-						Log.i(TAG, "Sending local package");
+						List<Video> videoPaths = new ArrayList<Video>();
+						List<Article> webPaths = new ArrayList<Article>();
 
-						List<Video> paths = new ArrayList<Video>();
-
-						FileUtils.getMasterRequestList(din, metaFile, paths);
-
-						if (paths != null) {
-							SocketUtils.sendVideoPackage(path, mmOutStream,
-									paths);
-						}
-
-						Log.i(TAG, "Local package sent");
-						
-						// wait until connector responds
-						// (connector has finished receiving)
-						byte[] buff = new byte[20];
 						try {
-							mmInStream.read(buff);
-						} catch (IOException e) {
-							e.printStackTrace();
+							byte[] buf = SocketUtils.receiveMetadataFile(
+									metaFile, mmInStream);
+							Log.i(TAG, "Received videos meta data file");
+							// get delta entries to send/request
+							Log.i(TAG, "Calculating delta for videos");
+							FileUtils.getDeltaforVideos(buf, metaFile,
+									videoPaths);
+
+							buf = SocketUtils.receiveMetadataFile(metaFile,
+									mmInStream);
+							Log.i(TAG, "Received web articles meta data file");
+							Log.i(TAG, "Calculating delta for web articles");
+							FileUtils
+									.getDeltaforWeb(buf, webMetaFile, webPaths);
+						} catch (IOException e1) {
+							Log.e(TAG, "Tansaction state: " + transcState
+									+ ": Error receiving status message");
+							Log.e(TAG, e1.getMessage());
 						}
-						Log.i(TAG, "Connector responded: " + new String(buff));
+
+						if (videoPaths != null) {
+							FileUtils.broadcastMessage(ListenerService.this,
+									"Sending "
+											+ videoPaths.size()
+											+ " videos to: "
+											+ commSock.getRemoteDevice()
+													.getName());
+
+							Log.i(TAG, "Sending videos");
+							SocketUtils.sendVideoPackage(path, mmOutStream,
+									videoPaths);
+							Log.i(TAG, "Videos Sent");
+
+							// wait for the reply before proceeding
+							try {
+								int resp = din.readShort();
+								Log.i(TAG, "Listener responded:" + resp);
+							} catch (IOException e) {
+								Log.e(TAG, "Tansaction state: " + transcState
+										+ ": Error receiving status message");
+								Log.e(TAG, e.getMessage());
+							}
+						}
+
+						if (webPaths != null) {
+							FileUtils.broadcastMessage(ListenerService.this,
+									"Sending "
+											+ webPaths.size()
+											+ " web articles to: "
+											+ commSock.getRemoteDevice()
+													.getName());
+
+							Log.i(TAG, "Sending web articles");
+							SocketUtils.sendWebPackage(path, dos, webPaths);
+							Log.i(TAG, "Web Acticles Sent");
+
+							// wait for the reply before proceeding
+							try {
+								short resp = din.readShort();
+								Log.i(TAG, "Listener responded: " + resp);
+							} catch (IOException e) {
+								Log.e(TAG, "Tansaction state: " + transcState
+										+ ": Error receiving status message");
+								Log.e(TAG, e.getMessage());
+							}
+						}
 
 						transcState = Constants.DATA_TO_MASTER;
 						break;
@@ -362,6 +357,8 @@ public class ListenerService extends Service {
 
 				// close the socket
 				try {
+					FileUtils.broadcastMessage(ListenerService.this,
+							"File sync is successful. Closing the session");
 					Log.i(TAG, "Close socket");
 					mmInStream.close();
 					mmOutStream.close();

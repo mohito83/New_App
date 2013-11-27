@@ -53,5 +53,11 @@ public class Constants {
 	 */
 	public static final short META_FROM_MASTER = 1003;
 	
+	
+	public static final short OK_RESPONSE = 200;
+	public static final short FAIL_RESPONSE = 400;
+	
 
+	public static final String VIDEO_THUMBNAIL_ID = "_default.jpg";
+	
 }

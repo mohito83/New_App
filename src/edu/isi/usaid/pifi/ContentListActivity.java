@@ -55,21 +55,22 @@ import edu.isi.usaid.pifi.services.ListenerService;
  * 
  * @author jenniferchen
  * 
- * This is the main activity of the app. It shows a list of content from the content directory.
- * The activity reads the list of content from the metadata file, which uses protocol buffers.
- * It shows the content as a list.
+ *         This is the main activity of the app. It shows a list of content from
+ *         the content directory. The activity reads the list of content from
+ *         the metadata file, which uses protocol buffers. It shows the content
+ *         as a list.
  * 
- * User can select a content to view.
+ *         User can select a content to view.
  * 
- * TODO articles have no categories right now
+ *         TODO articles have no categories right now
  * 
  */
 public class ContentListActivity extends Activity {
-	
+
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
-	
+
 	public static final String VIDEO_CONTENT = "Video";
-	
+
 	public static final String WEB_CONTENT = "Web";
 	
 	private static final String SETTING_BOOKMARKS = "bookmarks";
@@ -78,50 +79,53 @@ public class ContentListActivity extends Activity {
 
 	private ListView drawerList;
 
-    private ActionBarDrawerToggle drawerToggle;
+	private ActionBarDrawerToggle drawerToggle;
 
-    private ArrayList<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
-    
-    private DrawerListAdapter drawerListAdapter;
-	
+	private ArrayList<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
+
+	private DrawerListAdapter drawerListAdapter;
+
 	private File contentDirectory;
-	
+
 	private File metaFile;
-	
+
 	private File webMetaFile;
-	
+
 	private Videos metadata;
-	
+
 	private Articles webMetadata;
-	
+
 	private ListView contentList;
-	
+
 	private ArrayList<String> categories;
-	
+
 	private ArrayList<Object> contentItems = new ArrayList<Object>();
-	
+
 	private ContentListAdapter contentListAdapter;
-	
+
 	private String selectedCat = "All";
-	
+
 	private String selectedType = "All";
-	
+
 	private Object currentContent = null;
-	
+
 	private AlertDialog btStatusDialog;
-	
+
 	// register to receive message when a new comment is added
-	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
+	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context c, Intent i) {
-			if (i.getAction().equals(Constants.NEW_COMMENT_ACTION)){ // adding new comment
+			if (i.getAction().equals(Constants.NEW_COMMENT_ACTION)) { // adding
+																		// new
+																		// comment
 				String user = i.getStringExtra(ExtraConstants.USER);
 				String date = i.getStringExtra(ExtraConstants.DATE);
 				String comment = i.getStringExtra(ExtraConstants.USER_COMMENT);
 				addComment(user, date, comment);
-			}
-			else if (i.getAction().equals(Constants.META_UPDATED_ACTION)){ // meta file updated
+			} else if (i.getAction().equals(Constants.META_UPDATED_ACTION)) { // meta
+																				// file
+																				// updated
 				try {
 					reload();
 				} catch (FileNotFoundException e) {
@@ -129,20 +133,23 @@ public class ContentListActivity extends Activity {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
-			else if (i.getAction().equals(Constants.BT_STATUS_ACTION)){
-				if (btStatusDialog == null){
-					btStatusDialog = new AlertDialog.Builder(ContentListActivity.this).create();
-					btStatusDialog.setCancelable(false);
-					btStatusDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) { 
-							dialog.dismiss();
-						}
-					});
-				}
-				btStatusDialog.setMessage(i.getStringExtra(ExtraConstants.STATUS));
-				if (!btStatusDialog.isShowing())
-					btStatusDialog.show();
+			} else if (i.getAction().equals(Constants.BT_STATUS_ACTION)) {
+				/*
+				 * if (btStatusDialog == null){ btStatusDialog = new
+				 * AlertDialog.Builder(ContentListActivity.this).create();
+				 * btStatusDialog.setCancelable(false);
+				 * btStatusDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+				 * "OK", new OnClickListener() { public void
+				 * onClick(DialogInterface dialog, int which) {
+				 * dialog.dismiss(); } }); }
+				 * btStatusDialog.setMessage(i.getStringExtra
+				 * (ExtraConstants.STATUS)); if (!btStatusDialog.isShowing())
+				 * btStatusDialog.show();
+				 */
+				Toast toast = Toast.makeText(ContentListActivity.this,
+						i.getStringExtra(ExtraConstants.STATUS),
+						Toast.LENGTH_LONG);
+				toast.show();
 			}
 			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
 				String id = i.getStringExtra(ExtraConstants.ID);
@@ -155,9 +162,9 @@ public class ContentListActivity extends Activity {
 			}
 			
 		}
-		
+
 	};
-	
+
 	// The BroadcastReceiver that listens for discovered devices and
 	// changes the title when discovery is finished
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -172,22 +179,22 @@ public class ContentListActivity extends Activity {
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				// If it's already paired, skip it, because it's been listed
 				// already
-//				if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-					// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
-					// + device.getAddress());
-					if(device.getName().isEmpty()) {
-						Log.i("Empty device", device.getAddress());
-						return;
-					}					
-					bts.add(device);
-					dialog.redraw(bts);
-					
-//				}
+				// if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
+				// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
+				// + device.getAddress());
+				if (device.getName().isEmpty()) {
+					Log.i("Empty device", device.getAddress());
+					return;
+				}
+				bts.add(device);
+				dialog.redraw(bts);
+
+				// }
 				// When discovery is finished.
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 					.equals(action)) {
-				
-				//setProgressBarIndeterminateVisibility(false);
+
+				// setProgressBarIndeterminateVisibility(false);
 				/*
 				 * setTitle(R.string.select_device); if
 				 * (mNewDevicesArrayAdapter.getCount() == 0) { String noDevices
@@ -197,19 +204,20 @@ public class ContentListActivity extends Activity {
 			}
 		}
 	};
-	
+
 	private ArrayList<BluetoothDevice> bts;
 
 	private static final int REQUEST_ENABLE_BT = 3;
-  
+
 	private BluetoothAdapter mBluetoothAdapter = null;
-	
+
 	private BluetoothListDialog dialog;
 	
 	private SharedPreferences settings;
 	
 	private Set<String> bookmarks;
 	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -225,15 +233,15 @@ public class ContentListActivity extends Activity {
 		contentDirectory = new File(sdDir, Constants.contentDirName);
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
-		
+
 		// Set up the action bar to show a dropdown list for categories
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-	    actionBar.setHomeButtonEnabled(true);
-	    
-	    drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		actionBar.setHomeButtonEnabled(true);
+
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
-		contentList = (ListView)findViewById(R.id.listing);
+		contentList = (ListView) findViewById(R.id.listing);
 
 		// reload content
 		try {
@@ -243,59 +251,63 @@ public class ContentListActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			
-	    // setup menu drawer
-		drawerToggle = new ActionBarDrawerToggle(
-				this,
-				drawerLayout,
-				R.drawable.ic_drawer,
-				R.string.open_drawer,
-				R.string.close_drawer){
-			public void onDrawerClosed(View view) {
-                getActionBar().setTitle(getTitle());
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
 
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(getTitle());
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-		
+		// setup menu drawer
+		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_drawer, R.string.open_drawer,
+				R.string.close_drawer) {
+			public void onDrawerClosed(View view) {
+				getActionBar().setTitle(getTitle());
+				invalidateOptionsMenu(); // creates call to
+											// onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				getActionBar().setTitle(getTitle());
+				invalidateOptionsMenu(); // creates call to
+											// onPrepareOptionsMenu()
+			}
+
 		};
-		drawerLayout.setDrawerListener(drawerToggle);		
-		
+		drawerLayout.setDrawerListener(drawerToggle);
+
 		// menu drawer listener
-		drawerList.setOnItemClickListener(new OnItemClickListener(){
+		drawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int pos, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int pos,
+					long id) {
 				drawerList.setItemChecked(pos, true);
 				DrawerItem selItem = drawerItems.get(pos);
 				int type = selItem.getType();
-				for (DrawerItem item : drawerItems){
-					if (item != selItem && item.getType() == type){ // clear other checks of same type
+				for (DrawerItem item : drawerItems) {
+					if (item != selItem && item.getType() == type) { // clear
+																		// other
+																		// checks
+																		// of
+																		// same
+																		// type
 						item.setChecked(false);
 					}
 				}
 				selItem.setChecked(true);
 				applyListFilter(selItem);
-			    drawerLayout.closeDrawer(drawerList);
+				drawerLayout.closeDrawer(drawerList);
 			}
-			
+
 		});
-		
-			
+
 		// content list listener
-		contentList.setOnItemClickListener(new OnItemClickListener(){
+		contentList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int pos, long id) {
-				
+			public void onItemClick(AdapterView<?> parent, View view, int pos,
+					long id) {
+
 				currentContent = contentListAdapter.getItem(pos);
-				Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
-				
+				Intent intent = new Intent(getApplicationContext(),
+						ContentViewerActivity.class);
+
 				// if selected a video
 				if (currentContent instanceof Video){
 					intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
@@ -309,11 +321,12 @@ public class ContentListActivity extends Activity {
 				}
 				
 				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				overridePendingTransition(R.anim.slide_in_right,
+						R.anim.slide_out_left);
 			}
-			
+
 		});
-		
+
 		// Start bluetooth listener service
 		if (!isListenerServiceRunning())
 			startService(new Intent(this, ListenerService.class));
@@ -374,42 +387,44 @@ public class ContentListActivity extends Activity {
 		// Serialize the current dropdown position.
 		SparseBooleanArray array = drawerList.getCheckedItemPositions();
 		ArrayList<Integer> sel = new ArrayList<Integer>();
-		for (int i = 0; i < array.size(); i++){
+		for (int i = 0; i < array.size(); i++) {
 			if (array.get(i))
 				sel.add(i);
 		}
 		outState.putIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS, sel);
 	}
-    
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously state
 		if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEMS)) {
-			for (Integer i : savedInstanceState.getIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS)){
+			for (Integer i : savedInstanceState
+					.getIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS)) {
 				drawerList.setItemChecked(i, true);
 				drawerItems.get(i).setChecked(true);
 			}
 		}
 	}
-	
+
 	@Override
-	public boolean onNavigateUp(){
+	public boolean onNavigateUp() {
 		if (!drawerLayout.isDrawerOpen(Gravity.LEFT))
 			drawerLayout.openDrawer(Gravity.LEFT);
 		else
 			drawerLayout.closeDrawer(Gravity.LEFT);
 		return true;
 	}
-	
+
 	@Override
-	protected void onDestroy(){
+	protected void onDestroy() {
 		super.onDestroy();
-		if (broadcastReceiver != null){
-			LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+		if (broadcastReceiver != null) {
+			LocalBroadcastManager.getInstance(this).unregisterReceiver(
+					broadcastReceiver);
 			unregisterReceiver(broadcastReceiver);
 			broadcastReceiver = null;
 		}
-		stopService(new Intent(getBaseContext(), ConnectionService.class));	
+		stopService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 	
 	@Override
@@ -424,171 +439,168 @@ public class ContentListActivity extends Activity {
 	
 	/**
 	 * reload metadata and refresh the list
+	 * 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	private void reload() throws FileNotFoundException, IOException{
-		
+	private void reload() throws FileNotFoundException, IOException {
+
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
 		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
 		ArrayList<Article> articles = new ArrayList<Article>();
 		ArrayList<Video> videos = new ArrayList<Video>();
-			
+
 		// content objects from metadata
 		if (webMetaFile.exists())
 			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
-		else 
+		else
 			webMetadata = Articles.newBuilder().build();
 		articles.addAll(webMetadata.getArticleList());
-		
+
 		if (metaFile.exists())
 			metadata = Videos.parseFrom(new FileInputStream(metaFile));
 		else
 			metadata = Videos.newBuilder().build();
 		videos.addAll(metadata.getVideoList());
-			
+
 		contentItems.clear();
 		contentItems.addAll(videos);
 		contentItems.addAll(articles);
-			
+
 		// get a list of categories
 		// TODO need a better way to get the list of categories
 		categories = new ArrayList<String>();
-		for (Video video : videos){
+		for (Video video : videos) {
 			String id = video.getSnippet().getCategoryId();
 			if (!categories.contains(id))
 				categories.add(id);
 		}
 		String[] cats = new String[categories.size()];
 		cats = categories.toArray(cats);
-			
+
 		// setup menu drawer
-        drawerItems.clear();
-		drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
+		drawerItems.clear();
+		drawerItems
+				.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
 		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, true));
-		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, false));
-		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, false));
+		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE,
+				false));
+		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE,
+				false));
 		drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
 		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, true));
-		for (String cat : cats){
+		for (String cat : cats) {
 			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, false));
 		}
-			
-			
-			
+
 		// update/init adapter
-		if (drawerListAdapter == null){ // first time
-			drawerListAdapter = new DrawerListAdapter(this, drawerItems); 
+		if (drawerListAdapter == null) { // first time
+			drawerListAdapter = new DrawerListAdapter(this, drawerItems);
 			drawerList.setAdapter(drawerListAdapter);
-		}
-		else
+		} else
 			drawerListAdapter.notifyDataSetChanged();
 		
 		if (contentListAdapter == null){
 			contentListAdapter = new ContentListAdapter(this, contentItems, contentDirectory.getAbsolutePath(), bookmarks);
 			contentList.setAdapter(contentListAdapter);
-		}
-		else
+		} else
 			contentListAdapter.notifyDataSetChanged();
-				
+
 	}
-	
-	private void applyListFilter(DrawerItem item){
+
+	private void applyListFilter(DrawerItem item) {
 		if (item.getType() == DrawerItem.HEADER)
 			return;
-		
-		if (item.getType() == DrawerItem.CONTENT_TYPE){
-			 String newType = item.getLabel();
-			 if (newType != selectedType){
-				 selectedType = newType;
-			 }
-			 else 
-				 return;
-		}
-		else if (item.getType() == DrawerItem.CATEGORY){
+
+		if (item.getType() == DrawerItem.CONTENT_TYPE) {
+			String newType = item.getLabel();
+			if (newType != selectedType) {
+				selectedType = newType;
+			} else
+				return;
+		} else if (item.getType() == DrawerItem.CATEGORY) {
 			String newCat = item.getLabel();
-			if (newCat != selectedCat){
+			if (newCat != selectedCat) {
 				selectedCat = newCat;
-			}
-			else
+			} else
 				return;
 		}
-			
+
 		contentListAdapter.clear();
-		
+
 		// TODO nothing being taken care of for web category
-		if (selectedType.equals("All")){
-			if (selectedCat.equals("All")){
+		if (selectedType.equals("All")) {
+			if (selectedCat.equals("All")) {
 				contentListAdapter.addAll(metadata.getVideoList());
 				contentListAdapter.addAll(webMetadata.getArticleList());
-			}
-			else {
-				for (Video v : metadata.getVideoList()){
-					if (v.getSnippet().getCategoryId().equals(selectedCat))
-					contentListAdapter.add(v);
-				}
-			}
-		}
-		else if (selectedType.equals(VIDEO_CONTENT)){
-			if (selectedCat.equals("All"))
-				contentListAdapter.addAll(metadata.getVideoList());
-			else {
-				for (Video v : metadata.getVideoList()){
+			} else {
+				for (Video v : metadata.getVideoList()) {
 					if (v.getSnippet().getCategoryId().equals(selectedCat))
 						contentListAdapter.add(v);
 				}
 			}
-		}
-		else if (selectedType.equals(WEB_CONTENT)){
+		} else if (selectedType.equals(VIDEO_CONTENT)) {
+			if (selectedCat.equals("All"))
+				contentListAdapter.addAll(metadata.getVideoList());
+			else {
+				for (Video v : metadata.getVideoList()) {
+					if (v.getSnippet().getCategoryId().equals(selectedCat))
+						contentListAdapter.add(v);
+				}
+			}
+		} else if (selectedType.equals(WEB_CONTENT)) {
 			if (selectedCat.equals("All"))
 				contentListAdapter.addAll(webMetadata.getArticleList());
 		}
-		
-		
+
 		// update list
 		contentListAdapter.notifyDataSetChanged();
 	}
-	
+
 	/**
 	 * add new user comment to metadata
+	 * 
 	 * @param comment
 	 */
-	private void addComment(final String user, final String date, final String comment){
+	private void addComment(final String user, final String date,
+			final String comment) {
 		if (currentContent == null || comment == null || comment.isEmpty())
 			return;
-		
-		Thread t = new Thread(new Runnable(){
+
+		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				
+
 				// Add comments to metadata
 
-				if (currentContent instanceof Video){
+				if (currentContent instanceof Video) {
 					Videos.Builder newVideos = Videos.newBuilder();
-					for (Video video : metadata.getVideoList()){
-						
+					for (Video video : metadata.getVideoList()) {
+
 						// copy from original
 						Video.Builder videoBuilder = Video.newBuilder();
 						videoBuilder.mergeFrom(video);
-						
+
 						// found the video to add comment
-						if (video.getId().equals(((Video)currentContent).getId())){ 
-							
+						if (video.getId().equals(
+								((Video) currentContent).getId())) {
+
 							// create new comment
-							Comment.Builder commentBuilder = Comment.newBuilder();
+							Comment.Builder commentBuilder = Comment
+									.newBuilder();
 							commentBuilder.setUser(user);
 							commentBuilder.setDate(date);
 							commentBuilder.setText(comment);
-							
+
 							// modify the video snippet by adding comment
 							videoBuilder.addComments(commentBuilder);
 						}
-						
+
 						newVideos.addVideo(videoBuilder);
 					}
-					
+
 					// write new meta out and update metadata in memory
 					try {
 						FileOutputStream out = new FileOutputStream(metaFile);
@@ -598,33 +610,33 @@ public class ContentListActivity extends Activity {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
-					
-				}
-				else if (currentContent instanceof Article){
+
+				} else if (currentContent instanceof Article) {
 					Articles.Builder newArticles = Articles.newBuilder();
-					for (Article article : webMetadata.getArticleList()){
-						
+					for (Article article : webMetadata.getArticleList()) {
+
 						// copy data from original
 						Article.Builder articleBuilder = Article.newBuilder();
 						articleBuilder.mergeFrom(article);
-						
+
 						// found the article to add comment
-						if (article.getUrl().equals(((Article)currentContent).getUrl())){ 
-							
+						if (article.getUrl().equals(
+								((Article) currentContent).getUrl())) {
+
 							// create new comment
-							Comment.Builder commentBuilder = Comment.newBuilder();
+							Comment.Builder commentBuilder = Comment
+									.newBuilder();
 							commentBuilder.setUser(user);
 							commentBuilder.setDate(date);
 							commentBuilder.setText(comment);
-							
+
 							// modify the article by adding comment
 							articleBuilder.addComments(commentBuilder);
 						}
-						
+
 						newArticles.addArticle(articleBuilder);
 					}
-					
+
 					// write new meta out and update metadata in memory
 					try {
 						FileOutputStream out = new FileOutputStream(webMetaFile);
@@ -635,21 +647,22 @@ public class ContentListActivity extends Activity {
 						e.printStackTrace();
 					}
 				}
-				
+
 				// broadcast metadata updated
 				Intent i = new Intent();
 				i.setAction(Constants.META_UPDATED_ACTION);
-				LocalBroadcastManager.getInstance(ContentListActivity.this).sendBroadcast(i);
+				LocalBroadcastManager.getInstance(ContentListActivity.this)
+						.sendBroadcast(i);
 			}
-			
+
 		});
-		
+
 		t.start();
 	}
-	
+
 	// TODO
-	private void sync(){
-		
+	private void sync() {
+
 		bts.clear();
 		/* To check if the device has the bluetooth hardware */
 		String TAG = "BluetoothFileTransferActivity";
@@ -659,10 +672,10 @@ public class ContentListActivity extends Activity {
 					"No bluetooth capabilities available on the device. Exiting!!");
 			Toast.makeText(this, "Bluetooth is not available",
 					Toast.LENGTH_LONG).show();
-			//finish();
+			// finish();
 			return;
 		}
-		
+
 		/*
 		 * create an Broadcast register and register the event that you are
 		 * interested in
@@ -687,17 +700,18 @@ public class ContentListActivity extends Activity {
 					"Bluetooth is already enabled. Setting up the file transfer");
 			// TODO setup the bluetooth file transfer app
 		}
-		
+
 		searchForBTDevices();
-		
+
 		dialog = new BluetoothListDialog();
 		dialog.setHandler(new BluetoothListDialog.IHandler() {
-			
+
 			@Override
 			public void onReturnValue(BluetoothDevice device) {
 				dialog.dismiss();
 				mBluetoothAdapter.cancelDiscovery();
-				Intent bluetoothServiceIntent = new Intent(getBaseContext(), ConnectionService.class);
+				Intent bluetoothServiceIntent = new Intent(getBaseContext(),
+						ConnectionService.class);
 				bluetoothServiceIntent.putExtra("Device", device);
 				startService(bluetoothServiceIntent);
 			}
@@ -705,23 +719,23 @@ public class ContentListActivity extends Activity {
 		dialog.setList(bts);
 		dialog.setReceiver(mReceiver);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
-		
+
 	}
-	
+
 	private void searchForBTDevices() {
 
 		mBluetoothAdapter.startDiscovery();
 	}
-	
+
 	private boolean isListenerServiceRunning() {
-	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (ListenerService.class.getName().equals(service.service.getClassName())) {
-	            return true;
-	        }
-	    }
-	    return false;
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if (ListenerService.class.getName().equals(
+					service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
-
-
