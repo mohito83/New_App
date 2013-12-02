@@ -61,7 +61,7 @@ public class HtmlFragment extends Fragment {
  		settings.setBuiltInZoomControls(true);
  		settings.setLoadWithOverviewMode(true);
  		settings.setUseWideViewPort(true);
- 		webview.setWebViewClient(new WebViewClient()); // keep using webview when user click on links
+// 		webview.setWebViewClient(new WebViewClient()); // keep using webview when user click on links
 
  		// load html content
  		webview.loadUrl(uri);
