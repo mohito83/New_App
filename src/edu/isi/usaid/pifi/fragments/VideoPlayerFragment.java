@@ -3,11 +3,7 @@ package edu.isi.usaid.pifi.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ThumbnailUtils;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -40,8 +36,6 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
     private int pausedPos = 0;
     
     private boolean resumePlay = false;
-    
-    private Bitmap preview = null;
     
     private static final int FULLSCREEN_ACTIVITY = 1011;
     
@@ -97,13 +91,14 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
         }
         else {
         	// initial preview
-        	preview = ThumbnailUtils.createVideoThumbnail(
-        			videoSource,
-        	        MediaStore.Images.Thumbnails.MINI_KIND);
-        	videoSurface.setBackground(new BitmapDrawable(getResources(), preview));
-        	controller.show();
-        	
+//        	preview = ThumbnailUtils.createVideoThumbnail(
+//        			videoSource,
+//        	        MediaStore.Images.Thumbnails.MINI_KIND);
+//        	videoSurface.setBackground(new BitmapDrawable(getResources(), preview));
+//        	controller.show();
+        	start();
         }
+        
         
         return rootView;
     }
@@ -197,7 +192,7 @@ public class VideoPlayerFragment extends Fragment implements VideoControllerView
 
     @Override
     public void start() {
-    	videoSurface.setBackgroundResource(0);
+    	videoSurface.setBackgroundResource(0); // clear thumbnail
         videoSurface.start();
     }
 
