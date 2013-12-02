@@ -85,6 +85,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			
 			holder = new ViewHolder();
 			holder.imageView = (ImageView)convertView.findViewById(R.id.contentThumb);
+			holder.playButtonView = (ImageView)convertView.findViewById(R.id.playButton);
 			holder.titleView = (TextView)convertView.findViewById(R.id.contentTitle);
 			holder.catView = (TextView)convertView.findViewById(R.id.contentCatagory);
 			holder.descView = (TextView)convertView.findViewById(R.id.contentDesc);
@@ -109,6 +110,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.titleView.setText(title);
 			holder.catView.setText(cat);
 			holder.descView.setText(desc);
+			holder.playButtonView.setVisibility(View.VISIBLE);
 			
 			// try to find the image from cache first
 			Bitmap bitmap = getBitmapFromCache(uri.getPath());
@@ -148,6 +150,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.titleView.setText(title);
 			holder.catView.setText("news"); // TODO need category for articles
 			holder.descView.setText("");
+			holder.playButtonView.setVisibility(View.GONE);
 			
 			// TODO need thumbnail for articles
 			// right now randomly pick one from image folder
@@ -213,6 +216,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	
 	private static class ViewHolder {
 		public ImageView imageView;
+		public ImageView playButtonView;
 		public TextView titleView;
 		public TextView catView;
 		public TextView descView;
