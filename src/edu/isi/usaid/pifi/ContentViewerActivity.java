@@ -69,6 +69,7 @@ public class ContentViewerActivity extends FragmentActivity {
 		// show "up" menu
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		pager = (ViewPager)findViewById(R.id.pager);
+		pager.setOffscreenPageLimit(2); // prevent fragments from destroyed when moved away from screen
 		pagerAdapter = new PageAdapter(getSupportFragmentManager(), getFragments());
 		pager.setAdapter(pagerAdapter);
 		

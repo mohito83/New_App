@@ -13,7 +13,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -114,8 +113,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private String selectedBookmark = "All";
 	
 	private Object currentContent = null;
-
-	private AlertDialog btStatusDialog;
 
 	// register to receive message when a new comment is added
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {

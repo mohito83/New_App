@@ -4,7 +4,6 @@
 package edu.isi.usaid.pifi.fragments;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;

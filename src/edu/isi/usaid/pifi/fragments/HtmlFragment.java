@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import edu.isi.usaid.pifi.ExtraConstants;
 import edu.isi.usaid.pifi.R;
 
