@@ -44,9 +44,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * Find the delta after comparing local meta data file with remote. TODO
-	 * this is only for videos only need to extend this functionality for web
-	 * content also
+	 * Find the delta after comparing local meta data file with remote.
 	 * 
 	 * @param metaFile
 	 * @param sendTo

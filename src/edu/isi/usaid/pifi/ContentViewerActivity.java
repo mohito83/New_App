@@ -19,9 +19,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -54,9 +57,22 @@ public class ContentViewerActivity extends FragmentActivity {
 	
 	private Menu menu;
 	
+	private TextView titleTextView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayShowCustomEnabled(true);
+		getActionBar().setDisplayShowTitleEnabled(false);
+		
+		LayoutInflater inflater = LayoutInflater.from(this);
+		View titleView = inflater.inflate(R.layout.scroll_title_view, null);
+		titleTextView = (TextView)titleView.findViewById(R.id.title);
+		titleTextView.setSelected(true); // if we are using marquee title in action bar, need this to prevent video view from taking over focus
+		getActionBar().setCustomView(titleView);
+		
 		setContentView(R.layout.activity_content_viewer);
 		
 		bookmark = getIntent().getBooleanExtra(ExtraConstants.BOOKMARK, false);
@@ -66,8 +82,6 @@ public class ContentViewerActivity extends FragmentActivity {
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
 		
-		// show "up" menu
-		getActionBar().setDisplayHomeAsUpEnabled(true);
 		pager = (ViewPager)findViewById(R.id.pager);
 		pager.setOffscreenPageLimit(2); // prevent fragments from destroyed when moved away from screen
 		pagerAdapter = new PageAdapter(getSupportFragmentManager(), getFragments());
@@ -192,17 +206,19 @@ public class ContentViewerActivity extends FragmentActivity {
 						video.getSnippet().getTitle()));
 				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
 				f.add(CommentsFragment.newInstance(video.getCommentsList()));
-				setTitle(video.getSnippet().getTitle());
+//				setTitle(video.getSnippet().getTitle());
+				titleTextView.setText(video.getSnippet().getTitle());
 			}
 			else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
 			
 				article = Article.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
 				File htmlFile = new File(contentDirectory + "/" + article.getFilename());
 				Uri uri = Uri.fromFile(htmlFile);
-				f.add(HtmlFragment.newInstance(uri.toString()));
+				f.add(HtmlFragment.newInstance(uri.toString(), article.getTitle()));
 				f.add(DescriptionFragment.newInstance(article.getDatePublished(), "")); // TODO description for article
 				f.add(CommentsFragment.newInstance(article.getCommentsList()));
-				setTitle(article.getTitle());
+//				setTitle(article.getTitle());
+				titleTextView.setText(article.getTitle());
 			}
 		
 		} catch (InvalidProtocolBufferException e) {

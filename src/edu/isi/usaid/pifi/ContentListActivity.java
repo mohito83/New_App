@@ -63,7 +63,7 @@ import edu.isi.usaid.pifi.services.ListenerService;
  * 
  *         User can select a content to view.
  * 
- *         TODO articles have no categories right now
+ *         TODO need categories for web articles
  * 
  */
 public class ContentListActivity extends Activity implements BookmarkManager{
@@ -180,11 +180,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// If it's already paired, skip it, because it's been listed
-				// already
-				// if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-				// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
-				// + device.getAddress());
 				if (device.getName().isEmpty()) {
 					Log.i("Empty device", device.getAddress());
 					return;
@@ -821,7 +816,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		} else {
 			Log.d(TAG,
 					"Bluetooth is already enabled. Setting up the file transfer");
-			// TODO setup the bluetooth file transfer app
 		}
 
 		searchForBTDevices();
