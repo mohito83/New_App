@@ -158,13 +158,7 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
     }
 	
 	protected void onPostExecute(Void v) {
-		try {
-			parent.reload(false);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		parent.reload(false);
 		dialog.dismiss();
 	}
 

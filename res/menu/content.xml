@@ -13,5 +13,12 @@
         android:showAsAction="always"
         android:icon="@drawable/ic_action_sync"
         android:title="sync"/>
+    
+    <item
+        android:id="@+id/action_download"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_download"
+        android:title="download"/>
 
 </menu>

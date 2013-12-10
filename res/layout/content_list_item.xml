@@ -51,7 +51,7 @@
 	    android:layout_marginTop="1dip"
 	    android:layout_below="@+id/contentTitle"
 	    android:layout_toRightOf="@+id/contentThumbFrame" 
-	    android:background="@color/accent"
+	    android:background="@color/DimGray"
 	    android:singleLine="true" />
 	
 	<TextView
