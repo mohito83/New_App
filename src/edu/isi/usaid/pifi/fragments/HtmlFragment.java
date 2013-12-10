@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
+import android.widget.TextView;
 import edu.isi.usaid.pifi.ExtraConstants;
 import edu.isi.usaid.pifi.R;
 
@@ -26,10 +27,11 @@ public class HtmlFragment extends Fragment {
 	
 	private WebView webview;
 	
-	public static final HtmlFragment newInstance(String uri){
+	public static final HtmlFragment newInstance(String uri, String title){
 		HtmlFragment f = new HtmlFragment();
 		Bundle b = new Bundle(1);
 		b.putString(ExtraConstants.URI, uri);
+		b.putString(ExtraConstants.TITLE, title);
 		f.setArguments(b);
 		return f;
 	}
@@ -47,9 +49,10 @@ public class HtmlFragment extends Fragment {
         // Inflate the layout containing a title and body text.
         ViewGroup rootView = (ViewGroup) inflater
                 .inflate(R.layout.fragment_html, container, false);
-
-        // get uri
+        
      	String uri = getArguments().getString(ExtraConstants.URI);
+     	String title = getArguments().getString(ExtraConstants.TITLE);
+     	((TextView)rootView.findViewById(R.id.htmlTitle)).setText(title);
  		
  		// settings
  		webview = (WebView)rootView.findViewById(R.id.webview);

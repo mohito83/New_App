@@ -11,7 +11,6 @@
 	    android:id="@+id/listing"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:listSelector="@drawable/list_selector"
 	    android:dividerHeight="0dp"
 	    android:divider="@null" />
 

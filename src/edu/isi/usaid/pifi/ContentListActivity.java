@@ -13,11 +13,13 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -51,6 +53,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
 import edu.isi.usaid.pifi.services.ListenerService;
+import edu.isi.usaid.pifi.tasks.DownloadTask;
 
 /**
  * 
@@ -63,7 +66,7 @@ import edu.isi.usaid.pifi.services.ListenerService;
  * 
  *         User can select a content to view.
  * 
- *         TODO articles have no categories right now
+ *         TODO need categories for web articles
  * 
  */
 public class ContentListActivity extends Activity implements BookmarkManager{
@@ -127,15 +130,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				String comment = i.getStringExtra(ExtraConstants.USER_COMMENT);
 				addComment(user, date, comment);
 			} else if (i.getAction().equals(Constants.META_UPDATED_ACTION)) { // meta
-																				// file
-																				// updated
-				try {
-					reload(false);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			
+				reload(false);
+
 			} else if (i.getAction().equals(Constants.BT_STATUS_ACTION)) {
 				/*
 				 * if (btStatusDialog == null){ btStatusDialog = new
@@ -180,11 +177,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// If it's already paired, skip it, because it's been listed
-				// already
-				// if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-				// TODO :mNewDevicesArrayAdapter.add(device.getName() + "\n"
-				// + device.getAddress());
 				if (device.getName().isEmpty()) {
 					Log.i("Empty device", device.getAddress());
 					return;
@@ -308,13 +300,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		contentList = (ListView) findViewById(R.id.listing);
 
 		// reload content
-		try {
-			reload(true);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		reload(true);
 
 		// setup menu drawer
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -455,17 +441,35 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	if (item.getItemId() == R.id.action_refresh){
-			try {
-				  reload(false);
-			  } catch (FileNotFoundException e) {
-				  e.printStackTrace();
-			  } catch (IOException e) {
-				  e.printStackTrace();
-			  }
+    		reload(false);
 			return true;
     	}
     	else if (item.getItemId() == R.id.action_sync){
     		sync();
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_download){
+    		// confirm download
+    		new AlertDialog.Builder(this)
+    			.setTitle("Download Content")
+    			.setMessage("Do you want to download default content? This will overwrite existing content.")
+    			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String url = "http://shinyichen.com/shared/PifiContent.zip";
+			    		ProgressDialog pd;
+			    		pd = new ProgressDialog(ContentListActivity.this);
+			    		pd.setMessage("Download Content");
+			    		pd.setIndeterminate(true);
+			    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			    		pd.setCancelable(true);
+			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
+			    		task.execute(url);
+					}
+				})
+				.setNegativeButton("No", null).show();
+    		
     		return true;
     	}
     	else 
@@ -524,7 +528,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public void reload(boolean firsttime) throws FileNotFoundException, IOException{
+	public void reload(boolean firsttime) {
 		
 		// read meatadata
 		metaFile = new File(contentDirectory, Constants.metaFileName);
@@ -533,6 +537,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		ArrayList<Video> videos = new ArrayList<Video>();
 
 		// content objects from metadata
+		try {
 		if (webMetaFile.exists())
 			webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
 		else
@@ -543,6 +548,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			metadata = Videos.parseFrom(new FileInputStream(metaFile));
 		else
 			metadata = Videos.newBuilder().build();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 		videos.addAll(metadata.getVideoList());
 
 		contentItems.clear();
@@ -821,7 +829,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		} else {
 			Log.d(TAG,
 					"Bluetooth is already enabled. Setting up the file transfer");
-			// TODO setup the bluetooth file transfer app
 		}
 
 		searchForBTDevices();

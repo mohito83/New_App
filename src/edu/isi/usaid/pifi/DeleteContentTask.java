@@ -84,7 +84,7 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				File file = new File(contentDirectory, path);
 				String name = file.getName();
 				
-				// TODO delete thumbnail
+				// TODO delete thumbnail when we have it
 				
 				// delete assets 
 				// TODO update this code when meta description completed with asset list
@@ -158,13 +158,7 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
     }
 	
 	protected void onPostExecute(Void v) {
-		try {
-			parent.reload(false);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		parent.reload(false);
 		dialog.dismiss();
 	}
 

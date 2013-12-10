@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.util.LruCache;
 import android.util.SparseBooleanArray;
@@ -208,8 +207,9 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			});
 		}
 		
-		convertView.setBackgroundColor(selected.get(pos) ? 0x9934B5E4
-                : Color.TRANSPARENT);
+		if (selected.get(pos)){
+			convertView.setBackgroundColor(0x9934B5E4); // highlight deletion selection
+		}
 		
 		return convertView;
 	}
