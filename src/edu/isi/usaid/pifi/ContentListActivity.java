@@ -13,11 +13,13 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -447,15 +449,27 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_download){
-    		String url = "http://shinyichen.com/shared/PifiContent.zip";
-    		ProgressDialog pd;
-    		pd = new ProgressDialog(this);
-    		pd.setMessage("Download Content");
-    		pd.setIndeterminate(true);
-    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		pd.setCancelable(true);
-    		DownloadTask task = new DownloadTask(this, pd);
-    		task.execute(url);
+    		// confirm download
+    		new AlertDialog.Builder(this)
+    			.setTitle("Download Content")
+    			.setMessage("Do you want to download default content? This will overwrite existing content.")
+    			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String url = "http://shinyichen.com/shared/PifiContent.zip";
+			    		ProgressDialog pd;
+			    		pd = new ProgressDialog(ContentListActivity.this);
+			    		pd.setMessage("Download Content");
+			    		pd.setIndeterminate(true);
+			    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			    		pd.setCancelable(true);
+			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
+			    		task.execute(url);
+					}
+				})
+				.setNegativeButton("No", null).show();
+    		
     		return true;
     	}
     	else 
