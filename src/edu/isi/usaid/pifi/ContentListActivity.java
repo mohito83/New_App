@@ -53,6 +53,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
 import edu.isi.usaid.pifi.services.ListenerService;
+import edu.isi.usaid.pifi.tasks.DeleteContentTask;
 import edu.isi.usaid.pifi.tasks.DownloadTask;
 
 /**
@@ -457,7 +458,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						String url = "http://shinyichen.com/shared/PifiContent.zip";
+						String url = "http://shinyichen.com/shared/BackpackContent.zip";
 			    		ProgressDialog pd;
 			    		pd = new ProgressDialog(ContentListActivity.this);
 			    		pd.setMessage("Download Content");

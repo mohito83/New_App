@@ -17,11 +17,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import edu.isi.usaid.pifi.BitmapTask;
 import edu.isi.usaid.pifi.ContentListActivity;
 import edu.isi.usaid.pifi.R;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
+import edu.isi.usaid.pifi.tasks.BitmapTask;
 
 /**
  * 
