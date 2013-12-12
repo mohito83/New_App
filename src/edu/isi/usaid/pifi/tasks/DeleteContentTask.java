@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.isi.usaid.pifi;
+package edu.isi.usaid.pifi.tasks;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +12,7 @@ import java.util.List;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import edu.isi.usaid.pifi.ContentListActivity;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;

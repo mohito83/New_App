@@ -19,13 +19,15 @@ public class Constants {
 	
 	public static final String BOOKMARK_ACTION = "edu.isi.usaid.pifi.BookmarkAction";
 	
-	public static final String contentDirName = "PifiContent";
+	public static final String contentDirName = "BackpackContent";
 	
 	public static final String xferDirName = "xfer";
 	
 	public static final String metaFileName = "videos.dat";
 	
 	public static final String webMetaFileName = "news.dat";
+	
+	public static final String defaultContentURL = "http://107.20.184.189/vids/download?filename=%2Fvol%2Ftmp%2FBackpackContent.zip";
 	
 
 	/*

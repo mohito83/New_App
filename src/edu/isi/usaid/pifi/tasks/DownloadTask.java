@@ -75,7 +75,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             int fileLength = connection.getContentLength();        	
         	input = connection.getInputStream();
         	File sdDir = Environment.getExternalStorageDirectory();
-        	File file = new File(sdDir, "PifiContent.zip");
+        	File file = new File(sdDir, "BackpackContent.zip");
         	output = new FileOutputStream(file);
 	
         	byte data[] = new byte[4096];
@@ -98,6 +98,9 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
         		if (fileLength > 0) // only if total length is known
         			publishProgress((int) (total * 100 / fileLength));
             }
+        	
+        	publishProgress(1000);
+        	
         	if (output != null)
         		output.close();
 			if (input != null)
@@ -136,7 +139,11 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onProgressUpdate(Integer... progress) {
 	    super.onProgressUpdate(progress);
-	    // if we get here, length is known, now set indeterminate to false
+	    
+	    if (progress[0] > 100){
+	    	progressDialog.setIndeterminate(true);
+	    	progressDialog.setMessage("Extracting Content");
+	    }
 	    progressDialog.setIndeterminate(false);
 	    progressDialog.setMax(100);
 	    progressDialog.setProgress(progress[0]);

@@ -9,7 +9,7 @@ Setup
 1. Download and install Android SDK bundle from http://developer.android.com/sdk/index.html. This bundle includes Eclipse IDE.
 2. Get the code from github. You need to sign up for Github account if you don't have one already. Go to https://github.com/ISI-code/PiFiMobile, click on 'fork', you will get your copy of the code in your repository. Then you can go to your repository and clone the code to your computer. 
 3. Import project into Eclipse. (If you get compile errors, check the next section for possible issues.)
-4. Get the content pacakges and put it on the test phone.  https://www.dropbox.com/s/dklqlsvuwjdhv30/PifiContent.zip. Extract PifiContent.zip and put the files on the phone under sdcard/PifiContent/. 
+4. Get the content pacakges and put it on the test phone under sdcard/BackpackContent/. 
 5. Connect the phone to computer, from Eclipse, use Run as or Debug as on the project, then pick your phone from the list.
 
 Compile Errors
