@@ -161,7 +161,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					addBookmark(id);
 				else
 					removeBookmark(id);
-				contentListAdapter.notifyDataSetChanged();
 			}
 			
 		}
@@ -618,7 +617,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private void applyListFilter(DrawerItem item){
 		
-		// if something selected/de-selected
+		// if filter selected/de-selected
 		if (item != null){
 			if (item.getType() == DrawerItem.HEADER)
 				return;
@@ -893,6 +892,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		if (!bookmarks.contains(id)){
 			bookmarks.add(id);
 			saveBookmarks();
+			reload(false);
 		}
 	}
 
@@ -904,6 +904,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		if (bookmarks.contains(id)){
 			bookmarks.remove(id);
 			saveBookmarks();
+			reload(false);
 		}
 	}
 
