@@ -458,7 +458,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						String url = "http://shinyichen.com/shared/BackpackContent.zip";
 			    		ProgressDialog pd;
 			    		pd = new ProgressDialog(ContentListActivity.this);
 			    		pd.setMessage("Download Content");
@@ -466,7 +465,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			    		pd.setCancelable(true);
 			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
-			    		task.execute(url);
+			    		task.execute(Constants.defaultContentURL);
 					}
 				})
 				.setNegativeButton("No", null).show();
