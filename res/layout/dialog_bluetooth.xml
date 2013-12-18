@@ -4,10 +4,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
+    <TextView 
+        android:id="@+id/bluetoothTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:text="Scanning..."/>
+        
     <ListView 
         android:id="@+id/bluetoothList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:listSelector="@drawable/bluetooth_list_selector"
         android:choiceMode="singleChoice">
     </ListView>

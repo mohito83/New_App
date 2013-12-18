@@ -72,6 +72,8 @@ import edu.isi.usaid.pifi.tasks.DownloadTask;
  */
 public class ContentListActivity extends Activity implements BookmarkManager{
 	
+	public static final String TAG = "ContentListActivity";
+	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
 	public static final String VIDEO_CONTENT = "Video";
@@ -178,17 +180,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// adding a null check for device name, it may happen that some
-				// devices may not have any name configured
-				if (device.getName() == null || device.getName().isEmpty()) {
-					Log.i("Empty device", device.getAddress());
-					return;
+				if (!bts.contains(device)){
+					bts.add(device);
+					dialog.redraw(bts);
 				}
-				bts.add(device);
-				dialog.redraw(bts);
 
-				// }
-				// When discovery is finished.
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 					.equals(action)) {
 
@@ -199,6 +195,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				 * = getResources().getText(R.string.none_found).toString();
 				 * mNewDevicesArrayAdapter.add(noDevices); }
 				 */
+				dialog.setTitle("Finished Scanning. Found " + bts.size() + " device(s)");
+				ContentListActivity.this.unregisterReceiver(mReceiver);
 			}
 		}
 	};
@@ -859,8 +857,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			}
 		});
 		dialog.setList(bts);
-		dialog.setReceiver(mReceiver);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
+		
 
 	}
 

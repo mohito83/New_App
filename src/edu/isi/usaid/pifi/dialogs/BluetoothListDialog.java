@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import edu.isi.usaid.pifi.R;
 import edu.isi.usaid.pifi.data.BluetoothListAdapter;
 
@@ -27,7 +27,7 @@ import edu.isi.usaid.pifi.data.BluetoothListAdapter;
 public class BluetoothListDialog extends DialogFragment {
 	
 	private ArrayList<BluetoothDevice> btItems;
-	private BroadcastReceiver bluetoothReceiver;
+	private TextView titleView;
 	private ListView listView;
 	private ArrayAdapter<BluetoothDevice> adapter;
 	public static interface IHandler{
@@ -45,21 +45,11 @@ public class BluetoothListDialog extends DialogFragment {
 	}
 	
 	@Override
-	public void onDestroy() {
-		// disable the bluetooth broadcast receiver.
-		super.onDestroy();
-		this.getActivity().unregisterReceiver(bluetoothReceiver);	
-	}
-	
-	public void setReceiver(BroadcastReceiver receiver) {
-		bluetoothReceiver = receiver;
-	}
-	
-	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View view = inflater.inflate(R.layout.dialog_bluetooth, null);
+		titleView = (TextView)view.findViewById(R.id.bluetoothTitle);
 		listView = (ListView) view.findViewById(R.id.bluetoothList);
 		adapter = new BluetoothListAdapter(getActivity(), btItems);
 		listView.setAdapter(adapter);
@@ -75,6 +65,9 @@ public class BluetoothListDialog extends DialogFragment {
 		adapter.notifyDataSetChanged();		
 	}
 	
+	public void setTitle(String title){
+		titleView.setText(title);
+	}
 	 @Override
 	  public void onResume() {
 	    super.onResume();
