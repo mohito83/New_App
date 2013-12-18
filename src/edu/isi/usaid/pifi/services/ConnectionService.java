@@ -38,7 +38,8 @@ public class ConnectionService extends Service {
 
 	// Name for the SDP record when creating server socket
 	private static final UUID MY_UUID = UUID
-			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+			/*.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");*/
+			.fromString("00001101-0000-1000-8000-00805F9B34FB"); // this is the correct UUID for SPP
 
 	private BluetoothAdapter mAdapter;
 	private BluetoothSocket mmSocket;
