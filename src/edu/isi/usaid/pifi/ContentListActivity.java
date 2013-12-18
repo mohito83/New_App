@@ -524,6 +524,14 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		stopService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 	
+	protected void onActivityResult (int requestCode, int resultCode, Intent data){
+		// turn on bluetooth requested due to sync request
+		if (requestCode == REQUEST_ENABLE_BT && resultCode != RESULT_CANCELED){
+			// if user allowed turning on bt, try to sync again
+			sync();
+		}
+	}
+	
 	/**
 	 * reload metadata and refresh the list
 	 * 
@@ -808,6 +816,20 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			// finish();
 			return;
 		}
+		
+		// request turn on the bluetooth if it's off
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+			return;
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+		}
 
 		/*
 		 * create an Broadcast register and register the event that you are
@@ -820,18 +842,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		// Register for broadcasts when discovery has finished
 		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		this.registerReceiver(mReceiver, filter);
-
-		if (!mBluetoothAdapter.isEnabled()) {
-			// make your device discoverable
-			Intent makeDiscoverable = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			makeDiscoverable.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
-		} else {
-			Log.d(TAG,
-					"Bluetooth is already enabled. Setting up the file transfer");
-		}
 
 		searchForBTDevices();
 
@@ -909,4 +919,5 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		else
 			return false;
 	}
+	
 }
