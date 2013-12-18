@@ -178,7 +178,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				if (device.getName().isEmpty()) {
+				// adding a null check for device name, it may happen that some
+				// devices may not have any name configured
+				if (device.getName() == null || device.getName().isEmpty()) {
 					Log.i("Empty device", device.getAddress());
 					return;
 				}
