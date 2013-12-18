@@ -62,4 +62,9 @@ public class Constants {
 
 	public static final String VIDEO_THUMBNAIL_ID = "_default.jpg";
 	
+	/**
+	 * This constant defined the timeout period for which your bluetooth device will be visible to other devices.
+	 */
+	public static final int VISIBILITY_TIMEOUT = 3600;
+	
 }

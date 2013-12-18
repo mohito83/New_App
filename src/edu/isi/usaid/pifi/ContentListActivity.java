@@ -854,6 +854,18 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		this.registerReceiver(mReceiver, filter);
 
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.VISIBILITY_TIMEOUT);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+		}
+
 		searchForBTDevices();
 
 		dialog = new BluetoothListDialog();
