@@ -374,7 +374,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
-				// if in editing mode, add/remove selection
+				// if in editing/deletion mode, add/remove selection
 				else {
 					boolean select = contentListAdapter.toggleSelection(pos);
 					if (select)
