@@ -48,7 +48,9 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 //		else {
 			view = inflater.inflate(R.layout.bluetooth_list_item, parent, false);
 			TextView textView = (TextView)view.findViewById(R.id.btItemText);
-			textView.setText(item.getName());
+			//This is to ensure that for Bluetooth device with no name should have their address displayed.
+			String itemTxt = item.getName()!=null?item.getName():item.getAddress();
+			textView.setText(itemTxt);
 	//	}
 
         return view;

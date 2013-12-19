@@ -72,6 +72,8 @@ import edu.isi.usaid.pifi.tasks.DownloadTask;
  */
 public class ContentListActivity extends Activity implements BookmarkManager{
 	
+	public static final String TAG = "ContentListActivity";
+	
 	public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
 	public static final String VIDEO_CONTENT = "Video";
@@ -159,7 +161,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					addBookmark(id);
 				else
 					removeBookmark(id);
-				contentListAdapter.notifyDataSetChanged();
 			}
 			
 		}
@@ -178,15 +179,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				if (device.getName().isEmpty()) {
-					Log.i("Empty device", device.getAddress());
-					return;
+				if (!bts.contains(device)){
+					bts.add(device);
+					dialog.redraw(bts);
 				}
-				bts.add(device);
-				dialog.redraw(bts);
 
-				// }
-				// When discovery is finished.
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 					.equals(action)) {
 
@@ -197,6 +194,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				 * = getResources().getText(R.string.none_found).toString();
 				 * mNewDevicesArrayAdapter.add(noDevices); }
 				 */
+				dialog.setTitle("Finished Scanning. Found " + bts.size() + " device(s)");
+				ContentListActivity.this.unregisterReceiver(mReceiver);
 			}
 		}
 	};
@@ -522,6 +521,14 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		stopService(new Intent(getBaseContext(), ConnectionService.class));
 	}
 	
+	protected void onActivityResult (int requestCode, int resultCode, Intent data){
+		// turn on bluetooth requested due to sync request
+		if (requestCode == REQUEST_ENABLE_BT && resultCode != RESULT_CANCELED){
+			// if user allowed turning on bt, try to sync again
+			sync();
+		}
+	}
+	
 	/**
 	 * reload metadata and refresh the list
 	 * 
@@ -610,7 +617,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private void applyListFilter(DrawerItem item){
 		
-		// if something selected/de-selected
+		// if filter selected/de-selected
 		if (item != null){
 			if (item.getType() == DrawerItem.HEADER)
 				return;
@@ -806,6 +813,20 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			// finish();
 			return;
 		}
+		
+		// request turn on the bluetooth if it's off
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+			return;
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+		}
 
 		/*
 		 * create an Broadcast register and register the event that you are
@@ -818,18 +839,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		// Register for broadcasts when discovery has finished
 		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		this.registerReceiver(mReceiver, filter);
-
-		if (!mBluetoothAdapter.isEnabled()) {
-			// make your device discoverable
-			Intent makeDiscoverable = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			makeDiscoverable.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
-		} else {
-			Log.d(TAG,
-					"Bluetooth is already enabled. Setting up the file transfer");
-		}
 
 		searchForBTDevices();
 
@@ -847,8 +856,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			}
 		});
 		dialog.setList(bts);
-		dialog.setReceiver(mReceiver);
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
+		
 
 	}
 
@@ -883,6 +892,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		if (!bookmarks.contains(id)){
 			bookmarks.add(id);
 			saveBookmarks();
+			reload(false);
 		}
 	}
 
@@ -894,6 +904,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		if (bookmarks.contains(id)){
 			bookmarks.remove(id);
 			saveBookmarks();
+			reload(false);
 		}
 	}
 
@@ -907,4 +918,5 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		else
 			return false;
 	}
+	
 }

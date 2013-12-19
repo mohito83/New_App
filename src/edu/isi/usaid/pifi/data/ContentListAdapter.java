@@ -112,7 +112,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			holder.playButtonView.setVisibility(View.VISIBLE);
 			
 			// try to find the image from cache first
-			Bitmap bitmap = getBitmapFromCache(uri.getPath());
+			Bitmap bitmap = getBitmapFromCache(uri.toString());
 			if (bitmap != null)
 				holder.imageView.setImageBitmap(bitmap);
 			else {
@@ -165,7 +165,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 					String fileName = f.getName();
 					if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG") || fileName.endsWith(".png") || fileName.endsWith(".PNG")){
 						Uri uri = Uri.fromFile(f);
-						bitmap = getBitmapFromCache(uri.getPath());
+						bitmap = getBitmapFromCache(uri.toString());
 						if (bitmap == null){
 							BitmapTask task = new BitmapTask(
 									holder.imageView, 
@@ -173,7 +173,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 									holder.imageView.getLayoutParams().width,
 									holder.imageView.getLayoutParams().height,
 									bitmapCache);
-							task.execute(Uri.fromFile(f));
+							task.execute(uri);
 						}
 						break;
 					}
