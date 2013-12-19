@@ -880,8 +880,10 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private void saveBookmarks(){
 		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(SETTING_BOOKMARKS);
+		editor.apply();
 		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
-		editor.commit();
+		editor.apply();
 	}
 
 	/* (non-Javadoc)
