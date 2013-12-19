@@ -398,7 +398,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				selectedRowItems.add(contentListAdapter.getItem(pos));
 				contentListAdapter.toggleSelection(pos);
 				rowActionMode = startActionMode(rowActionCallback);
-				view.setSelected(true);
 				return true;
 			}
 			
@@ -880,8 +879,10 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private void saveBookmarks(){
 		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(SETTING_BOOKMARKS);
+		editor.apply();
 		editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
-		editor.commit();
+		editor.apply();
 	}
 
 	/* (non-Javadoc)
