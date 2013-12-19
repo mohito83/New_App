@@ -398,7 +398,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				selectedRowItems.add(contentListAdapter.getItem(pos));
 				contentListAdapter.toggleSelection(pos);
 				rowActionMode = startActionMode(rowActionCallback);
-				view.setSelected(true);
 				return true;
 			}
 			
