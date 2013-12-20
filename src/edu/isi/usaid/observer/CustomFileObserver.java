@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
@@ -35,9 +37,12 @@ public class CustomFileObserver extends FileObserver
 
 	private FileMonitorTask fileMonitorTask;
 	
+	private Map<String, FileObserver> fileObserverMap = new HashMap<String, FileObserver>() ; 
+	
 	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask) 
 	{
 		super(path);
+		
 		this.fileMonitorTask = fileMonitorTask;
 	}
 	
@@ -55,6 +60,14 @@ public class CustomFileObserver extends FileObserver
 	public void onEvent(int event, String path) 
 	{
 		Log.d(tagName, "Got event for file with path: " + path);
+		if(path== null || path.equals("null")) return; 
+		String fullPath = baseDirPath + "/" + path; 
+		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
+		{
+			fileObserverMap.put(fullPath, new CustomFileObserver(fullPath, fileMonitorTask));
+			return;
+		}
+		Log.d(tagName, "Event Id: " + event);
 		if(event == FileObserver.MOVE_SELF && isTransferDirectoryContent(path)) 
 		{
 			if(isMetaDataFile(path))
@@ -68,6 +81,12 @@ public class CustomFileObserver extends FileObserver
 			}
 			cleanupFile(path);
 		}			
+	}
+
+	private boolean isDirectory(String path) 
+	{
+		File file = new File(path); 
+		return file.isDirectory();
 	}
 
 	private void propogateUpdatedMessage(String path) 
