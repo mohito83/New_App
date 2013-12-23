@@ -16,9 +16,9 @@ import java.util.zip.ZipInputStream;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.util.Log;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.ContentListActivity;
 
@@ -27,6 +27,8 @@ import edu.isi.usaid.pifi.ContentListActivity;
  *
  */
 public class DownloadTask extends AsyncTask<String, Integer, String> {
+	
+	public static final String TAG = "DownloadTask";
 	
 	private ContentListActivity context;
 	
@@ -45,8 +47,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	 */
 	@Override
 	protected String doInBackground(String... urls) {
-		
-		Debug.waitForDebugger();
 		
 		// take CPU lock to prevent CPU from going off if the user 
         // presses the power button during download
@@ -72,7 +72,10 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             	return "Unable to connect, abort";
             }
 
-            int fileLength = connection.getContentLength();        	
+            int fileLength = connection.getContentLength();  
+            if (fileLength < 0)
+            	publishProgress(-1);
+            Log.i(TAG, "file size " + fileLength + " bytes");
         	input = connection.getInputStream();
         	File sdDir = Environment.getExternalStorageDirectory();
         	File file = new File(sdDir, "BackpackContent.zip");
@@ -97,6 +100,9 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
         		// publishing the progress....
         		if (fileLength > 0) // only if total length is known
         			publishProgress((int) (total * 100 / fileLength));
+        		else 
+        			publishProgress(-1);
+        			
             }
         	
         	publishProgress(1000);
@@ -140,13 +146,12 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	protected void onProgressUpdate(Integer... progress) {
 	    super.onProgressUpdate(progress);
 	    
-	    if (progress[0] > 100){
-	    	progressDialog.setIndeterminate(true);
+	    if (progress[0] > 100) // finished
 	    	progressDialog.setMessage("Extracting Content");
-	    }
-	    progressDialog.setIndeterminate(false);
-	    progressDialog.setMax(100);
-	    progressDialog.setProgress(progress[0]);
+	    else if (progress[0] == -1)
+	    	progressDialog.setMessage("Downloading Content (file size unknown)");
+	    else
+		    progressDialog.setMessage("Downloading Content (" + progress[0] + "%)");
 	}
 	
 	@Override

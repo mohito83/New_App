@@ -458,9 +458,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					public void onClick(DialogInterface dialog, int which) {
 			    		ProgressDialog pd;
 			    		pd = new ProgressDialog(ContentListActivity.this);
-			    		pd.setMessage("Download Content");
+			    		pd.setMessage("Prepare to download");
 			    		pd.setIndeterminate(true);
-			    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			    		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			    		pd.setCancelable(true);
 			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
 			    		task.execute(Constants.defaultContentURL);
