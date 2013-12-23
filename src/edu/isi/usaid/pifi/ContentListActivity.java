@@ -294,6 +294,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -307,13 +308,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				R.drawable.ic_drawer, R.string.open_drawer,
 				R.string.close_drawer) {
 			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(getTitle());
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle(getTitle());
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
