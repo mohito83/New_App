@@ -161,6 +161,10 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	    context.reload(false);
 	}
 	
+	@Override
+	protected void onCancelled(String result){
+		Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+	}
 	private String unzip(File directory, File zip){
 		try {
 			FileInputStream fis = new FileInputStream(zip);

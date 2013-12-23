@@ -20,6 +20,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -461,8 +462,16 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			    		pd.setIndeterminate(true);
 			    		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			    		pd.setCancelable(true);
-			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
+			    		final DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
 			    		task.execute(Constants.defaultContentURL);
+			    		pd.setOnCancelListener(new OnCancelListener(){
+
+							@Override
+							public void onCancel(DialogInterface arg0) {
+								task.cancel(true);
+							}
+			    			
+			    		});
 					}
 				})
 				.setNegativeButton("No", null).show();
