@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="90dp"
     android:orientation="horizontal"
+    android:layout_margin="5dp"
     android:background="@drawable/list_selector">
     
     <FrameLayout 
@@ -52,6 +53,7 @@
 	    android:layout_below="@+id/contentTitle"
 	    android:layout_toRightOf="@+id/contentThumbFrame" 
 	    android:background="@color/DimGray"
+	    android:textSize="12sp"
 	    android:singleLine="true" />
 	
 	<TextView
