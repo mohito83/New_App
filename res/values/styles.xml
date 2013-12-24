@@ -14,10 +14,10 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:editTextStyle">@style/PiFiEditText</item>
         <item name="android:actionDropDownStyle">@style/PiFiDropDownNavSpinner</item>
         <item name="android:spinnerItemStyle">@style/PiFiSpinnerItem</item>
+    	<item name="android:actionModeCloseDrawable">@drawable/ic_action_undo</item>
     </style>
     
     <style name="PiFiEditText" parent="@android:style/Widget.EditText">
