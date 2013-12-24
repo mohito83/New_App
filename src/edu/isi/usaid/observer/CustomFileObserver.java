@@ -27,6 +27,8 @@ import android.util.Log;
 
 public class CustomFileObserver extends FileObserver
 {
+	private static final String TRANSFER_DIRECTORY_NAME = "xfer";
+
 	public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
 
 	public static final String VIDEO_META_FILE_LOCATION = Constants.metaFileName;
@@ -42,13 +44,12 @@ public class CustomFileObserver extends FileObserver
 	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask) 
 	{
 		super(path);
-		
 		this.fileMonitorTask = fileMonitorTask;
 	}
 	
 	public boolean isTransferDirectoryContent(String path)
 	{
-		return path != null && path.contains("transfer");
+		return path != null && path.contains(TRANSFER_DIRECTORY_NAME);
 	}
 
 
