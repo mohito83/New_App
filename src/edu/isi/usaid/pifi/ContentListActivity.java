@@ -20,6 +20,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -294,6 +295,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -307,13 +309,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				R.drawable.ic_drawer, R.string.open_drawer,
 				R.string.close_drawer) {
 			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(getTitle());
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle(getTitle());
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
@@ -374,7 +374,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
-				// if in editing mode, add/remove selection
+				// if in editing/deletion mode, add/remove selection
 				else {
 					boolean select = contentListAdapter.toggleSelection(pos);
 					if (select)
@@ -458,12 +458,20 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					public void onClick(DialogInterface dialog, int which) {
 			    		ProgressDialog pd;
 			    		pd = new ProgressDialog(ContentListActivity.this);
-			    		pd.setMessage("Download Content");
+			    		pd.setMessage("Prepare to download");
 			    		pd.setIndeterminate(true);
-			    		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			    		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			    		pd.setCancelable(true);
-			    		DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
+			    		final DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
 			    		task.execute(Constants.defaultContentURL);
+			    		pd.setOnCancelListener(new OnCancelListener(){
+
+							@Override
+							public void onCancel(DialogInterface arg0) {
+								task.cancel(true);
+							}
+			    			
+			    		});
 					}
 				})
 				.setNegativeButton("No", null).show();

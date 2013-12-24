@@ -21,7 +21,6 @@
 		android:layout_height="match_parent" 
 		android:layout_gravity="start"
 		android:background="@color/white"
-		android:divider="@drawable/drawer_divider"
 		android:choiceMode="multipleChoice"/>
 
     

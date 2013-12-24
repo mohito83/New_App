@@ -5,6 +5,7 @@
     android:gravity="center_vertical"
     android:paddingLeft="5dp"
     android:paddingRight="16dp"
-    android:textColor="@color/white"
-    android:background="@color/background"
-    android:height="20dp"/>
+    android:textColor="@color/black"
+    android:background="@color/DimGray"
+    android:textStyle="bold"
+    android:height="25dp"/>

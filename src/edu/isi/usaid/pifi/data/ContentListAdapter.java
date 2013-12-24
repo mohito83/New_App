@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.LruCache;
 import android.util.SparseBooleanArray;
@@ -43,13 +42,11 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 	
 	private Bitmap defaultBitmap;
 
-	private Drawable defaultItemBackground;
 	
 	public ContentListAdapter(ContentListActivity context, List<Object> objects, String directory) {
 		super(context, R.layout.content_list_item, objects);
 		
 		this.context = context;
-		defaultItemBackground = context.getResources().getDrawable(R.drawable.gradient_bg);
 		contentDirectory = new File(directory);
 		
 		// create a cache for bitmaps
@@ -211,11 +208,11 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			});
 		}
 		
-		if (selected.get(pos)){
-			convertView.setBackgroundColor(0x9934B5E4); // highlight deletion selection
-		}
+		// this will cause the selected item to be highlighted
+		if (selected.get(pos))
+			convertView.setActivated(true);
 		else 
-			convertView.setBackground(defaultItemBackground);
+			convertView.setActivated(false);
 		
 		return convertView;
 	}

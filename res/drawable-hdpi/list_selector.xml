@@ -8,6 +8,10 @@
         android:state_selected="true"
         android:drawable="@drawable/gradient_bg_hover" />
     
+    <item 
+        android:state_activated="true"
+        android:drawable="@drawable/gradient_bg_hover" />
+    
     <item
         android:drawable="@drawable/gradient_bg" />
 </selector>
