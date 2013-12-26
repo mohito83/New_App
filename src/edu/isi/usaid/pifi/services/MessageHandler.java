@@ -174,7 +174,7 @@ public class MessageHandler {
 				// 1.1. send Info message
 				File f = new File(sdir, v.getFilepath());
 				InfoMessage info = SocketUtils.createInfoMessage(
-						Constants.VIDEO_CONTENT_DATA, f);
+						Constants.FILE_DATA, f);
 				conn.sendInfoMessage(info);
 
 				// 1.2. send video contents
@@ -196,8 +196,8 @@ public class MessageHandler {
 				// 2.1 send Info message first
 				String thumbnail = v.getId() + Constants.VIDEO_THUMBNAIL_ID;
 				File thumbNailFile = new File(sdir, thumbnail);
-				info = SocketUtils.createInfoMessage(
-						Constants.VIDEO_BITMAP_DATA, thumbNailFile);
+				info = SocketUtils.createInfoMessage(Constants.IMAGE_DATA,
+						thumbNailFile);
 				conn.sendInfoMessage(info);
 
 				// 2.2 send bitmap content
@@ -261,7 +261,7 @@ public class MessageHandler {
 	 * 
 	 * @param sdir
 	 */
-	public void receiveVideos(File sdir) {
+	public void receiveFiles(File sdir) {
 		boolean start = false;
 		// wait for bulk data tx signal
 		InfoMessage bulkMsg = conn.receiveInfoMessage();
@@ -291,7 +291,7 @@ public class MessageHandler {
 				start = false;
 				break;
 
-			case Constants.VIDEO_CONTENT_DATA:
+			case Constants.FILE_DATA:
 				result = conn.readFileData(info, sdir);
 				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
@@ -299,7 +299,7 @@ public class MessageHandler {
 				conn.sendInfoMessage(ackMsg);
 				break;
 
-			case Constants.VIDEO_BITMAP_DATA:
+			case Constants.IMAGE_DATA:
 				result = conn.readFileData(info, sdir);
 				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
@@ -313,7 +313,19 @@ public class MessageHandler {
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				if (result > 0) {
-					FileUtils.broadcastMessage(wrapper, "Received video file: "
+					FileUtils.broadcastMessage(wrapper, "Received file: "
+							+ ((InfoPayload) info.getPayload()).getFileName());
+				}
+				conn.sendInfoMessage(ackMsg);
+				break;
+
+			case Constants.WEB_META_DATA_TMP:
+				result = conn.readTmpMetaData(info, sdir, false);
+				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+						type, result > 0 ? Constants.OK_RESPONSE
+								: Constants.FAIL_RESPONSE);
+				if (result > 0) {
+					FileUtils.broadcastMessage(wrapper, "Received file: "
 							+ ((InfoPayload) info.getPayload()).getFileName());
 				}
 				conn.sendInfoMessage(ackMsg);
@@ -350,7 +362,7 @@ public class MessageHandler {
 				// 1.1 send info message first
 				File f = new File(sdir, a.getFilename());
 				InfoMessage info = SocketUtils.createInfoMessage(
-						Constants.WEB_CONTENT_DATA, f);
+						Constants.FILE_DATA, f);
 				conn.sendInfoMessage(info);
 
 				// 1.2 send the actual web content file
@@ -373,8 +385,8 @@ public class MessageHandler {
 						.getWebArticleImages(sdir, a);
 				for (File img : webImgList) {
 					// 2.1 send info message
-					info = SocketUtils.createInfoMessage(
-							Constants.WEB_IMAGES_DATA, img);
+					info = SocketUtils.createInfoMessage(Constants.IMAGE_DATA,
+							img);
 					conn.sendInfoMessage(info);
 
 					// 2.2 Send actual image data
@@ -432,75 +444,6 @@ public class MessageHandler {
 			if (payload.getAck() == Constants.OK_RESPONSE) {
 				Log.i(TAG, "Bulk transfer of web content files finishes");
 			}
-		}
-	}
-
-	/**
-	 * This method receives web content from the sender
-	 * 
-	 * TODO Can use only receiveVideoContent as these two functions are similar
-	 * 
-	 * @param sdir
-	 */
-	public void receiveWebContent(File sdir) {
-		boolean start = false;
-		// wait for bulk data tx signal
-		InfoMessage bulkMsg = conn.receiveInfoMessage();
-		if (bulkMsg.getType() == Constants.START_BULK_TX) {
-			start = true;
-		}
-
-		if (start) {
-			InfoMessage bulkAckMsg = SocketUtils.createInfoMessage(
-					Constants.ACK_DATA, Constants.START_BULK_TX,
-					Constants.OK_RESPONSE);
-			conn.sendInfoMessage(bulkAckMsg);
-		}
-
-		InfoMessage ackMsg = null;
-		int result = 0;
-
-		while (start) {
-			InfoMessage info = conn.receiveInfoMessage();
-			short type = info.getType();
-
-			switch (type) {
-			case Constants.STOP_BULK_TX:
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
-						Constants.STOP_BULK_TX, Constants.OK_RESPONSE);
-				conn.sendInfoMessage(ackMsg);
-				start = false;
-				break;
-
-			case Constants.WEB_CONTENT_DATA:
-				result = conn.readFileData(info, sdir);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
-						type, result > 0 ? Constants.OK_RESPONSE
-								: Constants.FAIL_RESPONSE);
-				conn.sendInfoMessage(ackMsg);
-				break;
-
-			case Constants.WEB_IMAGES_DATA:
-				result = conn.readFileData(info, sdir);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
-						type, result > 0 ? Constants.OK_RESPONSE
-								: Constants.FAIL_RESPONSE);
-				conn.sendInfoMessage(ackMsg);
-				break;
-
-			case Constants.WEB_META_DATA_TMP:
-				result = conn.readTmpMetaData(info, sdir, false);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
-						type, result > 0 ? Constants.OK_RESPONSE
-								: Constants.FAIL_RESPONSE);
-				if (result > 0) {
-					FileUtils.broadcastMessage(wrapper, "Received video file: "
-							+ ((InfoPayload) info.getPayload()).getFileName());
-				}
-				conn.sendInfoMessage(ackMsg);
-				break;
-			}
-
 		}
 	}
 
