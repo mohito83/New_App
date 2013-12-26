@@ -34,7 +34,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
  */
 public class SocketUtils {
 
-	private static final String TAG = "SocketUtils";
+	private static final String TAG = "BackPackSocketUtils";
 	private static byte buffer[] = new byte[8 * 1024];
 
 	/**
@@ -192,7 +192,7 @@ public class SocketUtils {
 			for (i = 0; i < no_of_files; i++) {
 				String fName = dis.readUTF();
 				readFromSocket(dis, sdir, fName);
-				//Read the thumb nail image
+				// Read the thumb nail image
 				String tName = dis.readUTF();
 				readFromSocket(dis, sdir, tName);
 				readTmpMetaDataFromSocket(dis, sdir, fName, true);
@@ -226,10 +226,10 @@ public class SocketUtils {
 
 				// save the images in the folder whose name can be obtained by
 				// truncating .html from the news article file.
-				//1. create the folder
-				String folderName =fName.substring(0, fName.indexOf(".html"));
-				File imgFolder = new File(sdir,folderName);
-				if(!imgFolder.exists()){
+				// 1. create the folder
+				String folderName = fName.substring(0, fName.indexOf(".html"));
+				File imgFolder = new File(sdir, folderName);
+				if (!imgFolder.exists()) {
 					imgFolder.mkdir();
 				}
 				// read each image file
@@ -269,12 +269,12 @@ public class SocketUtils {
 
 				Log.i(TAG, "Sent video " + totalBytesSent + " bytes");
 
-				//send the thumb nail associated with the video file
-				String thumbnail = v.getId()+Constants.VIDEO_THUMBNAIL_ID;
+				// send the thumb nail associated with the video file
+				String thumbnail = v.getId() + Constants.VIDEO_THUMBNAIL_ID;
 				File thumbNailFile = new File(root, thumbnail);
 				writeToSocket(dos, thumbNailFile);
-				
-				//send temp protobuf file for the video
+
+				// send temp protobuf file for the video
 				sendProtoBufToReceiver(v, os);
 				Log.i(TAG, "Sent video meta data" + totalBytesSent + " bytes");
 			}
@@ -467,7 +467,7 @@ public class SocketUtils {
 		return totalFiles;
 	}
 
-	private static List<File> getWebArticleImages(File path, Article artilce) {
+	public static List<File> getWebArticleImages(File path, Article artilce) {
 		List<File> webImagesPath = new ArrayList<File>();
 		String filenName = artilce.getFilename();
 		String webImageFolderName = filenName.substring(0,
@@ -479,4 +479,43 @@ public class SocketUtils {
 
 		return webImagesPath;
 	}
+
+	/**
+	 * This method creates the info message
+	 * 
+	 * @param type
+	 * @param f
+	 * @return
+	 */
+	public static InfoMessage createInfoMessage(short type, File f) {
+		InfoMessage infomsg = new InfoMessage();
+		infomsg.setType(type);
+		InfoPayload payload = new InfoPayload();
+		if (f != null) {
+			payload.setFileName(f.getName());
+			payload.setLength(f.length());
+		}
+		infomsg.setPayload(payload);
+		return infomsg;
+	}
+
+	/**
+	 * This method creates the info message with ack payload
+	 * 
+	 * @param type
+	 * @param orgType
+	 * @param ackVal
+	 * @return
+	 */
+	public static InfoMessage createInfoMessage(short type, short orgType,
+			short ackVal) {
+		InfoMessage infomsg = new InfoMessage();
+		infomsg.setType(type);
+		AckPayload ackPayload = new AckPayload();
+		ackPayload.setAck(ackVal);
+		ackPayload.setOrgMsgType(orgType);
+		infomsg.setPayload(ackPayload);
+		return infomsg;
+	}
+
 }

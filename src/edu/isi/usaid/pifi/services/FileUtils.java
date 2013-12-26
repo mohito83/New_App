@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -141,5 +143,60 @@ public class FileUtils {
 		i.setAction(Constants.BT_STATUS_ACTION);
 		i.putExtra(ExtraConstants.STATUS, message);
 		wrapper.sendBroadcast(i);
+	}
+
+	/**
+	 * This method calculates the delta for the video meta data file
+	 * 
+	 * @param videoMetaFile
+	 * @param newMetaFile
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<Video> getVideoDeltaList(File videoMetaFile,
+			File newMetaFile) throws IOException {
+		List<Video> videoList = new ArrayList<Video>();
+		FileInputStream finorg = new FileInputStream(videoMetaFile);
+		FileInputStream finnew = new FileInputStream(newMetaFile);
+
+		Map<String, Video> newMap = new HashMap<String, Video>();
+		for (Video v : Videos.parseFrom(finnew).getVideoList()) {
+			newMap.put(v.getFilename(), v);
+		}
+
+		for (Video nVid : Videos.parseFrom(finorg).getVideoList()) {
+			if (!newMap.containsKey(nVid.getFilename())) {
+				videoList.add(nVid);
+			}
+		}
+
+		return videoList;
+	}
+
+	/**
+	 * This method calculates the delta for web meta data file
+	 * 
+	 * @param webMetaFile
+	 * @param newMetaFile
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<Article> getWebDeltaList(File webMetaFile,
+			File newMetaFile) throws IOException {
+		List<Article> webList = new ArrayList<Article>();
+		FileInputStream finorg = new FileInputStream(webMetaFile);
+		FileInputStream finnew = new FileInputStream(newMetaFile);
+
+		Map<String, Article> newMap = new HashMap<String, Article>();
+		for (Article v : Articles.parseFrom(finnew).getArticleList()) {
+			newMap.put(v.getFilename(), v);
+		}
+
+		for (Article nVid : Articles.parseFrom(finorg).getArticleList()) {
+			if (!newMap.containsKey(nVid.getFilename())) {
+				webList.add(nVid);
+			}
+		}
+		return webList;
 	}
 }

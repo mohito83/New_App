@@ -30,36 +30,32 @@ public class Constants {
 	public static final String defaultContentURL = "http://107.20.184.189/vids/download?filename=%2Fvol%2Ftmp%2FBackpackContent.zip";
 	
 
-	/*
-	 * Flag for no data transfer
-	 */
-	public static final short NO_DATA_META = 0;
-	
-	public static final short META_DATA_RECEIVED=1000;
-	
-	public static final int META_DATA_TO_SLAVE = 1001;
-	
-	public static final int DATA_FROM_SLAVE = 1002;
-	
-	public static final short META_TO_MASTER = 1003;
-	/*
-	 * Flag for identifying that data is from master
-	 */
-	public static final short DATA_FROM_MASTER = 1004;
-	/*
-	 * Flag for identifying data to master
-	 */
-	public static final short DATA_TO_MASTER = 1002;
-	/*
-	 * Flag for identifying meta data from master
-	 */
-	public static final short META_FROM_MASTER = 1003;
+	/****************************************************/
+	/*****************Transaction states*****************/
+	/****************************************************/
+	public static final short META_DATA_EXCHANGE = 1000;
+	public static final short FILE_DATA_EXCHANGE = 1001; 
+	public static final short SYNC_COMPLETE	=	1002;
 	
 	
+	/**************************************************/
+	/*********Codes used for Infomessage types*********/
+	/**************************************************/
+	public static final short VIDEO_META_DATA_FULL = 1;
+	public static final short WEB_META_DATA_FULL = 2;
+	public static final short VIDEO_META_DATA_TMP = 3;
+	public static final short WEB_META_DATA_TMP = 4;
+	public static final short VIDEO_BITMAP_DATA = 5;
+	public static final short WEB_IMAGES_DATA = 6;
+	public static final short VIDEO_CONTENT_DATA = 7;
+	public static final short WEB_CONTENT_DATA = 8;
+	public static final short START_BULK_TX = 9;
+	public static final short STOP_BULK_TX = 10;
+	public static final short ACK_DATA = 15;
 	public static final short OK_RESPONSE = 200;
 	public static final short FAIL_RESPONSE = 400;
 	
-
+	
 	public static final String VIDEO_THUMBNAIL_ID = "_default.jpg";
 	
 	/**

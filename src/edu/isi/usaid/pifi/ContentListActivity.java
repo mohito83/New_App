@@ -156,7 +156,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				 */
 				Toast toast = Toast.makeText(ContentListActivity.this,
 						i.getStringExtra(ExtraConstants.STATUS),
-						Toast.LENGTH_LONG);
+						Toast.LENGTH_SHORT);
 				toast.show();
 			}
 			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
