@@ -14,7 +14,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
@@ -52,7 +51,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-		Debug.waitForDebugger();
+//		Debug.waitForDebugger();
 
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);
@@ -241,11 +240,15 @@ public class ListenerService extends Service {
 
 				// close the socket
 				if (terminate) {
+					BackpackUtils.broadcastMessage(ListenerService.this,
+							"File sync is successful. Closing the session");
+					Log.i(TAG, "Close socket");
 					try {
-						BackpackUtils.broadcastMessage(ListenerService.this,
-								"File sync is successful. Closing the session");
-						Log.i(TAG, "Close socket");
-
+						Thread.sleep(2000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					try {
 						mmInStream.close();
 						mmOutStream.close();
 						commSock.close();

@@ -50,7 +50,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-		// Debug.waitForDebugger();
+//		 Debug.waitForDebugger();
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
@@ -229,6 +229,12 @@ public class ConnectionService extends Service {
 					if (terminate) {
 						BackpackUtils.broadcastMessage(ConnectionService.this,
 								"File sync is successful. Closing the session");
+						Log.i(TAG, "Close socket");
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
 						try {
 							mmInStream.close();
 							mmOutStream.close();
