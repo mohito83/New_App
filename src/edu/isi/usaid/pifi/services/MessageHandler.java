@@ -56,7 +56,7 @@ public class MessageHandler {
 	 */
 	public int sendFullMetaData(short type, File metaFile) {
 		int result = -1;
-		InfoMessage infomessage = SocketUtils.createInfoMessage(type, metaFile);
+		InfoMessage infomessage = BackpackUtils.createInfoMessage(type, metaFile);
 		// 1. send the info message informing the data
 		conn.sendInfoMessage(infomessage);
 
@@ -69,7 +69,7 @@ public class MessageHandler {
 			if (ackMessage.getType() == Constants.ACK_DATA) {
 				AckPayload payload = (AckPayload) ackMessage.getPayload();
 				if (payload.getAck() == Constants.OK_RESPONSE) {
-					FileUtils.broadcastMessage(wrapper, "Sent metadata file: "
+					BackpackUtils.broadcastMessage(wrapper, "Sent metadata file: "
 							+ metaFile.getName());
 					Log.i(TAG,
 							"Successfully sent meta data file: "
@@ -109,7 +109,7 @@ public class MessageHandler {
 
 		// calculate the delta
 		if (result >= 0) {
-			FileUtils.broadcastMessage(wrapper, "Received metadata file: "
+			BackpackUtils.broadcastMessage(wrapper, "Received metadata file: "
 					+ ((InfoPayload) info.getPayload()).getFileName());
 
 			Log.i(TAG, "Successfully received metadata file: "
@@ -120,12 +120,12 @@ public class MessageHandler {
 			try {
 				if (info.getType() == Constants.VIDEO_META_DATA_FULL) {
 					File newVideoMetaFile = new File(sdir, tempMetaFName);
-					videoList = FileUtils.getVideoDeltaList(videoMetaFile,
+					videoList = BackpackUtils.getVideoDeltaList(videoMetaFile,
 							newVideoMetaFile);
 					newVideoMetaFile.delete();
 				} else {
 					File newWebMetaFile = new File(sdir, tempMetaFName);
-					webList = FileUtils.getWebDeltaList(webMetaFile,
+					webList = BackpackUtils.getWebDeltaList(webMetaFile,
 							newWebMetaFile);
 					newWebMetaFile.delete();
 				}
@@ -139,7 +139,7 @@ public class MessageHandler {
 		// 3. Send back ACK message
 		short ackVal = result > 0 ? Constants.OK_RESPONSE
 				: Constants.FAIL_RESPONSE;
-		InfoMessage ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+		InfoMessage ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 				info.getType(), ackVal);
 		conn.sendInfoMessage(ackMsg);
 
@@ -155,7 +155,7 @@ public class MessageHandler {
 	public void sendVideos(File sdir) {
 		boolean start = false;
 		// send an info message informing start of bulk transfer operation
-		InfoMessage bulkMsg = SocketUtils.createInfoMessage(
+		InfoMessage bulkMsg = BackpackUtils.createInfoMessage(
 				Constants.START_BULK_TX, null);
 		conn.sendInfoMessage(bulkMsg);
 
@@ -173,7 +173,7 @@ public class MessageHandler {
 				// 1. Send video file
 				// 1.1. send Info message
 				File f = new File(sdir, v.getFilepath());
-				InfoMessage info = SocketUtils.createInfoMessage(
+				InfoMessage info = BackpackUtils.createInfoMessage(
 						Constants.FILE_DATA, f);
 				conn.sendInfoMessage(info);
 
@@ -196,7 +196,7 @@ public class MessageHandler {
 				// 2.1 send Info message first
 				String thumbnail = v.getId() + Constants.VIDEO_THUMBNAIL_ID;
 				File thumbNailFile = new File(sdir, thumbnail);
-				info = SocketUtils.createInfoMessage(Constants.IMAGE_DATA,
+				info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA,
 						thumbNailFile);
 				conn.sendInfoMessage(info);
 
@@ -219,7 +219,7 @@ public class MessageHandler {
 
 				// 3. Send temp meta data for video
 				// 3.1 send info message
-				info = SocketUtils.createInfoMessage(
+				info = BackpackUtils.createInfoMessage(
 						Constants.VIDEO_META_DATA_TMP, f);
 				conn.sendInfoMessage(info);
 
@@ -232,7 +232,7 @@ public class MessageHandler {
 					AckPayload payload = (AckPayload) ackMsg.getPayload();
 					if (payload.getAck() == Constants.OK_RESPONSE) {
 						Log.i(TAG, "Successfully sent tmp meta data");
-						FileUtils.broadcastMessage(wrapper, "Sent video file: "
+						BackpackUtils.broadcastMessage(wrapper, "Sent video file: "
 								+ v.getFilename());
 					} else {
 						Log.i(TAG, "Failed to sent meta data");
@@ -243,7 +243,7 @@ public class MessageHandler {
 		}
 
 		// signal stopping of bulk transfer action
-		bulkMsg = SocketUtils.createInfoMessage(Constants.STOP_BULK_TX, null);
+		bulkMsg = BackpackUtils.createInfoMessage(Constants.STOP_BULK_TX, null);
 		conn.sendInfoMessage(bulkMsg);
 
 		bulkAckMsg = conn.receiveInfoMessage();
@@ -270,7 +270,7 @@ public class MessageHandler {
 		}
 
 		if (start) {
-			InfoMessage bulkAckMsg = SocketUtils.createInfoMessage(
+			InfoMessage bulkAckMsg = BackpackUtils.createInfoMessage(
 					Constants.ACK_DATA, Constants.START_BULK_TX,
 					Constants.OK_RESPONSE);
 			conn.sendInfoMessage(bulkAckMsg);
@@ -285,7 +285,7 @@ public class MessageHandler {
 
 			switch (type) {
 			case Constants.STOP_BULK_TX:
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						Constants.STOP_BULK_TX, Constants.OK_RESPONSE);
 				conn.sendInfoMessage(ackMsg);
 				start = false;
@@ -293,7 +293,7 @@ public class MessageHandler {
 
 			case Constants.FILE_DATA:
 				result = conn.readFileData(info, sdir);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				conn.sendInfoMessage(ackMsg);
@@ -301,7 +301,7 @@ public class MessageHandler {
 
 			case Constants.IMAGE_DATA:
 				result = conn.readFileData(info, sdir);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				conn.sendInfoMessage(ackMsg);
@@ -309,11 +309,11 @@ public class MessageHandler {
 
 			case Constants.VIDEO_META_DATA_TMP:
 				result = conn.readTmpMetaData(info, sdir, true);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				if (result > 0) {
-					FileUtils.broadcastMessage(wrapper, "Received file: "
+					BackpackUtils.broadcastMessage(wrapper, "Received file: "
 							+ ((InfoPayload) info.getPayload()).getFileName());
 				}
 				conn.sendInfoMessage(ackMsg);
@@ -321,11 +321,11 @@ public class MessageHandler {
 
 			case Constants.WEB_META_DATA_TMP:
 				result = conn.readTmpMetaData(info, sdir, false);
-				ackMsg = SocketUtils.createInfoMessage(Constants.ACK_DATA,
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				if (result > 0) {
-					FileUtils.broadcastMessage(wrapper, "Received file: "
+					BackpackUtils.broadcastMessage(wrapper, "Received file: "
 							+ ((InfoPayload) info.getPayload()).getFileName());
 				}
 				conn.sendInfoMessage(ackMsg);
@@ -343,7 +343,7 @@ public class MessageHandler {
 	public void sendWebContent(File sdir) {
 		boolean start = false;
 		// send an info message informing start of bulk transfer operation
-		InfoMessage bulkMsg = SocketUtils.createInfoMessage(
+		InfoMessage bulkMsg = BackpackUtils.createInfoMessage(
 				Constants.START_BULK_TX, null);
 		conn.sendInfoMessage(bulkMsg);
 
@@ -361,7 +361,7 @@ public class MessageHandler {
 				// 1. Send web content (.html) file
 				// 1.1 send info message first
 				File f = new File(sdir, a.getFilename());
-				InfoMessage info = SocketUtils.createInfoMessage(
+				InfoMessage info = BackpackUtils.createInfoMessage(
 						Constants.FILE_DATA, f);
 				conn.sendInfoMessage(info);
 
@@ -381,11 +381,11 @@ public class MessageHandler {
 				}
 
 				// 2 Send images associated with the web content
-				List<File> webImgList = SocketUtils
+				List<File> webImgList = BackpackUtils
 						.getWebArticleImages(sdir, a);
 				for (File img : webImgList) {
 					// 2.1 send info message
-					info = SocketUtils.createInfoMessage(Constants.IMAGE_DATA,
+					info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA,
 							img);
 					conn.sendInfoMessage(info);
 
@@ -411,7 +411,7 @@ public class MessageHandler {
 
 				// 3 Send tmp web meta data
 				// 3.1 send info message
-				info = SocketUtils.createInfoMessage(
+				info = BackpackUtils.createInfoMessage(
 						Constants.WEB_META_DATA_TMP, f);
 				conn.sendInfoMessage(info);
 
@@ -424,7 +424,7 @@ public class MessageHandler {
 					AckPayload payload = (AckPayload) ackMsg.getPayload();
 					if (payload.getAck() == Constants.OK_RESPONSE) {
 						Log.i(TAG, "Successfully sent tmp meta data");
-						FileUtils.broadcastMessage(wrapper,
+						BackpackUtils.broadcastMessage(wrapper,
 								"Sent web content: " + a.getFilename());
 					} else {
 						Log.i(TAG, "Failed to sent meta data");
@@ -435,7 +435,7 @@ public class MessageHandler {
 		}
 
 		// signal stopping of bulk transfer action
-		bulkMsg = SocketUtils.createInfoMessage(Constants.STOP_BULK_TX, null);
+		bulkMsg = BackpackUtils.createInfoMessage(Constants.STOP_BULK_TX, null);
 		conn.sendInfoMessage(bulkMsg);
 
 		bulkAckMsg = conn.receiveInfoMessage();

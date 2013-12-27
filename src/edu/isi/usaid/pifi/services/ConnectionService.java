@@ -130,7 +130,7 @@ public class ConnectionService extends Service {
 							e1.printStackTrace();
 						}
 					} else {
-						FileUtils.broadcastMessage(ConnectionService.this,
+						BackpackUtils.broadcastMessage(ConnectionService.this,
 								"Connection with " + device.getName()
 										+ "Failed");
 
@@ -151,7 +151,7 @@ public class ConnectionService extends Service {
 
 				// connection established
 				Log.i(TAG, "Connection established");
-				FileUtils.broadcastMessage(ConnectionService.this,
+				BackpackUtils.broadcastMessage(ConnectionService.this,
 						"Successfully connected to " + device.getName());
 
 				if (mmSocket != null) {
@@ -164,7 +164,7 @@ public class ConnectionService extends Service {
 								ConnectionService.this, metaFile, webMetaFile);
 					} catch (IOException e) {
 						Log.e(TAG, "unable to get in/out put streams", e);
-						FileUtils.broadcastMessage(ConnectionService.this,
+						BackpackUtils.broadcastMessage(ConnectionService.this,
 								"Error in initiating connection");
 						return;
 					}
@@ -234,118 +234,13 @@ public class ConnectionService extends Service {
 								transcState = Constants.SYNC_COMPLETE;
 								terminate = true;
 								break;
-							/*
-							 * byte[] buf = SocketUtils
-							 * .receiveMetadataFile(metaFile, mmInStream);
-							 * Log.i(TAG, "Received videos meta data file"); //
-							 * get delta entries to send/request Log.i(TAG,
-							 * "Calculating delta for videos");
-							 * FileUtils.getDeltaforVideos(buf, metaFile,
-							 * sendToVideos);
-							 * 
-							 * buf = SocketUtils.receiveMetadataFile( metaFile,
-							 * mmInStream); Log.i(TAG,
-							 * "Received web articles meta data file"); // get
-							 * delta entries to send/request Log.i(TAG,
-							 * "Calculating delta for web articles");
-							 * FileUtils.getDeltaforWeb(buf, webMetaFile,
-							 * sendToWeb);
-							 * 
-							 * FileUtils.broadcastMessage(
-							 * ConnectionService.this, "Sending " +
-							 * sendToVideos.size() + " videos to: " +
-							 * device.getName());
-							 * 
-							 * Log.i(TAG, "Sending videos");
-							 * SocketUtils.sendVideoPackage(path, mmOutStream,
-							 * sendToVideos); Log.i(TAG, "Videos Sent");
-							 * 
-							 * // Wait here till you receive a message from //
-							 * the Listener. Starts sending web content // only
-							 * after that. short resp = dis.readShort();
-							 * Log.i(TAG, "Listener responded:" + resp);
-							 * 
-							 * // sending web content
-							 * FileUtils.broadcastMessage(
-							 * ConnectionService.this, "Sending " +
-							 * sendToWeb.size() + " entries to: " +
-							 * device.getName());
-							 * 
-							 * Log.i(TAG, "Sending web articles");
-							 * SocketUtils.sendWebPackage(path, mmOutStream,
-							 * sendToWeb); Log.i(TAG, "Web Acticles Sent");
-							 * 
-							 * // wait until listener responds // (listener has
-							 * finished receiving) resp = dis.readShort();
-							 * Log.i(TAG, "Listener responded: " + resp);
-							 * 
-							 * transcState = Constants.META_DATA_RECEIVED;
-							 * break;
-							 * 
-							 * case Constants.META_DATA_RECEIVED: // send list
-							 * of files required by the master // to slave
-							 * 
-							 * Log.i(TAG, "Sending meta data for videos");
-							 * 
-							 * SocketUtils.sendMetaData(metaFile, mmOutStream);
-							 * Log.i(TAG, "Sending meta data for web articles");
-							 * SocketUtils.sendMetaData(webMetaFile,
-							 * mmOutStream);
-							 * 
-							 * transcState = Constants.META_DATA_TO_SLAVE;
-							 * break;
-							 * 
-							 * case Constants.META_DATA_TO_SLAVE: // receive
-							 * data from the slave and write it // to the file
-							 * system
-							 * 
-							 * File xferDir = new File(path,
-							 * Constants.xferDirName + "/" + device.getName());
-							 * xferDir.mkdirs(); Log.i(TAG, "Receiving Videos");
-							 * int noOfFile = SocketUtils
-							 * .readVideoFromSocket(xferDir, dis);
-							 * FileUtils.broadcastMessage(
-							 * ConnectionService.this, "Received " + noOfFile +
-							 * " video files from: " + device.getName());
-							 * Log.i(TAG, "Successfully received Videos");
-							 * 
-							 * // send some beacon message to the sender //
-							 * waiting to send web content
-							 * dos.writeShort(Constants.OK_RESPONSE);
-							 * 
-							 * // start receiving web content files Log.i(TAG,
-							 * "Receiving Web articles"); noOfFile = SocketUtils
-							 * .readArticlesFromSocket(xferDir, dis); Log.i(TAG,
-							 * "Successfully received Web articles"); FileUtils
-							 * .broadcastMessage( ConnectionService.this,
-							 * "Received " + noOfFile +
-							 * " web content files from: " + device.getName());
-							 * 
-							 * Log.i(TAG, "Replying back with status message");
-							 * dos.writeShort(Constants.OK_RESPONSE);
-							 * 
-							 * transcState = Constants.DATA_FROM_SLAVE; break;
-							 * 
-							 * case Constants.DATA_FROM_SLAVE: // close the
-							 * connection socket terminate = true; transcState =
-							 * Constants.META_DATA_EXCHANGE; break;
-							 */
 							}
 						}
-
-						/*
-						 * } catch (IOException e) {
-						 * FileUtils.broadcastMessage(ConnectionService.this,
-						 * "Connection lost with " + device.getName());
-						 * Log.e(TAG,"Connection lost with " +
-						 * device.getName()); Log.e(TAG, "due to error:"+
-						 * e.getMessage()); break; }
-						 */
 
 					}
 
 					if (terminate) {
-						FileUtils.broadcastMessage(ConnectionService.this,
+						BackpackUtils.broadcastMessage(ConnectionService.this,
 								"File sync is successful. Closing the session");
 						try {
 							mmInStream.close();
