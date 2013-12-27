@@ -137,7 +137,7 @@ public class MessageHandler {
 		}
 
 		// 3. Send back ACK message
-		short ackVal = result > 0 ? Constants.OK_RESPONSE
+		short ackVal = result >= 0 ? Constants.OK_RESPONSE
 				: Constants.FAIL_RESPONSE;
 		InfoMessage ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 				info.getType(), ackVal);

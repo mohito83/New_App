@@ -197,7 +197,7 @@ public class Connector {
 
 		// after file transfer is complete then rename the file to drop
 		// .tmp
-		if (result > 0) {
+		if (result >= 0) {
 			File finalFile = new File(sdir, fName);
 			boolean isSuccess = f.renameTo(finalFile);
 			Log.i(TAG, "File (" + fName + ") tranfer:" + isSuccess);

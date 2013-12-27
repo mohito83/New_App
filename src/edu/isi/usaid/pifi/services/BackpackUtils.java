@@ -22,12 +22,13 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 
 /**
- * This class defines the utility methods 
+ * This class defines the utility methods
+ * 
  * @author mohit aggarwl
- *
+ * 
  */
 public class BackpackUtils {
-	
+
 	/**
 	 * This method calculates the delta for the video meta data file
 	 * 
@@ -43,15 +44,25 @@ public class BackpackUtils {
 		FileInputStream finnew = new FileInputStream(newMetaFile);
 
 		Map<String, Video> newMap = new HashMap<String, Video>();
-		for (Video v : Videos.parseFrom(finnew).getVideoList()) {
-			newMap.put(v.getFilename(), v);
-		}
 
-		for (Video nVid : Videos.parseFrom(finorg).getVideoList()) {
-			if (!newMap.containsKey(nVid.getFilename())) {
-				videoList.add(nVid);
+		if (videoMetaFile.length() > 0 && newMetaFile.length() > 0) {
+			for (Video v : Videos.parseFrom(finnew).getVideoList()) {
+				newMap.put(v.getFilename(), v);
+			}
+
+			for (Video nVid : Videos.parseFrom(finorg).getVideoList()) {
+				if (!newMap.containsKey(nVid.getFilename())) {
+					videoList.add(nVid);
+				}
+			}
+		} else {
+			if (videoMetaFile.length() > 0 && newMetaFile.length() == 0) {
+				videoList.addAll(Videos.parseFrom(finorg).getVideoList());
 			}
 		}
+
+		finorg.close();
+		finnew.close();
 
 		return videoList;
 	}
@@ -71,18 +82,29 @@ public class BackpackUtils {
 		FileInputStream finnew = new FileInputStream(newMetaFile);
 
 		Map<String, Article> newMap = new HashMap<String, Article>();
-		for (Article v : Articles.parseFrom(finnew).getArticleList()) {
-			newMap.put(v.getFilename(), v);
-		}
 
-		for (Article nVid : Articles.parseFrom(finorg).getArticleList()) {
-			if (!newMap.containsKey(nVid.getFilename())) {
-				webList.add(nVid);
+		if (webMetaFile.length() > 0 && newMetaFile.length() > 0) {
+			for (Article v : Articles.parseFrom(finnew).getArticleList()) {
+				newMap.put(v.getFilename(), v);
+			}
+
+			for (Article nVid : Articles.parseFrom(finorg).getArticleList()) {
+				if (!newMap.containsKey(nVid.getFilename())) {
+					webList.add(nVid);
+				}
+			}
+		} else {
+			if (webMetaFile.length() > 0 && newMetaFile.length() == 0) {
+				webList.addAll(Articles.parseFrom(finorg).getArticleList());
 			}
 		}
+
+		finorg.close();
+		finnew.close();
+
 		return webList;
 	}
-	
+
 	/**
 	 * 
 	 * @param path
@@ -139,7 +161,7 @@ public class BackpackUtils {
 		infomsg.setPayload(ackPayload);
 		return infomsg;
 	}
-	
+
 	/**
 	 * This method broadcast the messages to the
 	 * 

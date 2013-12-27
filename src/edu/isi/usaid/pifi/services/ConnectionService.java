@@ -50,7 +50,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-//		 Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
@@ -171,8 +171,6 @@ public class ConnectionService extends Service {
 
 					// start transactions
 					boolean terminate = false;
-					int isVidtoSend = 0, isVidToRecv = 0;
-					int isWebtoSend = 0, isWebToRecv = 0;
 
 					while (!terminate) {
 
@@ -181,20 +179,18 @@ public class ConnectionService extends Service {
 							switch (transcState) {
 							case Constants.META_DATA_EXCHANGE:
 								Log.i(TAG, "Receiving videos meta data");
-								isVidtoSend = mHanlder
-										.receiveFullMetaData(path);
+								mHanlder.receiveFullMetaData(path);
 
 								Log.i(TAG, "Sending videos meta data");
-								isVidToRecv = mHanlder.sendFullMetaData(
+								mHanlder.sendFullMetaData(
 										Constants.VIDEO_META_DATA_FULL,
 										metaFile);
 
 								Log.i(TAG, "Receiving web meta data");
-								isWebtoSend = mHanlder
-										.receiveFullMetaData(path);
+								mHanlder.receiveFullMetaData(path);
 
 								Log.i(TAG, "Sending web meta data");
-								isWebToRecv = mHanlder.sendFullMetaData(
+								mHanlder.sendFullMetaData(
 										Constants.WEB_META_DATA_FULL,
 										webMetaFile);
 
@@ -206,30 +202,21 @@ public class ConnectionService extends Service {
 										Constants.xferDirName + "/"
 												+ device.getName());
 								xferDir.mkdirs();
-								if (isVidtoSend > 0) {
-									Log.i(TAG, "Start sending videos");
-									mHanlder.sendVideos(path);
-									Log.i(TAG, "Finished sending videos");
-								}
+								Log.i(TAG, "Start sending videos");
+								mHanlder.sendVideos(path);
+								Log.i(TAG, "Finished sending videos");
 
-								if (isVidToRecv > 0) {
-									Log.i(TAG, "Start receiving videos");
-									mHanlder.receiveFiles(xferDir);
-									Log.i(TAG, "Finished receiving videos");
-								}
+								Log.i(TAG, "Start receiving videos");
+								mHanlder.receiveFiles(xferDir);
+								Log.i(TAG, "Finished receiving videos");
 
-								if (isWebtoSend > 0) {
-									Log.i(TAG, "Start sending web contents");
-									mHanlder.sendWebContent(path);
-									Log.i(TAG, "Finished sending web contents");
-								}
+								Log.i(TAG, "Start sending web contents");
+								mHanlder.sendWebContent(path);
+								Log.i(TAG, "Finished sending web contents");
 
-								if (isWebToRecv > 0) {
-									Log.i(TAG, "Start receiving web contents");
-									mHanlder.receiveFiles(xferDir);
-									Log.i(TAG,
-											"Finished receiving web contents");
-								}
+								Log.i(TAG, "Start receiving web contents");
+								mHanlder.receiveFiles(xferDir);
+								Log.i(TAG, "Finished receiving web contents");
 
 								transcState = Constants.SYNC_COMPLETE;
 								terminate = true;
