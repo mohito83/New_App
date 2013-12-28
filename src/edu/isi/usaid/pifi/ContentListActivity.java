@@ -156,7 +156,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				 */
 				Toast toast = Toast.makeText(ContentListActivity.this,
 						i.getStringExtra(ExtraConstants.STATUS),
-						Toast.LENGTH_LONG);
+						Toast.LENGTH_SHORT);
 				toast.show();
 			}
 			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
@@ -853,6 +853,18 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		// Register for broadcasts when discovery has finished
 		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		this.registerReceiver(mReceiver, filter);
+
+		if (!mBluetoothAdapter.isEnabled()) {
+			// make your device discoverable
+			Intent makeDiscoverable = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			makeDiscoverable.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.VISIBILITY_TIMEOUT);
+			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+		} else {
+			Log.d(TAG,
+					"Bluetooth is already enabled. Setting up the file transfer");
+		}
 
 		searchForBTDevices();
 
