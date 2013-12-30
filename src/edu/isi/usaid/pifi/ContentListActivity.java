@@ -828,20 +828,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			return;
 		}
 		
-		// request turn on the bluetooth if it's off
-		if (!mBluetoothAdapter.isEnabled()) {
-			// make your device discoverable
-			Intent makeDiscoverable = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			makeDiscoverable.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
-			return;
-		} else {
-			Log.d(TAG,
-					"Bluetooth is already enabled. Setting up the file transfer");
-		}
-
 		/*
 		 * create an Broadcast register and register the event that you are
 		 * interested in

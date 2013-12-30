@@ -120,6 +120,7 @@ public class ConnectionService extends Service {
 									"createRfcommSocket",
 									new Class[] { int.class });
 							mmSocket = (BluetoothSocket) m.invoke(device, 1);
+							mmSocket.connect();
 						} catch (NoSuchMethodException e1) {
 							e1.printStackTrace();
 						} catch (IllegalArgumentException e1) {
@@ -128,6 +129,12 @@ public class ConnectionService extends Service {
 							e1.printStackTrace();
 						} catch (InvocationTargetException e1) {
 							e1.printStackTrace();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+							BackpackUtils.broadcastMessage(ConnectionService.this,
+									"Connection with " + device.getName()
+											+ "Failed");
+							return;
 						}
 					} else {
 						BackpackUtils.broadcastMessage(ConnectionService.this,
