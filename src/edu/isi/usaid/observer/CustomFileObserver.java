@@ -65,10 +65,14 @@ public class CustomFileObserver extends FileObserver
 		String fullPath = baseDirPath + "/" + path; 
 		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
 		{
-			fileObserverMap.put(fullPath, new CustomFileObserver(fullPath, fileMonitorTask));
+			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask);
+			fileObserverMap.put(fullPath, transferDirObserver);
+			transferDirObserver.startWatching();
 			return;
 		}
 		Log.d(tagName, "Event Id: " + event);
+		Log.d(tagName, "Move self event: " + FileObserver.MOVE_SELF);
+		Log.d(tagName, "Create event: " + FileObserver.CREATE);
 		if(event == FileObserver.MOVE_SELF && isTransferDirectoryContent(path)) 
 		{
 			if(isMetaDataFile(path))
