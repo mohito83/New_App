@@ -4,6 +4,7 @@ import edu.isi.usaid.pifi.Constants;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -13,7 +14,7 @@ public class FileMonitorTask extends Service
 	
 	private final String path = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
 	
-	private final CustomFileObserver customFileObserver = new CustomFileObserver(path, this);
+	private final CustomFileObserver customFileObserver = new CustomFileObserver(path, this, new int[] {FileObserver.CREATE});
 	
 	@Override
 	public IBinder onBind(Intent intent) 

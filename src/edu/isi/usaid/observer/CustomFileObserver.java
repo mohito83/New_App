@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
@@ -36,20 +37,23 @@ public class CustomFileObserver extends FileObserver
 	private static String tagName = "CustomFileObserver";
 	
 	private final String baseDirPath = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
+	
+	private String toAppendPath = null;
 
 	private FileMonitorTask fileMonitorTask;
 	
 	private Map<String, FileObserver> fileObserverMap = new HashMap<String, FileObserver>() ; 
 	
-	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask) 
+	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask, int[] eventTypes) 
 	{
-		super(path);
+		super(path, FileObserver.CREATE | FileObserver.MOVE_SELF);
+		toAppendPath = path;
 		this.fileMonitorTask = fileMonitorTask;
 	}
 	
 	public boolean isTransferDirectoryContent(String path)
 	{
-		return path != null && path.contains(TRANSFER_DIRECTORY_NAME);
+		return path != null ;
 	}
 
 
@@ -60,12 +64,17 @@ public class CustomFileObserver extends FileObserver
 	@Override
 	public void onEvent(int event, String path) 
 	{
+		if(path.endsWith(".tmp"))
+			path = path.replaceAll(".tmp", "");
 		Log.d(tagName, "Got event for file with path: " + path);
+		String fullPath = toAppendPath + "/" + path;; 
+		Log.d(tagName, "checking for directory " + " at path :" + fullPath + " with result : "    + isDirectory(fullPath)); 
 		if(path== null || path.equals("null")) return; 
-		String fullPath = baseDirPath + "/" + path; 
+	
 		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
 		{
-			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask);
+			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask, new int[]{FileObserver.MOVED_FROM});
+			Log.d(tagName, "Creating a new observer for the new transfer folder path: " + fullPath);			
 			fileObserverMap.put(fullPath, transferDirObserver);
 			transferDirObserver.startWatching();
 			return;
@@ -73,16 +82,22 @@ public class CustomFileObserver extends FileObserver
 		Log.d(tagName, "Event Id: " + event);
 		Log.d(tagName, "Move self event: " + FileObserver.MOVE_SELF);
 		Log.d(tagName, "Create event: " + FileObserver.CREATE);
-		if(event == FileObserver.MOVE_SELF && isTransferDirectoryContent(path)) 
+
+		fullPath = toAppendPath + "/" + path;
+		
+		Log.d(tagName, "Looking for a file at path " + fullPath);
+
+		if(isTransferDirectoryContent(fullPath) && !isDirectory(fullPath)) 
 		{
-			if(isMetaDataFile(path))
+			Log.d(tagName, "Checking for isMetaDataFile for the path : " + fullPath + " with result : " + isMetaDataFile(fullPath));
+			if(isMetaDataFile(fullPath) )
 			{
-				appendContentToMainMetaFile(path);
-				propogateUpdatedMessage(path);
+				appendContentToMainMetaFile(fullPath);
+				propogateUpdatedMessage(fullPath);
 			}
 			else
 			{
-				copyFileToBaseDirectory(path);								
+				copyFileToBaseDirectory(fullPath);								
 			}
 			cleanupFile(path);
 		}			
@@ -91,7 +106,12 @@ public class CustomFileObserver extends FileObserver
 	private boolean isDirectory(String path) 
 	{
 		File file = new File(path); 
-		return file.isDirectory();
+		try {
+			return file.getCanonicalFile().isDirectory();
+		} catch (IOException e) {
+			Log.e(tagName, e.getMessage());
+		}
+		return false;
 	}
 
 	private void propogateUpdatedMessage(String path) 
@@ -231,7 +251,9 @@ public class CustomFileObserver extends FileObserver
 
 	private void copyFileToBaseDirectory(String sourceFilePath) 
 	{
-		File srcFile = new File(sourceFilePath);
+		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
+		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
+		File srcFile = new File(StringEscapeUtils.escapeJava(sourceFilePath));
 		File destDir = new File(baseDirPath);
 		try 
 		{
