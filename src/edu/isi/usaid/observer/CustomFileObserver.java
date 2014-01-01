@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.client.utils.URIUtils;
 
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
@@ -46,7 +48,8 @@ public class CustomFileObserver extends FileObserver
 	
 	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask, int[] eventTypes) 
 	{
-		super(path, FileObserver.CREATE | FileObserver.MOVE_SELF);
+		
+		super(path, FileObserver.CREATE | FileObserver.MOVED_TO);
 		toAppendPath = path;
 		this.fileMonitorTask = fileMonitorTask;
 	}
@@ -70,7 +73,8 @@ public class CustomFileObserver extends FileObserver
 		String fullPath = toAppendPath + "/" + path;; 
 		Log.d(tagName, "checking for directory " + " at path :" + fullPath + " with result : "    + isDirectory(fullPath)); 
 		if(path== null || path.equals("null")) return; 
-	
+		if(toAppendPath.equals(baseDirPath) && !isDirectory(fullPath))
+			return;
 		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
 		{
 			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask, new int[]{FileObserver.MOVED_FROM});
@@ -251,9 +255,15 @@ public class CustomFileObserver extends FileObserver
 
 	private void copyFileToBaseDirectory(String sourceFilePath) 
 	{
+		try { 
 		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
-		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
-		File srcFile = new File(StringEscapeUtils.escapeJava(sourceFilePath));
+//		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
+		byte[] pathBytes = sourceFilePath.getBytes(); 
+		String encodedPath = new String(pathBytes, "UTF-8");
+		Log.d(tagName, "Encoded path: " + encodedPath);
+		File tempfile = new File("/storage/sdcard0/BackpackContent/xfer/Backpack 2/"); 
+		Log.d(tagName, "Check if the file exists: " + tempfile.exists());
+		File srcFile = new File(encodedPath).getCanonicalFile();
 		File destDir = new File(baseDirPath);
 		try 
 		{
@@ -264,6 +274,12 @@ public class CustomFileObserver extends FileObserver
 			Log.e(tagName, "Error occured when trying to copy a file from " + 
 							sourceFilePath + " to " + baseDirPath, 
 							e.getCause());
+			String str = Log.getStackTraceString(e.getCause());
+			Log.e(tagName, "Stacktrace string for exception: " + str + " message " + e.getMessage()); 
+		}}
+		catch(Exception e)
+		{
+			Log.d(tagName, e.getMessage() );
 		}
 	}
 }
