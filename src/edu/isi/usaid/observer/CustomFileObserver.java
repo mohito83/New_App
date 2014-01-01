@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -45,6 +46,8 @@ public class CustomFileObserver extends FileObserver
 	private FileMonitorTask fileMonitorTask;
 	
 	private Map<String, FileObserver> fileObserverMap = new HashMap<String, FileObserver>() ; 
+	
+	private Map<String, String> transferredVideoFiles = new ConcurrentHashMap<String, String>();
 	
 	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask, int[] eventTypes) 
 	{
@@ -144,7 +147,11 @@ public class CustomFileObserver extends FileObserver
 		else 
 		{			
 			Log.d(tagName, "Trying to append file with path: " + sourceMetaFilePath + " to the actual video meta file"); 
-			appendToVideosMetaFile(sourceMetaFilePath);
+			if(!transferredVideoFiles.containsKey(sourceMetaFilePath))
+			{
+				transferredVideoFiles.put(sourceMetaFilePath, "1");
+				appendToVideosMetaFile(sourceMetaFilePath);
+			}
 		}
 	}
 
