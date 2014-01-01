@@ -153,7 +153,7 @@ public class CustomFileObserver extends FileObserver
 		try 
 		{
 			Videos videos = Videos.parseFrom(new FileInputStream(fileName));
-			return videos.getVideoList();
+			return new ArrayList<Video>(videos.getVideoList());
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -173,7 +173,7 @@ public class CustomFileObserver extends FileObserver
 		try 
 		{
 			Articles articles = Articles.parseFrom(new FileInputStream(fileName));
-			return articles.getArticleList();
+			return  new ArrayList<Article> (articles.getArticleList());
 		} 
 		catch (FileNotFoundException e) 
 		{
