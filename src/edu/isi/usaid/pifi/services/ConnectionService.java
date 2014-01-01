@@ -79,7 +79,7 @@ public class ConnectionService extends Service {
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		 Debug.waitForDebugger();
+		// Debug.waitForDebugger();
 		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
 
 		// use a seaparate thread for connection and data transfer

@@ -14,7 +14,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
@@ -52,7 +51,7 @@ public class ListenerService extends Service {
 	 * 
 	 */
 	public void onCreate() {
-		Debug.waitForDebugger();
+//		Debug.waitForDebugger();
 
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);

@@ -455,6 +455,8 @@ public class MessageHandler {
 				// 3.1 send info message
 				info = BackpackUtils.createInfoMessage(
 						Constants.WEB_META_DATA_TMP, f);
+				infoPayload = (InfoPayload)info.getPayload();
+				infoPayload.setFileName(a.getFilename());
 				conn.sendInfoMessage(info);
 
 				// 3.2 send temp meta data content
