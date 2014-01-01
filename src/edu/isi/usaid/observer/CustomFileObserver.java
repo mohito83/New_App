@@ -136,12 +136,14 @@ public class CustomFileObserver extends FileObserver
 
 	private void appendContentToMainMetaFile(String sourceMetaFilePath) 
 	{
-		if(sourceMetaFilePath.contains("news"))
+		if(sourceMetaFilePath.contains("html"))
 		{
+			Log.d(tagName, "Trying to append file with path: " + sourceMetaFilePath + " to the actual news meta file"); 
 			appendToNewsMetaFile(sourceMetaFilePath);
 		}
-		else if(sourceMetaFilePath.contains("video"))
+		else 
 		{			
+			Log.d(tagName, "Trying to append file with path: " + sourceMetaFilePath + " to the actual video meta file"); 
 			appendToVideosMetaFile(sourceMetaFilePath);
 		}
 	}
@@ -188,7 +190,7 @@ public class CustomFileObserver extends FileObserver
 	private void appendToVideosMetaFile(String sourceMetaFilePath) 
 	{
 		List<Video> newMetaFileVideos = getVideosFromFile(sourceMetaFilePath);
-		List<Video> existingMetaFileVideos = getVideosFromFile(VIDEO_META_FILE_LOCATION);
+		List<Video> existingMetaFileVideos = getVideosFromFile(baseDirPath + "/" + VIDEO_META_FILE_LOCATION);
 		if(newMetaFileVideos.isEmpty()) 
 			return;
 		existingMetaFileVideos.addAll(newMetaFileVideos);
@@ -202,7 +204,7 @@ public class CustomFileObserver extends FileObserver
 		Videos appendedVideos = videoBuilder.build();
 		try 
 		{
-			appendedVideos.writeTo(new FileOutputStream(VIDEO_META_FILE_LOCATION));
+			appendedVideos.writeTo(new FileOutputStream(baseDirPath + "/" + VIDEO_META_FILE_LOCATION));
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -219,11 +221,16 @@ public class CustomFileObserver extends FileObserver
 
 	private void appendToNewsMetaFile(String sourceMetaFilePath) 
 	{
+		Log.d(tagName, "Trying to write file at location sourceMetaFilePath to main new file"); 
 		List<Article> newArticles = getArticlesFromMetaFile(sourceMetaFilePath);
-		List<Article> existingArticles = getArticlesFromMetaFile(ARTICLE_META_FILE_LOCATION);
+		List<Article> existingArticles = getArticlesFromMetaFile(baseDirPath + "/" + ARTICLE_META_FILE_LOCATION);
 		if(newArticles.isEmpty())
+		{
+			Log.d(tagName, " Returning since the newArtciles are empty.");
 			return;
+		}
 		existingArticles.addAll(newArticles);
+		Log.d(tagName, "Writing updated articles into main meta file after merge") ; 
 		writeUpdatedArticles(existingArticles);
 	}
 
@@ -234,17 +241,17 @@ public class CustomFileObserver extends FileObserver
 		Articles appendedArticles = articleBuilder.build();
 		try 
 		{
-			appendedArticles.writeTo(new FileOutputStream(ARTICLE_META_FILE_LOCATION));
+			appendedArticles.writeTo(new FileOutputStream(baseDirPath + "/" + ARTICLE_META_FILE_LOCATION));
 		} 
 		catch (FileNotFoundException e) 
 		{
 			Log.e(tagName, "FileNotFoundException occured for the article meta data file "
-						   + " at location: " + VIDEO_META_FILE_LOCATION, e.getCause());
+						   + " at location: " + ARTICLE_META_FILE_LOCATION, e.getCause());
 		} 
 		catch (IOException e) 
 		{
 			Log.e(tagName, "IOException occured when writing article meta data file "
-					   + " at location: " + VIDEO_META_FILE_LOCATION, e.getCause());
+					   + " at location: " + ARTICLE_META_FILE_LOCATION, e.getCause());
 		}
 	}
 
