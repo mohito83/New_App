@@ -174,7 +174,7 @@ public class MessageHandler {
 				// 1.1. send Info message
 				File f = new File(sdir, v.getFilepath());
 				InfoMessage info = BackpackUtils.createInfoMessage(
-						Constants.FILE_DATA, f);
+						Constants.VIDEO_FILE_DATA, f);
 				conn.sendInfoMessage(info);
 
 				// 1.2. send video contents
@@ -196,7 +196,7 @@ public class MessageHandler {
 				// 2.1 send Info message first
 				String thumbnail = v.getId() + Constants.VIDEO_THUMBNAIL_ID;
 				File thumbNailFile = new File(sdir, thumbnail);
-				info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA,
+				info = BackpackUtils.createInfoMessage(Constants.VIDEO_IMAGE_DATA,
 						thumbNailFile);
 				conn.sendInfoMessage(info);
 
@@ -291,7 +291,7 @@ public class MessageHandler {
 				start = false;
 				break;
 
-			case Constants.FILE_DATA:
+			case Constants.VIDEO_FILE_DATA:
 				result = conn.readFileData(info, sdir);
 				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
@@ -299,7 +299,36 @@ public class MessageHandler {
 				conn.sendInfoMessage(ackMsg);
 				break;
 
-			case Constants.IMAGE_DATA:
+			case Constants.VIDEO_IMAGE_DATA:
+				result = conn.readFileData(info, sdir);
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
+						type, result > 0 ? Constants.OK_RESPONSE
+								: Constants.FAIL_RESPONSE);
+				conn.sendInfoMessage(ackMsg);
+				break;
+				
+			case Constants.WEB_FILE_DATA:
+				//create the folder structure similar to that at sender's side
+				InfoPayload payload = (InfoPayload)info.getPayload();
+				int noOfImgs = payload.getNoOfImg();
+				String fName = payload.getFileName();
+				fName = noOfImgs > 0 ? fName.substring(0,
+						fName.indexOf(".html")) : fName.substring(0,
+						fName.indexOf("/"));
+				File webDir = new File(sdir, fName);
+				if(!webDir.exists()){
+					webDir.mkdirs();
+				}
+				
+				result = conn.readFileData(info, sdir);
+				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
+						type, result > 0 ? Constants.OK_RESPONSE
+								: Constants.FAIL_RESPONSE);
+				conn.sendInfoMessage(ackMsg);
+				break;
+
+			case Constants.WEB_IMAGE_DATA:
+				
 				result = conn.readFileData(info, sdir);
 				ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA,
 						type, result > 0 ? Constants.OK_RESPONSE
@@ -358,11 +387,18 @@ public class MessageHandler {
 
 		if (start) {
 			for (Article a : webList) {
+				//compute the number of images before proceeding further
+				List<File> webImgList = BackpackUtils
+						.getWebArticleImages(sdir, a);
+				
 				// 1. Send web content (.html) file
 				// 1.1 send info message first
 				File f = new File(sdir, a.getFilename());
 				InfoMessage info = BackpackUtils.createInfoMessage(
-						Constants.FILE_DATA, f);
+						Constants.WEB_FILE_DATA, f);
+				InfoPayload infoPayload = (InfoPayload)info.getPayload();
+				infoPayload.setNoOfImg(webImgList.size());
+				infoPayload.setFileName(a.getFilename());
 				conn.sendInfoMessage(info);
 
 				// 1.2 send the actual web content file
@@ -381,12 +417,18 @@ public class MessageHandler {
 				}
 
 				// 2 Send images associated with the web content
-				List<File> webImgList = BackpackUtils
-						.getWebArticleImages(sdir, a);
 				for (File img : webImgList) {
 					// 2.1 send info message
-					info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA,
+					info = BackpackUtils.createInfoMessage(Constants.WEB_IMAGE_DATA,
 							img);
+					//modify the web images path. 
+					// TODO remove this when embedded images in HTML
+					// functionality is incorporated
+					InfoPayload p = (InfoPayload) info.getPayload();
+					String newImgFileName = a.getFilename().substring(0,
+							a.getFilename().indexOf(".html"))
+							+ "/" + img.getName();
+					p.setFileName(newImgFileName);
 					conn.sendInfoMessage(info);
 
 					// 2.2 Send actual image data

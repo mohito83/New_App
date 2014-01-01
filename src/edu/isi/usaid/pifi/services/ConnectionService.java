@@ -16,6 +16,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -50,7 +51,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-//		 Debug.waitForDebugger();
+		 Debug.waitForDebugger();
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
@@ -78,7 +79,7 @@ public class ConnectionService extends Service {
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		// Debug.waitForDebugger();
+		 Debug.waitForDebugger();
 		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
 
 		// use a seaparate thread for connection and data transfer
