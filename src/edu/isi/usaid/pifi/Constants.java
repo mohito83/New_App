@@ -45,8 +45,10 @@ public class Constants {
 	public static final short WEB_META_DATA_FULL = 2;
 	public static final short VIDEO_META_DATA_TMP = 3;
 	public static final short WEB_META_DATA_TMP = 4;
-	public static final short IMAGE_DATA = 5;
-	public static final short FILE_DATA = 7;
+	public static final short VIDEO_IMAGE_DATA = 5;
+	public static final short WEB_IMAGE_DATA = 6;
+	public static final short VIDEO_FILE_DATA = 7;
+	public static final short WEB_FILE_DATA = 8;
 	public static final short START_BULK_TX = 9;
 	public static final short STOP_BULK_TX = 10;
 	public static final short ACK_DATA = 15;

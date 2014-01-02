@@ -5,12 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.client.utils.URIUtils;
 
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
@@ -36,20 +40,26 @@ public class CustomFileObserver extends FileObserver
 	private static String tagName = "CustomFileObserver";
 	
 	private final String baseDirPath = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
+	
+	private String toAppendPath = null;
 
 	private FileMonitorTask fileMonitorTask;
 	
 	private Map<String, FileObserver> fileObserverMap = new HashMap<String, FileObserver>() ; 
 	
-	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask) 
+	private Map<String, String> transferredVideoFiles = new ConcurrentHashMap<String, String>();
+	
+	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask, int[] eventTypes) 
 	{
-		super(path);
+		
+		super(path, FileObserver.CREATE | FileObserver.MOVED_TO);
+		toAppendPath = path;
 		this.fileMonitorTask = fileMonitorTask;
 	}
 	
 	public boolean isTransferDirectoryContent(String path)
 	{
-		return path != null && path.contains(TRANSFER_DIRECTORY_NAME);
+		return path != null ;
 	}
 
 
@@ -60,12 +70,18 @@ public class CustomFileObserver extends FileObserver
 	@Override
 	public void onEvent(int event, String path) 
 	{
+		if(path.endsWith(".tmp"))
+			path = path.replaceAll(".tmp", "");
 		Log.d(tagName, "Got event for file with path: " + path);
+		String fullPath = toAppendPath + "/" + path;; 
+		Log.d(tagName, "checking for directory " + " at path :" + fullPath + " with result : "    + isDirectory(fullPath)); 
 		if(path== null || path.equals("null")) return; 
-		String fullPath = baseDirPath + "/" + path; 
+		if(toAppendPath.equals(baseDirPath) && !isDirectory(fullPath))
+			return;
 		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
 		{
-			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask);
+			FileObserver transferDirObserver = new CustomFileObserver(fullPath, fileMonitorTask, new int[]{FileObserver.MOVED_FROM});
+			Log.d(tagName, "Creating a new observer for the new transfer folder path: " + fullPath);			
 			fileObserverMap.put(fullPath, transferDirObserver);
 			transferDirObserver.startWatching();
 			return;
@@ -73,16 +89,22 @@ public class CustomFileObserver extends FileObserver
 		Log.d(tagName, "Event Id: " + event);
 		Log.d(tagName, "Move self event: " + FileObserver.MOVE_SELF);
 		Log.d(tagName, "Create event: " + FileObserver.CREATE);
-		if(event == FileObserver.MOVE_SELF && isTransferDirectoryContent(path)) 
+
+		fullPath = toAppendPath + "/" + path;
+		
+		Log.d(tagName, "Looking for a file at path " + fullPath);
+
+		if(isTransferDirectoryContent(fullPath) && !isDirectory(fullPath)) 
 		{
-			if(isMetaDataFile(path))
+			Log.d(tagName, "Checking for isMetaDataFile for the path : " + fullPath + " with result : " + isMetaDataFile(fullPath));
+			if(isMetaDataFile(fullPath) )
 			{
-				appendContentToMainMetaFile(path);
-				propogateUpdatedMessage(path);
+				appendContentToMainMetaFile(fullPath);
+				propogateUpdatedMessage(fullPath);
 			}
 			else
 			{
-				copyFileToBaseDirectory(path);								
+				copyFileToBaseDirectory(fullPath);								
 			}
 			cleanupFile(path);
 		}			
@@ -91,7 +113,12 @@ public class CustomFileObserver extends FileObserver
 	private boolean isDirectory(String path) 
 	{
 		File file = new File(path); 
-		return file.isDirectory();
+		try {
+			return file.getCanonicalFile().isDirectory();
+		} catch (IOException e) {
+			Log.e(tagName, e.getMessage());
+		}
+		return false;
 	}
 
 	private void propogateUpdatedMessage(String path) 
@@ -112,13 +139,19 @@ public class CustomFileObserver extends FileObserver
 
 	private void appendContentToMainMetaFile(String sourceMetaFilePath) 
 	{
-		if(sourceMetaFilePath.contains("news"))
+		if(sourceMetaFilePath.contains("html"))
 		{
+			Log.d(tagName, "Trying to append file with path: " + sourceMetaFilePath + " to the actual news meta file"); 
 			appendToNewsMetaFile(sourceMetaFilePath);
 		}
-		else if(sourceMetaFilePath.contains("video"))
+		else 
 		{			
-			appendToVideosMetaFile(sourceMetaFilePath);
+			Log.d(tagName, "Trying to append file with path: " + sourceMetaFilePath + " to the actual video meta file"); 
+			if(!transferredVideoFiles.containsKey(sourceMetaFilePath))
+			{
+				transferredVideoFiles.put(sourceMetaFilePath, "1");
+				appendToVideosMetaFile(sourceMetaFilePath);
+			}
 		}
 	}
 
@@ -127,7 +160,7 @@ public class CustomFileObserver extends FileObserver
 		try 
 		{
 			Videos videos = Videos.parseFrom(new FileInputStream(fileName));
-			return videos.getVideoList();
+			return new ArrayList<Video>(videos.getVideoList());
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -147,7 +180,7 @@ public class CustomFileObserver extends FileObserver
 		try 
 		{
 			Articles articles = Articles.parseFrom(new FileInputStream(fileName));
-			return articles.getArticleList();
+			return  new ArrayList<Article> (articles.getArticleList());
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -164,7 +197,7 @@ public class CustomFileObserver extends FileObserver
 	private void appendToVideosMetaFile(String sourceMetaFilePath) 
 	{
 		List<Video> newMetaFileVideos = getVideosFromFile(sourceMetaFilePath);
-		List<Video> existingMetaFileVideos = getVideosFromFile(VIDEO_META_FILE_LOCATION);
+		List<Video> existingMetaFileVideos = getVideosFromFile(baseDirPath + "/" + VIDEO_META_FILE_LOCATION);
 		if(newMetaFileVideos.isEmpty()) 
 			return;
 		existingMetaFileVideos.addAll(newMetaFileVideos);
@@ -178,7 +211,7 @@ public class CustomFileObserver extends FileObserver
 		Videos appendedVideos = videoBuilder.build();
 		try 
 		{
-			appendedVideos.writeTo(new FileOutputStream(VIDEO_META_FILE_LOCATION));
+			appendedVideos.writeTo(new FileOutputStream(baseDirPath + "/" + VIDEO_META_FILE_LOCATION));
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -195,11 +228,16 @@ public class CustomFileObserver extends FileObserver
 
 	private void appendToNewsMetaFile(String sourceMetaFilePath) 
 	{
+		Log.d(tagName, "Trying to write file at location sourceMetaFilePath to main new file"); 
 		List<Article> newArticles = getArticlesFromMetaFile(sourceMetaFilePath);
-		List<Article> existingArticles = getArticlesFromMetaFile(ARTICLE_META_FILE_LOCATION);
+		List<Article> existingArticles = getArticlesFromMetaFile(baseDirPath + "/" + ARTICLE_META_FILE_LOCATION);
 		if(newArticles.isEmpty())
+		{
+			Log.d(tagName, " Returning since the newArtciles are empty.");
 			return;
+		}
 		existingArticles.addAll(newArticles);
+		Log.d(tagName, "Writing updated articles into main meta file after merge") ; 
 		writeUpdatedArticles(existingArticles);
 	}
 
@@ -210,17 +248,17 @@ public class CustomFileObserver extends FileObserver
 		Articles appendedArticles = articleBuilder.build();
 		try 
 		{
-			appendedArticles.writeTo(new FileOutputStream(ARTICLE_META_FILE_LOCATION));
+			appendedArticles.writeTo(new FileOutputStream(baseDirPath + "/" + ARTICLE_META_FILE_LOCATION));
 		} 
 		catch (FileNotFoundException e) 
 		{
 			Log.e(tagName, "FileNotFoundException occured for the article meta data file "
-						   + " at location: " + VIDEO_META_FILE_LOCATION, e.getCause());
+						   + " at location: " + ARTICLE_META_FILE_LOCATION, e.getCause());
 		} 
 		catch (IOException e) 
 		{
 			Log.e(tagName, "IOException occured when writing article meta data file "
-					   + " at location: " + VIDEO_META_FILE_LOCATION, e.getCause());
+					   + " at location: " + ARTICLE_META_FILE_LOCATION, e.getCause());
 		}
 	}
 
@@ -231,7 +269,15 @@ public class CustomFileObserver extends FileObserver
 
 	private void copyFileToBaseDirectory(String sourceFilePath) 
 	{
-		File srcFile = new File(sourceFilePath);
+		try { 
+		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
+//		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
+		byte[] pathBytes = sourceFilePath.getBytes(); 
+		String encodedPath = new String(pathBytes, "UTF-8");
+		Log.d(tagName, "Encoded path: " + encodedPath);
+		File tempfile = new File("/storage/sdcard0/BackpackContent/xfer/Backpack 2/"); 
+		Log.d(tagName, "Check if the file exists: " + tempfile.exists());
+		File srcFile = new File(encodedPath).getCanonicalFile();
 		File destDir = new File(baseDirPath);
 		try 
 		{
@@ -242,6 +288,12 @@ public class CustomFileObserver extends FileObserver
 			Log.e(tagName, "Error occured when trying to copy a file from " + 
 							sourceFilePath + " to " + baseDirPath, 
 							e.getCause());
+			String str = Log.getStackTraceString(e.getCause());
+			Log.e(tagName, "Stacktrace string for exception: " + str + " message " + e.getMessage()); 
+		}}
+		catch(Exception e)
+		{
+			Log.d(tagName, e.getMessage() );
 		}
 	}
 }

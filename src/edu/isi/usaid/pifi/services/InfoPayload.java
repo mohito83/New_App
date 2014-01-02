@@ -17,10 +17,12 @@ public class InfoPayload implements Payload {
 	private static final long serialVersionUID = 1L;
 	private long length;
 	private String fileName;
+	private int noOfImg;
 
 	public InfoPayload() {
 		length = 0L;
 		fileName = "";
+		noOfImg = 0;
 	}
 
 	/**
@@ -58,5 +60,19 @@ public class InfoPayload implements Payload {
 		payload.setFileName(getFileName());
 		payload.setLength(getLength());
 		return payload;
+	}
+
+	/**
+	 * @return the noOfImg
+	 */
+	public int getNoOfImg() {
+		return noOfImg;
+	}
+
+	/**
+	 * @param noOfImg the noOfImg to set
+	 */
+	public void setNoOfImg(int noOfImg) {
+		this.noOfImg = noOfImg;
 	}
 }

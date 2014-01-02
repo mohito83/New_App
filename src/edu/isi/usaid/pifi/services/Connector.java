@@ -36,7 +36,7 @@ public class Connector {
 	private InputStream mmInputStream;
 	private OutputStream mmOutputSteam;
 
-	private static byte buffer[] = new byte[8 * 1024];
+	private static byte buffer[] = new byte[16 * 1024];
 
 	/**
 	 * 
@@ -180,6 +180,7 @@ public class Connector {
 			}
 
 			if(saveToFile && fos != null){
+				fos.flush();
 				fos.close();
 				result = bytesRead;
 			}
