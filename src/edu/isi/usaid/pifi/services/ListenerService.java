@@ -225,12 +225,12 @@ public class ListenerService extends Service {
 						Log.i(TAG, "Finished sending videos");
 
 						Log.i(TAG, "Start receiving web contents");
-//						mHanlder.receiveFiles(xferDir);
-//						Log.i(TAG, "Finished receiving web contents");
-//
-//						Log.i(TAG, "Start sending web contents");
-//						mHanlder.sendWebContent(path);
-//						Log.i(TAG, "Finished sending web contents");
+						mHanlder.receiveFiles(xferDir);
+						Log.i(TAG, "Finished receiving web contents");
+
+						Log.i(TAG, "Start sending web contents");
+						mHanlder.sendWebContent(path);
+						Log.i(TAG, "Finished sending web contents");
 
 						transcState = Constants.SYNC_COMPLETE;
 						terminate = true;
