@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.client.utils.URIUtils;
 
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
@@ -31,8 +28,6 @@ import android.util.Log;
 
 public class CustomFileObserver extends FileObserver
 {
-	private static final String TRANSFER_DIRECTORY_NAME = "xfer";
-
 	public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
 
 	public static final String VIDEO_META_FILE_LOCATION = Constants.metaFileName;
@@ -271,12 +266,9 @@ public class CustomFileObserver extends FileObserver
 	{
 		try { 
 		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
-//		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
 		byte[] pathBytes = sourceFilePath.getBytes(); 
 		String encodedPath = new String(pathBytes, "UTF-8");
 		Log.d(tagName, "Encoded path: " + encodedPath);
-		File tempfile = new File("/storage/sdcard0/BackpackContent/xfer/Backpack 2/"); 
-		Log.d(tagName, "Check if the file exists: " + tempfile.exists());
 		File srcFile = new File(encodedPath).getCanonicalFile();
 		File destDir = new File(baseDirPath);
 		try 
