@@ -312,12 +312,12 @@ public class MessageHandler {
 				InfoPayload payload = (InfoPayload)info.getPayload();
 				int noOfImgs = payload.getNoOfImg();
 				String fName = payload.getFileName();
-				fName = noOfImgs > 0 ? fName.substring(0,
-						fName.indexOf(".html")) : fName.substring(0,
-						fName.indexOf("/"));
-				File webDir = new File(sdir, fName);
-				if(!webDir.exists()){
-					webDir.mkdirs();
+				if (noOfImgs > 0) {
+					fName = fName.substring(0, fName.indexOf(".html"));
+					File webDir = new File(sdir, fName);
+					if (!webDir.exists()) {
+						webDir.mkdirs();
+					}
 				}
 				
 				result = conn.readFileData(info, sdir);

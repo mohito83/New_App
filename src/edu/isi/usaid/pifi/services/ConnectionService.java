@@ -16,7 +16,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -51,7 +50,7 @@ public class ConnectionService extends Service {
 	}
 
 	public void onCreate() {
-		 Debug.waitForDebugger();
+//		 Debug.waitForDebugger();
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState());
@@ -219,12 +218,12 @@ public class ConnectionService extends Service {
 								Log.i(TAG, "Finished receiving videos");
 
 								Log.i(TAG, "Start sending web contents");
-//								mHanlder.sendWebContent(path);
-//								Log.i(TAG, "Finished sending web contents");
+								mHanlder.sendWebContent(path);
+								Log.i(TAG, "Finished sending web contents");
 
 								Log.i(TAG, "Start receiving web contents");
-//								mHanlder.receiveFiles(xferDir);
-//								Log.i(TAG, "Finished receiving web contents");
+								mHanlder.receiveFiles(xferDir);
+								Log.i(TAG, "Finished receiving web contents");
 
 								transcState = Constants.SYNC_COMPLETE;
 								terminate = true;
