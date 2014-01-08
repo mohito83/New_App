@@ -44,8 +44,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
-import edu.isi.usaid.observer.CustomFileObserver;
-import edu.isi.usaid.observer.FileMonitorTask;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
@@ -57,6 +55,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
 import edu.isi.usaid.pifi.services.ListenerService;
+import edu.isi.usaid.pifi.tasks.DeleteAllContentTask;
 import edu.isi.usaid.pifi.tasks.DeleteContentTask;
 import edu.isi.usaid.pifi.tasks.DownloadTask;
 
@@ -454,7 +453,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		sync();
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download){
+    	else if (item.getItemId() == R.id.action_download_sample){
     		// confirm download
     		new AlertDialog.Builder(this)
     			.setTitle("Download Content")
@@ -483,6 +482,35 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				})
 				.setNegativeButton("No", null).show();
     		
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_delete_all){
+    		// confirm deletion
+    		new AlertDialog.Builder(this)
+    		.setTitle("Delete All Content")
+    		.setMessage("Are you sure you want to remove all the content?")
+    		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
+					progress.setTitle("Deletion in Progress");
+					progress.setMessage("Deleting...");
+					progress.setCancelable(false);
+					progress.show();
+					DeleteAllContentTask task = new DeleteAllContentTask(
+							ContentListActivity.this,
+							contentDirectory, 
+							progress, 
+							metadata,
+							webMetadata, 
+							metaFile,
+							webMetaFile);
+					task.execute();
+
+				}
+			})
+			.setNegativeButton("No", null).show();
     		return true;
     	}
     	else 
