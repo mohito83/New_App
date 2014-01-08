@@ -140,13 +140,13 @@ public class CustomFileObserver extends FileObserver
 			if(isMetaDataFile(fullPath) )
 			{
 				appendContentToMainMetaFile(fullPath);
-				propogateUpdatedMessage(fullPath);
+				propogateUpdatedMessage(fullPath);				
 			}
 			else
 			{
 				copyFileToBaseDirectory(fullPath);								
 			}
-			cleanupFile(path);
+			cleanupFile(fullPath);
 		}			
 	}
 
