@@ -13,18 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 
+import android.content.Intent;
+import android.os.Environment;
+import android.os.FileObserver;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Articles;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos.Builder;
-
-import android.content.Intent;
-import android.os.Environment;
-import android.os.FileObserver;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 public class CustomFileObserver extends FileObserver
 {

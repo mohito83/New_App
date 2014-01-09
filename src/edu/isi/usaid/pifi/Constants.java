@@ -27,8 +27,6 @@ public class Constants {
 	
 	public static final String webMetaFileName = "news.dat";
 	
-	public static final String defaultContentURL = "http://107.20.184.189/vids/download?filename=%2Fvol%2Ftmp%2FBackpackContent.zip";
-	
 
 	/****************************************************/
 	/*****************Transaction states*****************/

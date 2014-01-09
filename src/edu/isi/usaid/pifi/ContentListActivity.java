@@ -44,8 +44,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
-import edu.isi.usaid.observer.CustomFileObserver;
-import edu.isi.usaid.observer.FileMonitorTask;
 import edu.isi.usaid.pifi.data.ContentListAdapter;
 import edu.isi.usaid.pifi.data.DrawerItem;
 import edu.isi.usaid.pifi.data.DrawerListAdapter;
@@ -57,6 +55,7 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
 import edu.isi.usaid.pifi.services.ListenerService;
+import edu.isi.usaid.pifi.tasks.DeleteAllContentTask;
 import edu.isi.usaid.pifi.tasks.DeleteContentTask;
 import edu.isi.usaid.pifi.tasks.DownloadTask;
 
@@ -454,35 +453,83 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		sync();
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download){
+    	else if (item.getItemId() == R.id.action_download_sample){
+    		
     		// confirm download
     		new AlertDialog.Builder(this)
     			.setTitle("Download Content")
     			.setMessage("Do you want to download default content? This will overwrite existing content.")
     			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					
-					@Override
+    				@Override
 					public void onClick(DialogInterface dialog, int which) {
-			    		ProgressDialog pd;
-			    		pd = new ProgressDialog(ContentListActivity.this);
-			    		pd.setMessage("Prepare to download");
-			    		pd.setIndeterminate(true);
-			    		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			    		pd.setCancelable(true);
-			    		final DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
-			    		task.execute(Constants.defaultContentURL);
-			    		pd.setOnCancelListener(new OnCancelListener(){
+						
+						// if file has been previously downloaded
+						// extract it
+						File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+			        	File zip = new File(downloadDir, DevelopersConstants.sampleFilename);
+			        	
+			        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
+		        		pd.setMessage("Prepare to download");
+		        		pd.setIndeterminate(true);
+		        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		        		pd.setCancelable(true);
+		        		
+			        	if (zip.exists()){
+			        		DownloadTask task = DownloadTask.createExtractOnlyTask(
+			        				ContentListActivity.this, pd, zip, contentDirectory);
+			        		task.execute();
+			        	}
+			        	
+			        	// else download/extract
+			        	else {
+			        		final DownloadTask task = new DownloadTask(
+			        				ContentListActivity.this, 
+			        				DevelopersConstants.sampleContentURL, 
+			        				pd, 
+			        				zip, 
+			        				contentDirectory);
+			        		task.execute();
+			        		pd.setOnCancelListener(new OnCancelListener(){
 
-							@Override
-							public void onCancel(DialogInterface arg0) {
-								task.cancel(true);
-							}
-			    			
-			    		});
-					}
-				})
+			        			@Override
+			        			public void onCancel(DialogInterface arg0) {
+			        				task.cancel(true);
+			        			}
+			        		});
+			        	}
+    				}
+    			})
 				.setNegativeButton("No", null).show();
     		
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_delete_all){
+    		// confirm deletion
+    		new AlertDialog.Builder(this)
+    		.setTitle("Delete All Content")
+    		.setMessage("Are you sure you want to remove all the content?")
+    		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
+					progress.setTitle("Deletion in Progress");
+					progress.setMessage("Deleting...");
+					progress.setCancelable(false);
+					progress.show();
+					DeleteAllContentTask task = new DeleteAllContentTask(
+							ContentListActivity.this,
+							contentDirectory, 
+							progress, 
+							metadata,
+							webMetadata, 
+							metaFile,
+							webMetaFile);
+					task.execute();
+
+				}
+			})
+			.setNegativeButton("No", null).show();
     		return true;
     	}
     	else 
