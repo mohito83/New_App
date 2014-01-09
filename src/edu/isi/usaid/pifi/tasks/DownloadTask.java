@@ -4,29 +4,25 @@
 package edu.isi.usaid.pifi.tasks;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.PowerManager;
-import android.util.Log;
 import android.widget.Toast;
 import edu.isi.usaid.pifi.ContentListActivity;
+import edu.isi.usaid.pifi.util.FileUtil;
 
 /**
  * @author jenniferchen
  *
  */
-public class DownloadTask extends AsyncTask<String, Integer, String> {
+public class DownloadTask extends AsyncTask<Void, Integer, String> {
 	
 	public static final String TAG = "DownloadTask";
 	
@@ -34,9 +30,39 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	
 	private ProgressDialog progressDialog;
 	
-	public DownloadTask(ContentListActivity c, ProgressDialog pd){
+	private String url;
+	
+	private File contentDir;
+	
+	private File localFile;
+	
+	protected boolean extractOnly = false;
+	
+	/**
+	 * 
+	 * @param c
+	 * @param pd
+	 * @param localFile - where to save the file, task does not delete this file
+	 * @param contentDir - directory where content will be extracted
+	 */
+	public DownloadTask(
+			ContentListActivity c, 
+			String url, 
+			ProgressDialog pd, 
+			File localFile, 
+			File contentDir){
 		context = c;
 		progressDialog = pd;
+		this.url = url;
+		this.localFile = localFile;
+		this.contentDir = contentDir;
+	}
+	
+	public static DownloadTask createExtractOnlyTask(ContentListActivity c, ProgressDialog pd, File localFile, File contentDir){
+		DownloadTask task = new DownloadTask(c, null, pd, localFile, contentDir);
+		task.extractOnly = true;
+		return task;
+		
 	}
 
 	/* (non-Javadoc)
@@ -46,91 +72,89 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	 * 
 	 */
 	@Override
-	protected String doInBackground(String... urls) {
+	protected String doInBackground(Void... v) {
 		
-		// take CPU lock to prevent CPU from going off if the user 
-        // presses the power button during download
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-             getClass().getName());
-        wl.acquire();
-        
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        
-
-        // download the file
-        try {
-        	URL url = new URL(urls[0]);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            	
-            // unable to connect
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK){
-            	wl.release();
-            	return "Unable to connect, abort";
-            }
-
-            int fileLength = connection.getContentLength();  
-            if (fileLength < 0)
-            	publishProgress(-1);
-            Log.i(TAG, "file size " + fileLength + " bytes");
-        	input = connection.getInputStream();
-        	File sdDir = Environment.getExternalStorageDirectory();
-        	File file = new File(sdDir, "BackpackContent.zip");
-        	output = new FileOutputStream(file);
-	
-        	byte data[] = new byte[4096];
-        	int total = 0;
-        	int count;
-        	while ((count = input.read(data)) != -1) {
-        		// allow canceling with back button
-        		if (isCancelled()){
-        			input.close();
-        			output.close();
-        			file.delete();
-        			wl.release();
-        			return "download aborted";
-                }
-        		
-        		output.write(data, 0, count);
-        		
-        		total += count;
-        		// publishing the progress....
-        		if (fileLength > 0) // only if total length is known
-        			publishProgress((int) (total * 100 / fileLength));
-        		else 
-        			publishProgress(-1);
-        			
-            }
-        	
-        	publishProgress(1000);
-        	
-        	if (output != null)
-        		output.close();
-			if (input != null)
-				input.close();
+		if (!extractOnly){
 			
-			if (connection != null)
-				connection.disconnect();
-            wl.release();
+			// take CPU lock to prevent CPU from going off if the user 
+	        // presses the power button during download
+	        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+	             getClass().getName());
+	        wl.acquire();
+	        
+	        InputStream input = null;
+	        OutputStream output = null;
+	        HttpURLConnection connection = null;
+	        
+	
+	        // download the file
+	        try {
+	        	URL u = new URL(url);
+	            connection = (HttpURLConnection) u.openConnection();
+	            connection.connect();
+	            	
+	            // unable to connect
+	            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK){
+	            	wl.release();
+	            	return "Unable to connect, abort";
+	            }
+	
+	            int fileLength = connection.getContentLength();  
+	            if (fileLength < 0)
+	            	publishProgress(-1);
+	        	input = connection.getInputStream();
+	        	output = new FileOutputStream(localFile);
+		
+	        	byte data[] = new byte[4096];
+	        	int total = 0;
+	        	int count;
+	        	while ((count = input.read(data)) != -1) {
+	        		// allow canceling with back button
+	        		if (isCancelled()){
+	        			input.close();
+	        			output.close();
+	        			localFile.delete();
+	        			wl.release();
+	        			return "download aborted";
+	                }
+	        		
+	        		output.write(data, 0, count);
+	        		
+	        		total += count;
+	        		long percent = (long)total * 100l / (long)fileLength;
+	        		// publishing the progress....
+	        		if (fileLength > 0) // only if total length is known
+	        			publishProgress((int) percent);
+	        		else 
+	        			publishProgress(-1);
+	        			
+	            }
+	        	
+	        	if (output != null)
+	        		output.close();
+				if (input != null)
+					input.close();
+				
+				if (connection != null)
+					connection.disconnect();
+	            wl.release();
+	            
+	        } catch (Exception e) {
+	    		wl.release();
+				e.printStackTrace();
+				return "Download failed";
+			}
+        }
             
-            // extract file
-        	String res = unzip(sdDir, file);
-        	if (res != null){ // unzip failed
-        		file.delete();
-        		return res;
-        	}
-        	
-        	// delete file
-        	file.delete();
+        // extract file
+		publishProgress(1000);
+    	String res = FileUtil.unzip(contentDir, localFile);
+    	if (res != null){ // unzip failed
+    		localFile.delete();
+    		return res;
+    	}
             
-    	} catch (Exception e) {
-    		wl.release();
-			e.printStackTrace();
-			return "Download failed";
-		}
             
         
 		return "Content downloaded";
@@ -164,36 +188,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onCancelled(String result){
 		Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-	}
-	private String unzip(File directory, File zip){
-		try {
-			FileInputStream fis = new FileInputStream(zip);
-			ZipInputStream zis = new ZipInputStream(fis);
-			ZipEntry entry = null;
-			while ((entry = zis.getNextEntry()) != null){
-				File entryFile = new File(directory, entry.getName());
-				// if directory, create dir
-				if (entry.isDirectory()){
-					if (!entryFile.exists())
-						entryFile.mkdir();
-				}
-				else { // create file
-					FileOutputStream fos = new FileOutputStream(entryFile);
-					byte[] buffer = new byte[4096]; 
-					for (int c = zis.read(buffer); c != -1; c = zis.read(buffer)) { 
-						fos.write(buffer, 0, c); 
-					}
-					zis.closeEntry();
-					fos.close();
-				}
-			}
-			zis.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return e.getMessage();
-		}
-		
-		return null;
 	}
 
 }

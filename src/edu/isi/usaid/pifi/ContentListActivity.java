@@ -454,32 +454,51 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_download_sample){
+    		
     		// confirm download
     		new AlertDialog.Builder(this)
     			.setTitle("Download Content")
     			.setMessage("Do you want to download default content? This will overwrite existing content.")
     			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					
-					@Override
+    				@Override
 					public void onClick(DialogInterface dialog, int which) {
-			    		ProgressDialog pd;
-			    		pd = new ProgressDialog(ContentListActivity.this);
-			    		pd.setMessage("Prepare to download");
-			    		pd.setIndeterminate(true);
-			    		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			    		pd.setCancelable(true);
-			    		final DownloadTask task = new DownloadTask(ContentListActivity.this, pd);
-			    		task.execute(Constants.defaultContentURL);
-			    		pd.setOnCancelListener(new OnCancelListener(){
+						
+						// if file has been previously downloaded
+						// extract it
+						File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+			        	File zip = new File(downloadDir, DevelopersConstants.sampleFilename);
+			        	
+			        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
+		        		pd.setMessage("Prepare to download");
+		        		pd.setIndeterminate(true);
+		        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		        		pd.setCancelable(true);
+		        		
+			        	if (zip.exists()){
+			        		DownloadTask task = DownloadTask.createExtractOnlyTask(
+			        				ContentListActivity.this, pd, zip, contentDirectory);
+			        		task.execute();
+			        	}
+			        	
+			        	// else download/extract
+			        	else {
+			        		final DownloadTask task = new DownloadTask(
+			        				ContentListActivity.this, 
+			        				DevelopersConstants.sampleContentURL, 
+			        				pd, 
+			        				zip, 
+			        				contentDirectory);
+			        		task.execute();
+			        		pd.setOnCancelListener(new OnCancelListener(){
 
-							@Override
-							public void onCancel(DialogInterface arg0) {
-								task.cancel(true);
-							}
-			    			
-			    		});
-					}
-				})
+			        			@Override
+			        			public void onCancel(DialogInterface arg0) {
+			        				task.cancel(true);
+			        			}
+			        		});
+			        	}
+    				}
+    			})
 				.setNegativeButton("No", null).show();
     		
     		return true;
