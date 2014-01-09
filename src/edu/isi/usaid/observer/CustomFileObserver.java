@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.client.utils.URIUtils;
 
 import edu.isi.usaid.pifi.Constants;
 import edu.isi.usaid.pifi.metadata.ArticleProtos.Article;
@@ -31,8 +28,6 @@ import android.util.Log;
 
 public class CustomFileObserver extends FileObserver
 {
-	private static final String TRANSFER_DIRECTORY_NAME = "xfer";
-
 	public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
 
 	public static final String VIDEO_META_FILE_LOCATION = Constants.metaFileName;
@@ -50,13 +45,55 @@ public class CustomFileObserver extends FileObserver
 	private Map<String, String> transferredVideoFiles = new ConcurrentHashMap<String, String>();
 	
 	public CustomFileObserver(String path, FileMonitorTask fileMonitorTask, int[] eventTypes) 
-	{
-		
+	{		
 		super(path, FileObserver.CREATE | FileObserver.MOVED_TO);
 		toAppendPath = path;
 		this.fileMonitorTask = fileMonitorTask;
+		if(toAppendPath.equals(baseDirPath))
+		{
+			startWatchingForExistingDirectories();
+		}
 	}
 	
+	private void startWatchingForExistingDirectories() 
+	{
+		File baseDir = new File(baseDirPath);
+		File[] listFiles = baseDir.listFiles();
+		if(containsTransferFolder(listFiles))
+		{
+			String transferDirectoryPath = baseDirPath + "/xfer" ; 
+			addWatcherForFile(new File(transferDirectoryPath));
+			for(File file : new File(baseDirPath).listFiles())
+			{
+				addWatcherForFile(file);
+			}
+			
+		}
+	}
+
+	private boolean containsTransferFolder(File[] listFiles) 
+	{
+		for(File eachFile : listFiles)
+		{
+			try {
+				if(eachFile.getCanonicalPath().contains("xfer"))
+					return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	private void addWatcherForFile(File file) 
+	{
+		Log.d(tagName, "In addWatcherForFile: Adding observer for existing path: " +file.getAbsolutePath());
+		FileObserver transferDirObserver = new CustomFileObserver(file.getAbsolutePath(), fileMonitorTask, new int[]{FileObserver.MOVED_FROM});
+		fileObserverMap.put(file.getAbsolutePath(), transferDirObserver);
+		transferDirObserver.startWatching();
+
+	}
+
 	public boolean isTransferDirectoryContent(String path)
 	{
 		return path != null ;
@@ -65,7 +102,7 @@ public class CustomFileObserver extends FileObserver
 
   /*
    * Listening to move_self event rather than create event, since it is not 
-   * possible in create to know if the file transfer has already been done
+   * possible in create to know if the file transWhat followed next was pretty much in line with the craziness of the entire episode. Within five minutes, the three musketeers could not bear the pain of being seated in the second row in a 7:30 am lecture. They simply got up and sprinted to their (I am guessing) usual seats in the last bench. fer has already been done
    */  
 	@Override
 	public void onEvent(int event, String path) 
@@ -73,6 +110,9 @@ public class CustomFileObserver extends FileObserver
 		if(path.endsWith(".tmp"))
 			path = path.replaceAll(".tmp", "");
 		Log.d(tagName, "Got event for file with path: " + path);
+//		Environment.MEDIA_MOUNTED
+		Log.d(tagName, Environment.getRootDirectory().getAbsolutePath());
+		Log.d(tagName, Environment.getExternalStorageDirectory().getAbsolutePath());
 		String fullPath = toAppendPath + "/" + path;; 
 		Log.d(tagName, "checking for directory " + " at path :" + fullPath + " with result : "    + isDirectory(fullPath)); 
 		if(path== null || path.equals("null")) return; 
@@ -100,13 +140,13 @@ public class CustomFileObserver extends FileObserver
 			if(isMetaDataFile(fullPath) )
 			{
 				appendContentToMainMetaFile(fullPath);
-				propogateUpdatedMessage(fullPath);
+				propogateUpdatedMessage(fullPath);				
 			}
 			else
 			{
 				copyFileToBaseDirectory(fullPath);								
 			}
-			cleanupFile(path);
+			cleanupFile(fullPath);
 		}			
 	}
 
@@ -271,12 +311,9 @@ public class CustomFileObserver extends FileObserver
 	{
 		try { 
 		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
-//		Log.d(tagName, "Escaped Source File path: " + StringEscapeUtils.escapeJava(sourceFilePath));
 		byte[] pathBytes = sourceFilePath.getBytes(); 
 		String encodedPath = new String(pathBytes, "UTF-8");
 		Log.d(tagName, "Encoded path: " + encodedPath);
-		File tempfile = new File("/storage/sdcard0/BackpackContent/xfer/Backpack 2/"); 
-		Log.d(tagName, "Check if the file exists: " + tempfile.exists());
 		File srcFile = new File(encodedPath).getCanonicalFile();
 		File destDir = new File(baseDirPath);
 		try 
