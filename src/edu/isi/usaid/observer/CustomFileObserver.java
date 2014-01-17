@@ -28,7 +28,7 @@ public class CustomFileObserver extends FileObserver
 {
 	public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
 
-	public static final String VIDEO_META_FILE_LOCATION = Constants.metaFileName;
+	public static final String VIDEO_META_FILE_LOCATION = Constants.videoMetaFileName;
 
 	private static String TAG = "CustomFileObserver";
 	

@@ -23,7 +23,7 @@ public class Constants {
 	
 	public static final String xferDirName = "xfer";
 	
-	public static final String metaFileName = "videos.dat";
+	public static final String videoMetaFileName = "videos.dat";
 	
 	public static final String webMetaFileName = "news.dat";
 	

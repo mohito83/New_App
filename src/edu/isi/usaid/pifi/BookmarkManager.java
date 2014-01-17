@@ -9,7 +9,8 @@ package edu.isi.usaid.pifi;
  */
 public interface BookmarkManager {
 
-	public void addBookmark(String id);
-	public void removeBookmark(String id);
+	public void addBookmark(String id, boolean reload);
+	public void removeBookmark(String id, boolean reload);
 	public boolean isBookmarked(String id);
+	public void removeAllBookmarks(boolean reload);
 }
