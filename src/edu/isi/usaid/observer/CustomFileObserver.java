@@ -109,7 +109,6 @@ public class CustomFileObserver extends FileObserver
 		if(path.endsWith(".tmp"))
 			path = path.replaceAll(".tmp", "");
 		Log.d(tagName, "Got event for file with path: " + path);
-//		Environment.MEDIA_MOUNTED
 		Log.d(tagName, Environment.getRootDirectory().getAbsolutePath());
 		Log.d(tagName, Environment.getExternalStorageDirectory().getAbsolutePath());
 		String fullPath = toAppendPath + "/" + path;; 
@@ -308,13 +307,22 @@ public class CustomFileObserver extends FileObserver
 
 	private void copyFileToBaseDirectory(String sourceFilePath) 
 	{
-		try { 
+		try {
+			String toCopyDir = baseDirPath;
+			if(isImageCopied(sourceFilePath))
+			{
+				String dirName = extractDirectoryName(toAppendPath); 
+				Log.d(tagName, "DirName " + dirName + " extracted from the path : " + toAppendPath);
+				createDirectoryIfNotExists(dirName, baseDirPath);
+				toCopyDir = toCopyDir + "/" + dirName; 
+				Log.d(tagName, "toCopydir location: " + toCopyDir );
+			}
 		Log.d(tagName, "Actual sourceFilePath: " + sourceFilePath); 
 		byte[] pathBytes = sourceFilePath.getBytes(); 
 		String encodedPath = new String(pathBytes, "UTF-8");
 		Log.d(tagName, "Encoded path: " + encodedPath);
 		File srcFile = new File(encodedPath).getCanonicalFile();
-		File destDir = new File(baseDirPath);
+		File destDir = new File(toCopyDir);
 		try 
 		{
 			FileUtils.copyFileToDirectory(srcFile, destDir);
@@ -322,7 +330,7 @@ public class CustomFileObserver extends FileObserver
 		catch (IOException e) 
 		{
 			Log.e(tagName, "Error occured when trying to copy a file from " + 
-							sourceFilePath + " to " + baseDirPath, 
+							sourceFilePath + " to " + toCopyDir, 
 							e.getCause());
 			String str = Log.getStackTraceString(e.getCause());
 			Log.e(tagName, "Stacktrace string for exception: " + str + " message " + e.getMessage()); 
@@ -331,6 +339,50 @@ public class CustomFileObserver extends FileObserver
 		{
 			Log.d(tagName, e.getMessage() );
 		}
+	}
+
+	private String extractDirectoryName(String toAppendPath2) {
+		String[] splittedPaths = toAppendPath.split("/");
+		int i=0;
+		for(;i<splittedPaths.length;++i)
+		{
+			if(splittedPaths[i].equals("xfer"))
+			{
+				i += 2 ; break; 
+			}
+		}
+		 return splittedPaths[i]; 		
+	}
+
+	private void createDirectoryIfNotExists(String dirName, String baseDirPath2) 
+	{
+		String totalDirName = baseDirPath2 + "/" + dirName; 
+		File file = new File(totalDirName); 
+		if(!file.exists())
+		{
+			Log.d(tagName, "Directory with path : " + totalDirName + " does not exists."); 
+			Log.d(tagName, "Creating directory at location " + totalDirName);
+			boolean mkdir = file.mkdir();
+			if(mkdir) 
+			{
+				Log.d(tagName, "Directory creation successful at location " + totalDirName); 
+			}
+		}
+	}
+
+	private boolean isImageCopied(String sourceFilePath) 
+	{
+		String[] splittedPaths = toAppendPath.split("/");
+		int i=0;
+		for(;i<splittedPaths.length;++i)
+		{
+			if(splittedPaths[i].equals("xfer"))
+			{
+				i += 2 ; break; 
+			}
+		}
+		if(i < splittedPaths.length) return true; 
+		else return false;	
 	}
 }
 
