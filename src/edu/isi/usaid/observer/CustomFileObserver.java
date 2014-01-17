@@ -106,6 +106,8 @@ public class CustomFileObserver extends FileObserver
 	@Override
 	public void onEvent(int event, String path) 
 	{
+		if(path== null || path.equals("null")) return; 
+
 		if(path.endsWith(".tmp"))
 			path = path.replaceAll(".tmp", "");
 		Log.d(tagName, "Got event for file with path: " + path);
@@ -113,7 +115,6 @@ public class CustomFileObserver extends FileObserver
 		Log.d(tagName, Environment.getExternalStorageDirectory().getAbsolutePath());
 		String fullPath = toAppendPath + "/" + path;; 
 		Log.d(tagName, "checking for directory " + " at path :" + fullPath + " with result : "    + isDirectory(fullPath)); 
-		if(path== null || path.equals("null")) return; 
 		if(toAppendPath.equals(baseDirPath) && !isDirectory(fullPath))
 			return;
 		if(isDirectory(fullPath) && !fileObserverMap.containsKey(fullPath))
