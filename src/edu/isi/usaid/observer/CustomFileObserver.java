@@ -95,7 +95,7 @@ public class CustomFileObserver extends FileObserver
 
 	public boolean isTransferDirectoryContent(String path)
 	{
-		return path != null ;
+		return path != null && path.contains("xfer");
 	}
 
 
@@ -325,19 +325,21 @@ public class CustomFileObserver extends FileObserver
 		File destDir = new File(toCopyDir);
 		try 
 		{
+			if(sourceFilePath.contains("20VIRGINIA-articleLarge.jpg"))
+			{
+				Log.d(tagName, "Copying the file to " + destDir.getCanonicalPath() + " " + destDir.getAbsolutePath());
+				Log.d(tagName, "isImageCopied: " + isImageCopied(sourceFilePath)); 
+				Log.d(tagName, "toCopyDir :  " + toCopyDir +  " basedir:  " + baseDirPath ); 
+			}
 			FileUtils.copyFileToDirectory(srcFile, destDir);
 		} 
 		catch (IOException e) 
 		{
-			Log.e(tagName, "Error occured when trying to copy a file from " + 
-							sourceFilePath + " to " + toCopyDir, 
-							e.getCause());
-			String str = Log.getStackTraceString(e.getCause());
-			Log.e(tagName, "Stacktrace string for exception: " + str + " message " + e.getMessage()); 
+			Log.e(tagName, "Exception stuff: " + e.getMessage());
 		}}
 		catch(Exception e)
 		{
-			Log.d(tagName, e.getMessage() );
+			Log.e(tagName, "Exception stuff: " + e.getMessage());
 		}
 	}
 
@@ -351,7 +353,14 @@ public class CustomFileObserver extends FileObserver
 				i += 2 ; break; 
 			}
 		}
-		 return splittedPaths[i]; 		
+		String res = "" ; 
+		while ( i < splittedPaths.length) 
+		{
+			res = res + splittedPaths[i]; 
+			res += "/";
+			++i ; 
+		}
+		 return res; 		
 	}
 
 	private void createDirectoryIfNotExists(String dirName, String baseDirPath2) 
