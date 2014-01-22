@@ -1,20 +1,19 @@
 package edu.isi.usaid.observer;
 
-import edu.isi.usaid.pifi.Constants;
+import java.io.File;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Environment;
-import android.os.FileObserver;
 import android.os.IBinder;
 import android.util.Log;
+import edu.isi.usaid.pifi.Constants;
 
 public class FileMonitorTask extends Service
 {
 	private static final String TAG = "FileMonitorTaskTag";
 	
-	private final String path = Environment.getExternalStorageDirectory() + "/" + Constants.contentDirName;
-	
-	private final CustomFileObserver customFileObserver = new CustomFileObserver(path, this, new int[] {FileObserver.CREATE});
+	private CustomFileObserver customFileObserver; // global keeps it from being garbage collected
 	
 	@Override
 	public IBinder onBind(Intent intent) 
@@ -31,10 +30,11 @@ public class FileMonitorTask extends Service
 	@Override
 	public void onCreate() 
 	{
-		Log.d(TAG, "Called inside FileMonitorTaskFileUpdate For oncreateEvent");
-		Log.d(TAG, "Manually Starting the fileObserver");
-		customFileObserver.startWatching();
 		super.onCreate();
+		File contentDir = new File(Environment.getExternalStorageDirectory(), Constants.contentDirName);
+		customFileObserver
+			= new CustomFileObserver(contentDir.getAbsolutePath(), this);
+		customFileObserver.startWatching();
 	}
 
 	@Override
