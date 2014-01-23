@@ -94,7 +94,7 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	 * @param c
 	 * @param packageUrl - where to download package
 	 * @param pd - progress dialog
-	 * @param packageFile - where to save downloaded package
+	 * @param packageFile - where to save downloaded package, set null will not save the file
 	 * @param contentDir - backpack content directory
 	 * @param overrite - overwrite or merge content
 	 */
@@ -139,6 +139,12 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	 */
 	@Override
 	protected String doInBackground(Void... params) {
+		
+		boolean deleteLocalFile = false;
+		if (packageFile == null){
+			deleteLocalFile = true;
+			packageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "backpackPkgTmp.zip");
+		}
 		
 		// if need to download package file
 		if (packageUrl != null){
@@ -266,6 +272,10 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		// delete local file
+		if (deleteLocalFile)
+			packageFile.delete();
 		
 		return SUCCESSFUL;
 		

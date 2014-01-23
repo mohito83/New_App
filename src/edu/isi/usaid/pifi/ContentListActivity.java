@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,8 +101,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 
 	private File contentDirectory;
 	
-	private File downloadDirectory;
-
 	private File metaFile;
 
 	private File webMetaFile;
@@ -124,6 +124,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private String selectedBookmark = "All";
 	
 	private Object currentContent = null;
+	
+	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd");
 
 	// register to receive message when a new comment is added
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -298,9 +300,6 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
 		
-		// download directory
-		downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
 		// Set up the action bar to show a dropdown list for categories
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -457,24 +456,23 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		sync();
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download_daily){
-        	File zip = new File(downloadDirectory, DevelopersConstants.dailyFilename);
-    		downloadContent(DevelopersConstants.dailyPackageURL, zip);
+    	else if (item.getItemId() == R.id.action_download_today){
+    		String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download_sample){
-        	File zip = new File(downloadDirectory, DevelopersConstants.contentSampleFilename);
-    		downloadContent(DevelopersConstants.contentSampleURL, zip);
+    	else if (item.getItemId() == R.id.action_download_yesterday){
+    		Calendar yesterday = Calendar.getInstance();
+    		yesterday.add(Calendar.DATE, -1);
+    		String packageName = packageDateFormat.format(yesterday.getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download_smallset1){
-    		File zip = new File(downloadDirectory, DevelopersConstants.contentSmall1Filename);
-    		downloadContent(DevelopersConstants.contentSmall1URL, zip);    		
-    		return true;
-    	}
-    	else if (item.getItemId() == R.id.action_download_smallset2){
-    		File zip = new File(downloadDirectory, DevelopersConstants.contentSmall2Filename);
-    		downloadContent(DevelopersConstants.contentSmall2URL, zip);      		
+    	else if (item.getItemId() == R.id.action_download_2days){
+    		Calendar twoDaysAgo = Calendar.getInstance();
+    		twoDaysAgo.add(Calendar.DATE, -2);
+    		String packageName = packageDateFormat.format(twoDaysAgo.getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_delete_all){
@@ -758,7 +756,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	        		pd.setCancelable(true);
 	        		
 	        		// if file doesn't exist, download
-		        	if (!localFile.exists()){
+		        	if (localFile == null || !localFile.exists()){
 		        		ContentManagementTask task = new ContentManagementTask(
 		        				ContentListActivity.this, 
 		        				url,
@@ -793,7 +791,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	        		pd.setCancelable(true);
 	        		
 	        		// if file doesn't exist, download
-		        	if (!localFile.exists()){
+		        	if (localFile == null || !localFile.exists()){
 		        		ContentManagementTask task = new ContentManagementTask(
 		        				ContentListActivity.this, 
 		        				url,
