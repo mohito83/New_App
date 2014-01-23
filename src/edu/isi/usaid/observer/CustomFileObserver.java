@@ -111,11 +111,10 @@ public class CustomFileObserver extends FileObserver
 			else{
 				copyFileToBaseDirectory(fullPath);								
 			}
-			Log.d(TAG, "Delete " + fullPath);
-			cleanupFile(fullPath);
+			new File(fullPath).delete();
 		}			
 	}
-
+	
 	private void propogateUpdatedMessage(String path) 
 	{
 		Intent messageIntent = new Intent();
@@ -123,31 +122,15 @@ public class CustomFileObserver extends FileObserver
 		LocalBroadcastManager.getInstance(fileMonitorTask).sendBroadcast(messageIntent);
 	}
 
-	private void cleanupFile(String path) 
-	{
-		File file = new File(path);
-		if(file.isFile())
-		{
-			file.delete();
-		}
-	}
-
 	private void appendContentToMainMetaFile(String sourceMetaFilePath) 
 	{
 		if(sourceMetaFilePath.contains("html"))
-		{
-			Log.d(TAG, "Trying to append file with path: " + sourceMetaFilePath + " to the actual news meta file"); 
 			appendToNewsMetaFile(sourceMetaFilePath);
-		}
 		else 
-		{			
-			Log.d(TAG, "Trying to append file with path: " + sourceMetaFilePath + " to the actual video meta file"); 
-			if(!transferredVideoFiles.containsKey(sourceMetaFilePath))
-			{
+			if(!transferredVideoFiles.containsKey(sourceMetaFilePath)){ // TODO why do this? this never resets, just keeps adding up
 				transferredVideoFiles.put(sourceMetaFilePath, "1");
 				appendToVideosMetaFile(sourceMetaFilePath);
 			}
-		}
 	}
 
 	private List<Video> getVideosFromFile(String fileName)
@@ -238,7 +221,7 @@ public class CustomFileObserver extends FileObserver
 
 	private void writeUpdatedArticles(List<Article> existingArticles) 
 	{
-		edu.isi.usaid.pifi.metadata.ArticleProtos.Articles.Builder articleBuilder = Articles.newBuilder();
+		Articles.Builder articleBuilder = Articles.newBuilder();
 		articleBuilder.addAllArticle(existingArticles);
 		Articles appendedArticles = articleBuilder.build();
 		try 
@@ -270,28 +253,14 @@ public class CustomFileObserver extends FileObserver
 				toCopyDir = toCopyDir + "/" + dirName; 
 				Log.d(TAG, "toCopydir location: " + toCopyDir );
 			}
-		Log.d(TAG, "Actual sourceFilePath: " + sourceFilePath); 
-		byte[] pathBytes = sourceFilePath.getBytes(); 
-		String encodedPath = new String(pathBytes, "UTF-8");
-		Log.d(TAG, "Encoded path: " + encodedPath);
-		File srcFile = new File(encodedPath).getCanonicalFile();
-		File destDir = new File(toCopyDir);
-		try 
-		{
-			if(sourceFilePath.contains("20VIRGINIA-articleLarge.jpg"))
-			{
-				Log.d(TAG, "Copying the file to " + destDir.getCanonicalPath() + " " + destDir.getAbsolutePath());
-				Log.d(TAG, "isImageCopied: " + isImageCopied(sourceFilePath)); 
-				Log.d(TAG, "toCopyDir :  " + toCopyDir +  " basedir:  " + contentDirPath ); 
-			}
+			Log.d(TAG, "Actual sourceFilePath: " + sourceFilePath); 
+			byte[] pathBytes = sourceFilePath.getBytes(); 
+			String encodedPath = new String(pathBytes, "UTF-8");
+			Log.d(TAG, "Encoded path: " + encodedPath);
+			File srcFile = new File(encodedPath).getCanonicalFile();
+			File destDir = new File(toCopyDir);
 			FileUtils.copyFileToDirectory(srcFile, destDir);
-		} 
-		catch (IOException e) 
-		{
-			Log.e(TAG, "Exception stuff: " + e.getMessage());
-		}}
-		catch(Exception e)
-		{
+		} catch(Exception e){
 			Log.e(TAG, "Exception stuff: " + e.getMessage());
 		}
 	}
