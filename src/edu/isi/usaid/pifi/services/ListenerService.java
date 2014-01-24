@@ -58,7 +58,7 @@ public class ListenerService extends Service {
 		if (!path.exists()) {
 			path.mkdir();
 		}
-		metaFile = new File(path, Constants.metaFileName);
+		metaFile = new File(path, Constants.videoMetaFileName);
 		webMetaFile = new File(path, Constants.webMetaFileName);
 		try {
 			if (!webMetaFile.exists()) {

@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +23,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -55,9 +56,9 @@ import edu.isi.usaid.pifi.metadata.VideoProtos.Video;
 import edu.isi.usaid.pifi.metadata.VideoProtos.Videos;
 import edu.isi.usaid.pifi.services.ConnectionService;
 import edu.isi.usaid.pifi.services.ListenerService;
+import edu.isi.usaid.pifi.tasks.ContentManagementTask;
 import edu.isi.usaid.pifi.tasks.DeleteAllContentTask;
 import edu.isi.usaid.pifi.tasks.DeleteContentTask;
-import edu.isi.usaid.pifi.tasks.DownloadTask;
 
 /**
  * 
@@ -99,7 +100,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private DrawerListAdapter drawerListAdapter;
 
 	private File contentDirectory;
-
+	
 	private File metaFile;
 
 	private File webMetaFile;
@@ -123,6 +124,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private String selectedBookmark = "All";
 	
 	private Object currentContent = null;
+	
+	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd");
 
 	// register to receive message when a new comment is added
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -162,9 +165,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				String id = i.getStringExtra(ExtraConstants.ID);
 				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
 				if (on)
-					addBookmark(id);
+					addBookmark(id, true);
 				else
-					removeBookmark(id);
+					removeBookmark(id, true);
 			}
 			
 		}
@@ -280,10 +283,10 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		Log.d("ContentListActivity", "Printing the startup message");
 		Intent intent = new Intent("edu.isi.usaid.observer.FileMonitorTask");
 		startService(intent);
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
 		
 		// restore user preferences
@@ -296,7 +299,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		contentDirectory = new File(sdDir, Constants.contentDirName);
 		if (!contentDirectory.exists())
 			contentDirectory.mkdir();
-
+		
 		// Set up the action bar to show a dropdown list for categories
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -453,54 +456,23 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		sync();
     		return true;
     	}
-    	else if (item.getItemId() == R.id.action_download_sample){
-    		
-    		// confirm download
-    		new AlertDialog.Builder(this)
-    			.setTitle("Download Content")
-    			.setMessage("Do you want to download default content? This will overwrite existing content.")
-    			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-    				@Override
-					public void onClick(DialogInterface dialog, int which) {
-						
-						// if file has been previously downloaded
-						// extract it
-						File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-			        	File zip = new File(downloadDir, DevelopersConstants.sampleFilename);
-			        	
-			        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
-		        		pd.setMessage("Prepare to download");
-		        		pd.setIndeterminate(true);
-		        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		        		pd.setCancelable(true);
-		        		
-			        	if (zip.exists()){
-			        		DownloadTask task = DownloadTask.createExtractOnlyTask(
-			        				ContentListActivity.this, pd, zip, contentDirectory);
-			        		task.execute();
-			        	}
-			        	
-			        	// else download/extract
-			        	else {
-			        		final DownloadTask task = new DownloadTask(
-			        				ContentListActivity.this, 
-			        				DevelopersConstants.sampleContentURL, 
-			        				pd, 
-			        				zip, 
-			        				contentDirectory);
-			        		task.execute();
-			        		pd.setOnCancelListener(new OnCancelListener(){
-
-			        			@Override
-			        			public void onCancel(DialogInterface arg0) {
-			        				task.cancel(true);
-			        			}
-			        		});
-			        	}
-    				}
-    			})
-				.setNegativeButton("No", null).show();
-    		
+    	else if (item.getItemId() == R.id.action_download_today){
+    		String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_download_yesterday){
+    		Calendar yesterday = Calendar.getInstance();
+    		yesterday.add(Calendar.DATE, -1);
+    		String packageName = packageDateFormat.format(yesterday.getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_download_2days){
+    		Calendar twoDaysAgo = Calendar.getInstance();
+    		twoDaysAgo.add(Calendar.DATE, -2);
+    		String packageName = packageDateFormat.format(twoDaysAgo.getTime());
+    		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_delete_all){
@@ -599,7 +571,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	public void reload(boolean firsttime) {
 		
 		// read meatadata
-		metaFile = new File(contentDirectory, Constants.metaFileName);
+		metaFile = new File(contentDirectory, Constants.videoMetaFileName);
 		webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
 		ArrayList<Article> articles = new ArrayList<Article>();
 		ArrayList<Video> videos = new ArrayList<Video>();
@@ -757,6 +729,95 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		// update list
 		contentListAdapter.notifyDataSetChanged();
 	}
+	
+	/**
+	 * Download new content from URL and save locally (or use existing local file)
+	 * Then merge or replace current content
+	 * @param url - to download content package, if null, will use locaFile
+	 * @param localFile - where to save downloaded file, will not be deleted
+	 */
+	protected void downloadContent(final String url, final File localFile){
+		
+		// confirm download
+		new AlertDialog.Builder(this)
+			.setTitle("Download Content")
+			.setMessage("Do you want to merge or overwite existing content?")
+			.setPositiveButton("Merge", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					// local file (could exist or not)
+		        	
+		        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
+	        		pd.setMessage("Download Content Package");
+	        		pd.setIndeterminate(true);
+	        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	        		pd.setCancelable(true);
+	        		
+	        		// if file doesn't exist, download
+		        	if (localFile == null || !localFile.exists()){
+		        		ContentManagementTask task = new ContentManagementTask(
+		        				ContentListActivity.this, 
+		        				url,
+		        				pd, 
+		        				localFile, 
+		        				contentDirectory,
+		        				false);
+		        		task.execute();
+		        	}
+		        	
+		        	// file has been downloaded before
+		        	else {
+		        		ContentManagementTask task = new ContentManagementTask(
+		        				ContentListActivity.this, 
+		        				pd, 
+		        				localFile, 
+		        				contentDirectory,
+		        				false);
+		        		task.execute();
+		        	}
+				}
+			})
+			.setNegativeButton("Overwrite", new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+		        	
+		        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
+	        		pd.setMessage("Download Content Package");
+	        		pd.setIndeterminate(true);
+	        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	        		pd.setCancelable(true);
+	        		
+	        		// if file doesn't exist, download
+		        	if (localFile == null || !localFile.exists()){
+		        		ContentManagementTask task = new ContentManagementTask(
+		        				ContentListActivity.this, 
+		        				url,
+		        				pd, 
+		        				localFile, 
+		        				contentDirectory,
+		        				true);
+		        		task.execute();
+		        	}
+		        	
+		        	// file has been downloaded before
+		        	else {
+		        		ContentManagementTask task = new ContentManagementTask(
+		        				ContentListActivity.this, 
+		        				pd, 
+		        				localFile, 
+		        				contentDirectory,
+		        				true);
+		        		task.execute();
+		        	}
+				}
+				
+			})
+			.setNeutralButton("Cancel", null)
+			.show();
+	}
 
 	/**
 	 * add new user comment to metadata
@@ -805,6 +866,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					try {
 						FileOutputStream out = new FileOutputStream(metaFile);
 						newVideos.build().writeTo(out); // write out to file
+						out.close();
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -841,6 +903,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					try {
 						FileOutputStream out = new FileOutputStream(webMetaFile);
 						newArticles.build().writeTo(out); // write out to file
+						out.close();
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -949,11 +1012,12 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	 * @see edu.isi.usaid.pifi.BookmarkManager#addBookmark(java.lang.String)
 	 */
 	@Override
-	public void addBookmark(String id) {
+	public void addBookmark(String id, boolean reload) {
 		if (!bookmarks.contains(id)){
 			bookmarks.add(id);
 			saveBookmarks();
-			reload(false);
+			if (reload) 
+				reload(false);
 		}
 	}
 
@@ -961,11 +1025,12 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	 * @see edu.isi.usaid.pifi.BookmarkManager#removeBookmark(java.lang.String)
 	 */
 	@Override
-	public void removeBookmark(String id) {
+	public void removeBookmark(String id, boolean reload) {
 		if (bookmarks.contains(id)){
 			bookmarks.remove(id);
 			saveBookmarks();
-			reload(false);
+			if (reload)
+				reload(false);
 		}
 	}
 
@@ -978,6 +1043,17 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			return true;
 		else
 			return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.isi.usaid.pifi.BookmarkManager#removeAllBookmarks()
+	 */
+	@Override
+	public void removeAllBookmarks(boolean reload) {
+		bookmarks.clear();
+		saveBookmarks();
+		if (reload)
+			reload(false);
 	}
 	
 }

@@ -75,7 +75,7 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				
 				// delete from bookmark 
 				if (parent.isBookmarked(video.getFilepath()))
-					parent.removeBookmark(video.getFilepath());
+					parent.removeBookmark(video.getFilepath(), false);
 			}
 			else if (o instanceof Article){
 				Article article = (Article)o;
@@ -102,7 +102,7 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				
 				// delete from bookmark 
 				if (parent.isBookmarked(path))
-					parent.removeBookmark(path);
+					parent.removeBookmark(path, false);
 			}
 			
 //			publishProgress((int) ((i / (float) count) * 100));

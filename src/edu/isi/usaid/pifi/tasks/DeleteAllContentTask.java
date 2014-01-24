@@ -76,7 +76,7 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void>{
 			
 			// delete from bookmark 
 			if (parent.isBookmarked(video.getFilepath()))
-				parent.removeBookmark(video.getFilepath());
+				parent.removeBookmark(video.getFilepath(), false);
 		}
 		
 		// for each article
@@ -107,7 +107,7 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void>{
 			
 			// delete from bookmark 
 			if (parent.isBookmarked(path))
-				parent.removeBookmark(path);
+				parent.removeBookmark(path, false);
 		}
 		
 		// build new empty metadata

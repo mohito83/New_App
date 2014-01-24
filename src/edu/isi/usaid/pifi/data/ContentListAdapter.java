@@ -132,11 +132,11 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 				@Override
 				public void onClick(View arg0) {
 					if (context.isBookmarked(video.getFilepath())){
-						context.removeBookmark(video.getFilepath());
+						context.removeBookmark(video.getFilepath(), true);
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						context.addBookmark(video.getFilepath());
+						context.addBookmark(video.getFilepath(), true);
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}
@@ -196,11 +196,11 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 				@Override
 				public void onClick(View arg0) {
 					if (context.isBookmarked(article.getFilename())){
-						context.removeBookmark(article.getFilename());
+						context.removeBookmark(article.getFilename(), true);
 						holder.starView.setImageResource(R.drawable.ic_fav_unselected);
 					}
 					else {
-						context.addBookmark(article.getFilename());
+						context.addBookmark(article.getFilename(), true);
 						holder.starView.setImageResource(R.drawable.ic_fav_selected);
 					}
 				}

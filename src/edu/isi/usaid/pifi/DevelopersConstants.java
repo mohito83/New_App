@@ -11,8 +11,7 @@ package edu.isi.usaid.pifi;
  */
 public class DevelopersConstants {
 	
-	public static final String sampleContentURL = "http://shinyichen.com/shared/BackpackSample.zip";
+	public static final String dailyPackageURLPrefix = "http://107.20.184.189/vids/download?filename=%2Fvol%2FVideos%2Fyoutube%2F";
 	
-	public static final String sampleFilename = "BackpackSample.zip";
 
 }
