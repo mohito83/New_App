@@ -14,5 +14,5 @@
     <string name="open_drawer">Open Drawer</string>
 	<string name="close_drawer">Close Drawer</string>
 	<string name="license">USC Viterbi School of Engineering, Information Sciences Institute</string>
-	<string name="version">9.1</string>
+	<string name="version">0.91</string>
 </resources>
