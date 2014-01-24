@@ -13,4 +13,6 @@
     <string name="title_activity_content_viewer">Content Viewer</string>
     <string name="open_drawer">Open Drawer</string>
 	<string name="close_drawer">Close Drawer</string>
+	<string name="license">USC Vierbi School of Engineering, Information Sciences Institute</string>
+	<string name="version">9.1</string>
 </resources>
