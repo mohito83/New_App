@@ -475,6 +475,18 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
     		return true;
     	}
+    	else if (item.getItemId() == R.id.action_download_test1){
+    		downloadContent(DevelopersConstants.text1PackageURL, null);
+    		return true;
+    	} 
+    	else if (item.getItemId() == R.id.action_download_test2){
+    		downloadContent(DevelopersConstants.text2PackageURL, null);
+    		return true;
+    	} 
+    	else if (item.getItemId() == R.id.action_download_test3){
+    		downloadContent(DevelopersConstants.text3PackageURL, null);
+    		return true;
+    	} 
     	else if (item.getItemId() == R.id.action_delete_all){
     		// confirm deletion
     		new AlertDialog.Builder(this)
