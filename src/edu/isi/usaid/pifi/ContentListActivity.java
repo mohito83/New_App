@@ -516,6 +516,17 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			.setNegativeButton("No", null).show();
     		return true;
     	}
+    	else if (item.getItemId() == R.id.action_about){
+    		// confirm download
+    		new AlertDialog.Builder(this)
+    			.setTitle("About Backpack")
+    			.setMessage(getString(R.string.app_name) + 
+    					" v." + getString(R.string.version) + "\n\n" + 
+    					getString(R.string.license))
+    			.setNeutralButton("Close", null)
+    			.show();
+    		return true;
+    	}
     	else 
     		return super.onOptionsItemSelected(item);
     		
