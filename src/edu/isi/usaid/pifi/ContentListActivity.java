@@ -26,6 +26,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
@@ -517,11 +520,22 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_about){
-    		// confirm download
+    		
+    		String appName = "Backpack";
+    		String version = "Unknown";
+    		try {
+    			PackageManager pm = getPackageManager();
+        		ApplicationInfo info = pm.getApplicationInfo(getPackageName(), 0);
+        		appName = (String)pm.getApplicationLabel(info);
+        		version = pm.getPackageInfo(getPackageName(), 0).versionName;
+    		} catch (NameNotFoundException e) {
+				e.printStackTrace();
+			}
+    		
     		new AlertDialog.Builder(this)
-    			.setTitle("About Backpack")
-    			.setMessage(getString(R.string.app_name) + 
-    					" v." + getString(R.string.version) + "\n\n" + 
+    			.setTitle("About " + appName)
+    			.setMessage(appName + 
+    					" v." + version + "\n\n" + 
     					getString(R.string.license))
     			.setNeutralButton("Close", null)
     			.show();
