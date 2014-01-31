@@ -402,6 +402,9 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			FileOutputStream out = new FileOutputStream(dstVideoMeta);
 			videos.build().writeTo(out);
 			out.close();
+			
+			if (deleteSource)
+				srcVideoMeta.delete();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -478,6 +481,9 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			FileOutputStream out = new FileOutputStream(dstArticleMeta);
 			articles.build().writeTo(out);
 			out.close();
+			
+			if (deleteSource)
+				srcArticleMeta.delete();
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
