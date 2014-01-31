@@ -778,8 +778,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		// confirm download
 		new AlertDialog.Builder(this)
 			.setTitle("Download Content")
-			.setMessage("Do you want to merge or overwite existing content?")
-			.setPositiveButton("Merge", new DialogInterface.OnClickListener() {
+			.setMessage("Do you want to download and merge the new content?")
+			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -816,43 +816,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		        	}
 				}
 			})
-			.setNegativeButton("Overwrite", new DialogInterface.OnClickListener(){
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-		        	
-		        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
-	        		pd.setMessage("Download Content Package");
-	        		pd.setIndeterminate(true);
-	        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-	        		pd.setCancelable(true);
-	        		
-	        		// if file doesn't exist, download
-		        	if (localFile == null || !localFile.exists()){
-		        		ContentManagementTask task = new ContentManagementTask(
-		        				ContentListActivity.this, 
-		        				url,
-		        				pd, 
-		        				localFile, 
-		        				contentDirectory,
-		        				true);
-		        		task.execute();
-		        	}
-		        	
-		        	// file has been downloaded before
-		        	else {
-		        		ContentManagementTask task = new ContentManagementTask(
-		        				ContentListActivity.this, 
-		        				pd, 
-		        				localFile, 
-		        				contentDirectory,
-		        				true);
-		        		task.execute();
-		        	}
-				}
-				
-			})
-			.setNeutralButton("Cancel", null)
+			.setNeutralButton("No", null)
 			.show();
 	}
 
