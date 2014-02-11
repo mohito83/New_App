@@ -1,6 +1,6 @@
 package metadata;
 
-option java_package = "edu.isi.usaid.pifi.metadata";
+option java_package = "edu.isi.backpack.metadata";
 option java_outer_classname = "CommentProtos";
 
 message Comment {
