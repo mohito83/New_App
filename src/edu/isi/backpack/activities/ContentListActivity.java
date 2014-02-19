@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
@@ -29,7 +30,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -463,6 +466,38 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     	}
     	else if (item.getItemId() == R.id.action_sync){
     		sync();
+    		return true;
+    	}
+    	else if (item.getItemId() == R.id.action_share_app){
+    		
+    		// find the apk
+    		final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            final List<ResolveInfo> pkgAppsList = getPackageManager().queryIntentActivities(mainIntent, 0);
+            for (ResolveInfo info : pkgAppsList) {
+            	String packageName = info.activityInfo.applicationInfo.packageName;
+            	if (packageName.equals(getPackageName())){
+            		File apk =new File(info.activityInfo.applicationInfo.publicSourceDir);
+            		Log.d(TAG, apk.getAbsolutePath());
+            		
+            		// share apk using bluetooth
+            		Intent shareIntent = new Intent();
+            		shareIntent.setAction(Intent.ACTION_SEND);
+            		shareIntent.setType("image/*"); // set to a type that bluetooth can accept
+            		shareIntent.setPackage("com.android.bluetooth"); // force send using bt
+            		shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(apk));
+            		startActivity(shareIntent);
+            		
+            		return true;
+            	}
+            }
+                
+    		// apk not found (should not happen)
+    		new AlertDialog.Builder(this)
+    				.setTitle("File Missing")
+    				.setMessage("Cannot share app, the file is not found.")
+    				.setNeutralButton("OK", null)
+    				.show();
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_download_today){

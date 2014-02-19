@@ -15,6 +15,19 @@
         android:title="sync"/>
     
     <item
+         android:id="@+id/action_share"
+	        android:orderInCategory="100"
+	        android:showAsAction="always"
+	        android:icon="@drawable/ic_action_share"
+	        android:title="Developer">
+	    <menu>
+	        <item
+		        android:id="@+id/action_share_app"
+		        android:title="Share App"/>
+        </menu>
+    </item>
+    
+    <item
          android:id="@+id/action_developer"
 	        android:orderInCategory="100"
 	        android:showAsAction="always"
