@@ -138,6 +138,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private Object currentContent = null;
 	
 	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd");
+	
+	private boolean btDebugMsg = true;
+
 
 	// register to receive message when a new comment is added
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -156,22 +159,12 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				reload(false);
 
 			} else if (i.getAction().equals(Constants.BT_STATUS_ACTION)) {
-				/*
-				 * if (btStatusDialog == null){ btStatusDialog = new
-				 * AlertDialog.Builder(ContentListActivity.this).create();
-				 * btStatusDialog.setCancelable(false);
-				 * btStatusDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-				 * "OK", new OnClickListener() { public void
-				 * onClick(DialogInterface dialog, int which) {
-				 * dialog.dismiss(); } }); }
-				 * btStatusDialog.setMessage(i.getStringExtra
-				 * (ExtraConstants.STATUS)); if (!btStatusDialog.isShowing())
-				 * btStatusDialog.show();
-				 */
-				Toast toast = Toast.makeText(ContentListActivity.this,
-						i.getStringExtra(ExtraConstants.STATUS),
-						Toast.LENGTH_SHORT);
-				toast.show();
+				if (btDebugMsg){
+					Toast toast = Toast.makeText(ContentListActivity.this,
+							i.getStringExtra(ExtraConstants.STATUS),
+							Toast.LENGTH_SHORT);
+					toast.show();
+				}
 			}
 			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
 				String id = i.getStringExtra(ExtraConstants.ID);
