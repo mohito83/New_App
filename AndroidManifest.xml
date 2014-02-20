@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.isi.usaid.pifi"
+    package="edu.isi.backpack"
     android:versionCode="1"
     android:versionName="0.92" >
 
@@ -20,14 +20,14 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <receiver android:enabled="true" android:name="edu.isi.usaid.pifi.services.BootUpReceiver" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+        <receiver android:enabled="true" android:name="edu.isi.backpack.BootUpReceiver" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
       		<intent-filter>
       			<action android:name="android.intent.action.BOOT_COMPLETED" />
       			<category android:name="android.intent.category.DEFAULT" />
       		</intent-filter>
     	</receiver>
         <activity
-            android:name="edu.isi.usaid.pifi.ContentListActivity"
+            android:name="edu.isi.backpack.activities.ContentListActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"  >
             <!-- above code prevent onCreate being called when orientation changes -->
@@ -38,26 +38,22 @@
             </intent-filter>
         </activity>
                 <activity
-            android:name="edu.isi.usaid.pifi.ContentViewerActivity"
+            android:name="edu.isi.backpack.activities.ContentViewerActivity"
             android:label="@string/title_activity_content_viewer"
-            android:parentActivityName="edu.isi.usaid.pifi.ContentListActivity"
+            android:parentActivityName="edu.isi.backpack.activities.ContentListActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
         <activity
-            android:name="edu.isi.usaid.pifi.FullscreenVideoActivity"
+        	android:name="edu.isi.backpack.activities.FullscreenVideoActivity"
             android:label="@string/title_activity_fullscreen_video"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode" >
         </activity>
-        <service android:name="edu.isi.usaid.pifi.services.ConnectionService"/>
-        <service android:name="edu.isi.usaid.pifi.services.ListenerService"
+        <service android:name="edu.isi.backpack.services.ConnectionService"/>
+        <service android:name="edu.isi.backpack.services.ListenerService"
             android:process=":listener_process"/>
-        <service android:name="edu.isi.usaid.observer.FileMonitorTask">   
-           <intent-filter>
-           		<action android:name="edu.isi.usaid.observer.FileMonitorTask">
-           		</action>
-   		   </intent-filter>                
+        <service android:name="edu.isi.backpack.services.FileMonitorService">   
         </service>
     </application>
 
