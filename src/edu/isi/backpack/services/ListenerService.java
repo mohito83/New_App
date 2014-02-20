@@ -121,6 +121,7 @@ public class ListenerService extends Service {
 
 						// connection established
 						Log.i(TAG, "Connection established");
+						sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
 
 						if (socket != null) {
 							Thread commThread = new Thread(
@@ -184,6 +185,7 @@ public class ListenerService extends Service {
 				Log.e(TAG,
 						"Trying to get socket IOStream while socket is not connected"
 								+ e.getMessage());
+				sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
 			}
 		}
 
@@ -261,6 +263,8 @@ public class ListenerService extends Service {
 								"Exception while closing child socket after file sync is completed",
 								e);
 					}
+					
+					sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
 				}
 
 			}// end if(socket!=null)

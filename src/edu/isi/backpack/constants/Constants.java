@@ -17,6 +17,10 @@ public class Constants {
 	
 	public static final String BT_STATUS_ACTION = "edu.isi.backpack.BtStatusAction";
 	
+	public static final String BT_CONNECTED_ACTION = "edu.isi.backpack.BtConnectedAction";
+	
+	public static final String BT_DISCONNECTED_ACTION = "edu.isi.backpack.BtDisonnectedAction";
+	
 	public static final String BOOKMARK_ACTION = "edu.isi.backpack.BookmarkAction";
 	
 	public static final String contentDirName = "BackpackContent";

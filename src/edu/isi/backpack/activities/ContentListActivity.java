@@ -139,8 +139,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd");
 	
+	private Menu optionMenu;
+	
 	private boolean btDebugMsg = true;
-
 
 	// register to receive message when a new comment is added
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -165,8 +166,15 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 							Toast.LENGTH_SHORT);
 					toast.show();
 				}
-			}
-			else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
+			} else if (i.getAction().equals(Constants.BT_CONNECTED_ACTION)) {
+				MenuItem item = optionMenu.findItem(R.id.action_sync);
+				item.setIcon(R.drawable.ic_action_sync_active);
+				item.setEnabled(false);
+			} else if (i.getAction().equals(Constants.BT_DISCONNECTED_ACTION)) {
+				MenuItem item = optionMenu.findItem(R.id.action_sync);
+				item.setIcon(R.drawable.ic_action_sync);
+				item.setEnabled(true);
+			} else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
 				String id = i.getStringExtra(ExtraConstants.ID);
 				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
 				if (on)
@@ -430,12 +438,15 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				
 		// global messages (from other processes)
 		registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
+		registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_CONNECTED_ACTION));
+		registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_DISCONNECTED_ACTION));
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.content, menu);
+		optionMenu = menu;
 		return super.onCreateOptionsMenu(menu);
 	}
 

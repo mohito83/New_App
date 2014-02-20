@@ -161,6 +161,7 @@ public class ConnectionService extends Service {
 
 				// connection established
 				Log.i(TAG, "Connection established");
+				sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
 				BackpackUtils.broadcastMessage(ConnectionService.this,
 						"Successfully connected to " + device.getName());
 
@@ -174,6 +175,7 @@ public class ConnectionService extends Service {
 								ConnectionService.this, metaFile, webMetaFile);
 					} catch (IOException e) {
 						Log.e(TAG, "unable to get in/out put streams", e);
+						sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
 						BackpackUtils.broadcastMessage(ConnectionService.this,
 								"Error in initiating connection");
 						return;
@@ -252,6 +254,7 @@ public class ConnectionService extends Service {
 						} catch (IOException e) {
 							Log.e(TAG, "Unable to disconnect socket", e);
 						}
+						sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
 					}
 				}
 				// To stop the service
