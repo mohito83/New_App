@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -18,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,8 +27,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import edu.isi.backpack.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
-import edu.isi.backpack.fragments.CommentsFragment;
-import edu.isi.backpack.fragments.DescriptionFragment;
 import edu.isi.backpack.fragments.HtmlFragment;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
@@ -89,7 +83,10 @@ public class ContentViewerActivity extends FragmentActivity {
 		pager.setOffscreenPageLimit(2); // prevent fragments from destroyed when moved away from screen
 		pagerAdapter = new PageAdapter(getSupportFragmentManager(), getFragments());
 		pager.setAdapter(pagerAdapter);
-		
+
+		/** do not delete
+		 * this part of the code we might still bring back
+		 * 
 		// show tabs
 		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
@@ -115,7 +112,7 @@ public class ContentViewerActivity extends FragmentActivity {
         getActionBar().addTab(getActionBar().newTab().setText("View Content").setTabListener(tabListener));
         getActionBar().addTab(getActionBar().newTab().setText("Description").setTabListener(tabListener));
         getActionBar().addTab(getActionBar().newTab().setText("Comments").setTabListener(tabListener));
-        
+
         // swip listener
         pager.setOnPageChangeListener(new OnPageChangeListener(){
 
@@ -139,6 +136,7 @@ public class ContentViewerActivity extends FragmentActivity {
 			}
         	
         });
+        **/
 		
 		// this prevent video to start over when orientation is changed
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -207,9 +205,8 @@ public class ContentViewerActivity extends FragmentActivity {
 				f.add(VideoPlayerFragment.newInstance(
 						contentDirectory + "/" + video.getFilepath(),
 						video.getSnippet().getTitle()));
-				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
-				f.add(CommentsFragment.newInstance(video.getCommentsList()));
-//				setTitle(video.getSnippet().getTitle());
+//				f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(), video.getSnippet().getDescription()));
+//				f.add(CommentsFragment.newInstance(video.getCommentsList()));
 				titleTextView.setText(video.getSnippet().getTitle());
 			}
 			else if (type.equals(ExtraConstants.TYPE_ARTICLE)){
@@ -218,9 +215,8 @@ public class ContentViewerActivity extends FragmentActivity {
 				File htmlFile = new File(contentDirectory + "/" + article.getFilename());
 				Uri uri = Uri.fromFile(htmlFile);
 				f.add(HtmlFragment.newInstance(uri.toString(), article.getTitle()));
-				f.add(DescriptionFragment.newInstance(article.getDatePublished(), "")); // TODO description for article
-				f.add(CommentsFragment.newInstance(article.getCommentsList()));
-//				setTitle(article.getTitle());
+//				f.add(DescriptionFragment.newInstance(article.getDatePublished(), "")); // TODO description for article
+//				f.add(CommentsFragment.newInstance(article.getCommentsList()));
 				titleTextView.setText(article.getTitle());
 			}
 		
