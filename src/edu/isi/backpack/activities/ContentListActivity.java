@@ -230,7 +230,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 
 	private ArrayList<BluetoothDevice> bts;
 
-	private static final int REQUEST_ENABLE_BT = 3;
+	private static final int SYNC_REQUEST_ENABLE_BT = 3;
 
 	private BluetoothAdapter mBluetoothAdapter = null;
 
@@ -646,7 +646,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	protected void onActivityResult (int requestCode, int resultCode, Intent data){
 		// turn on bluetooth requested due to sync request
-		if (requestCode == REQUEST_ENABLE_BT && resultCode != RESULT_CANCELED){
+		if (requestCode == SYNC_REQUEST_ENABLE_BT && resultCode != RESULT_CANCELED){
 			// if user allowed turning on bt, try to sync again
 			sync();
 		}
@@ -1010,7 +1010,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			makeDiscoverable.putExtra(
 					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.VISIBILITY_TIMEOUT);
-			startActivityForResult(makeDiscoverable, REQUEST_ENABLE_BT);
+			startActivityForResult(makeDiscoverable, SYNC_REQUEST_ENABLE_BT);
+			return;
 		} else {
 			Log.d(TAG,
 					"Bluetooth is already enabled. Setting up the file transfer");
