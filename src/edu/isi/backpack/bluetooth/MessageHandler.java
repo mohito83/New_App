@@ -54,8 +54,9 @@ public class MessageHandler {
 	 * @param metaFile
 	 * @return -1 if receiver is failed to receive or process the data sent by
 	 *         the sender, else 1
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public int sendFullMetaData(short type, File metaFile) {
+	public int sendFullMetaData(short type, File metaFile) throws BluetoothDisconnectedException {
 		int result = -1;
 		InfoMessage infomessage = BackpackUtils.createInfoMessage(type, metaFile);
 		// 1. send the info message informing the data
@@ -95,8 +96,9 @@ public class MessageHandler {
 	 * 
 	 * @param sdir
 	 * @return
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public int receiveFullMetaData(File sdir) {
+	public int receiveFullMetaData(File sdir) throws BluetoothDisconnectedException {
 		int result = -1;
 		// 1. Receive the info message
 		InfoMessage info = conn.receiveInfoMessage();
@@ -152,8 +154,9 @@ public class MessageHandler {
 	 * the package are already calculated and stored in videoList.
 	 * 
 	 * @param sdir
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public void sendVideos(File sdir) {
+	public void sendVideos(File sdir) throws BluetoothDisconnectedException {
 		boolean start = false;
 		// send an info message informing start of bulk transfer operation
 		InfoMessage bulkMsg = BackpackUtils.createInfoMessage(
@@ -261,8 +264,9 @@ public class MessageHandler {
 	 * video file
 	 * 
 	 * @param sdir
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public void receiveFiles(File sdir) {
+	public void receiveFiles(File sdir) throws BluetoothDisconnectedException {
 		boolean start = false;
 		// wait for bulk data tx signal
 		InfoMessage bulkMsg = conn.receiveInfoMessage();
@@ -369,8 +373,9 @@ public class MessageHandler {
 	 * This method sends web content to the receiver
 	 * 
 	 * @param sdir
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public void sendWebContent(File sdir) {
+	public void sendWebContent(File sdir) throws BluetoothDisconnectedException {
 		boolean start = false;
 		// send an info message informing start of bulk transfer operation
 		InfoMessage bulkMsg = BackpackUtils.createInfoMessage(

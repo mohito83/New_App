@@ -72,8 +72,9 @@ public class Connector {
 	 * seconds for receiving the data.
 	 * 
 	 * @return null for failure
+	 * @throws BluetoothDisconnectedException 
 	 */
-	public InfoMessage receiveInfoMessage() {
+	public InfoMessage receiveInfoMessage() throws BluetoothDisconnectedException {
 		InfoMessage info = null;
 		try {
 			ObjectInputStream oInputStream = new ObjectInputStream(
@@ -89,6 +90,11 @@ public class Connector {
 			Log.e(TAG, "Error reading InfoMEssage Object:" + e.getMessage());
 		}
 
+		// bt disconnection occurred
+		if (info == null){
+			throw new BluetoothDisconnectedException("Bluetooth Disconnected");
+		}
+		
 		Log.i(TAG,
 				"Received InfoMEssage:" + info != null ? info.displayInfoData()
 						: "NULL");

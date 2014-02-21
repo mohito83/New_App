@@ -174,6 +174,14 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				MenuItem item = optionMenu.findItem(R.id.action_sync);
 				item.setIcon(R.drawable.ic_action_sync);
 				item.setEnabled(true);
+				
+				String msg = i.getStringExtra(ExtraConstants.STATUS);
+				if (msg != null)
+					new AlertDialog.Builder(ContentListActivity.this)
+						.setTitle("Sync Report")
+						.setMessage(msg)
+						.setNeutralButton("OK", null)
+						.show();
 			} else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
 				String id = i.getStringExtra(ExtraConstants.ID);
 				boolean on = i.getBooleanExtra(ExtraConstants.ON, false);

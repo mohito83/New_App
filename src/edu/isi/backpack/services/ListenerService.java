@@ -18,9 +18,11 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
 import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
+import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.util.BackpackUtils;
 
 /**
@@ -198,55 +200,75 @@ public class ListenerService extends Service {
 								+ commSock.getRemoteDevice().getName());
 
 				boolean terminate = false;
-
+				boolean disconnected = false;
+				
 				while (!terminate) {
 					switch (transcState) {
 					case Constants.META_DATA_EXCHANGE:
-						Log.i(TAG, "Sending videos meta data");
-						mHanlder.sendFullMetaData(
-								Constants.VIDEO_META_DATA_FULL, metaFile);
-						Log.i(TAG, "Receiving videos meta data");
-						mHanlder.receiveFullMetaData(path);
-
-						Log.i(TAG, "Sending web meta data");
-						mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL,
-								webMetaFile);
-						Log.i(TAG, "Receiving web meta data");
-						mHanlder.receiveFullMetaData(path);
-
-						transcState = Constants.FILE_DATA_EXCHANGE;
-						break;
+						try {
+							Log.i(TAG, "Sending videos meta data");
+							mHanlder.sendFullMetaData(
+									Constants.VIDEO_META_DATA_FULL, metaFile);
+							Log.i(TAG, "Receiving videos meta data");
+							mHanlder.receiveFullMetaData(path);
+	
+							Log.i(TAG, "Sending web meta data");
+							mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL,
+									webMetaFile);
+							Log.i(TAG, "Receiving web meta data");
+							mHanlder.receiveFullMetaData(path);
+	
+							transcState = Constants.FILE_DATA_EXCHANGE;
+							break;
+						} catch (BluetoothDisconnectedException e){
+							terminate = true;
+							disconnected = true;
+							break;
+						}
 
 					case Constants.FILE_DATA_EXCHANGE:
-						File xferDir = new File(path, Constants.xferDirName
-								+ "/" + commSock.getRemoteDevice().getName());
-						xferDir.mkdirs();
-						Log.i(TAG, "Start receiving videos");
-						mHanlder.receiveFiles(xferDir);
-						Log.i(TAG, "Finished receiving videos");
-
-						Log.i(TAG, "Start sending videos");
-						mHanlder.sendVideos(path);
-						Log.i(TAG, "Finished sending videos");
-
-						Log.i(TAG, "Start receiving web contents");
-						mHanlder.receiveFiles(xferDir);
-						Log.i(TAG, "Finished receiving web contents");
-
-						Log.i(TAG, "Start sending web contents");
-						mHanlder.sendWebContent(path);
-						Log.i(TAG, "Finished sending web contents");
-
-						transcState = Constants.SYNC_COMPLETE;
-						terminate = true;
-						break;
+						try {
+							File xferDir = new File(path, Constants.xferDirName
+									+ "/" + commSock.getRemoteDevice().getName());
+							xferDir.mkdirs();
+							Log.i(TAG, "Start receiving videos");
+							mHanlder.receiveFiles(xferDir);
+							Log.i(TAG, "Finished receiving videos");
+	
+							Log.i(TAG, "Start sending videos");
+							mHanlder.sendVideos(path);
+							Log.i(TAG, "Finished sending videos");
+	
+							Log.i(TAG, "Start receiving web contents");
+							mHanlder.receiveFiles(xferDir);
+							Log.i(TAG, "Finished receiving web contents");
+	
+							Log.i(TAG, "Start sending web contents");
+							mHanlder.sendWebContent(path);
+							Log.i(TAG, "Finished sending web contents");
+	
+							transcState = Constants.SYNC_COMPLETE;
+							terminate = true;
+							break;
+						} catch (BluetoothDisconnectedException e){
+							terminate = true;
+							disconnected = true;
+							break;
+						}
 					}
 				}
 
 				// close the socket
 				if (terminate) {
+					String message;
+					if (disconnected)  // got disconnected in the middle of transfer
+						message = "File sync incomplete.";
+					else 
+						message = "File sync is successful. Closing the session";
+					
 					BackpackUtils.broadcastMessage(ListenerService.this,
-							"File sync is successful. Closing the session");
+							message);
+					
 					Log.i(TAG, "Close socket");
 					try {
 						Thread.sleep(2000);
@@ -264,7 +286,9 @@ public class ListenerService extends Service {
 								e);
 					}
 					
-					sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
+					Intent i = new Intent(Constants.BT_DISCONNECTED_ACTION);
+					i.putExtra(ExtraConstants.STATUS, message);
+					sendBroadcast(i);
 				}
 
 			}// end if(socket!=null)

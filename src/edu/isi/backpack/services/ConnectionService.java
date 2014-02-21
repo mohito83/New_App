@@ -19,9 +19,11 @@ import android.content.Intent;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
+import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
 import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
+import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.util.BackpackUtils;
 
 /**
@@ -183,6 +185,7 @@ public class ConnectionService extends Service {
 
 					// start transactions
 					boolean terminate = false;
+					boolean disconnected = false;
 
 					while (!terminate) {
 
@@ -190,57 +193,77 @@ public class ConnectionService extends Service {
 						if (isExtDrMounted) {
 							switch (transcState) {
 							case Constants.META_DATA_EXCHANGE:
-								Log.i(TAG, "Receiving videos meta data");
-								mHanlder.receiveFullMetaData(path);
-
-								Log.i(TAG, "Sending videos meta data");
-								mHanlder.sendFullMetaData(
-										Constants.VIDEO_META_DATA_FULL,
-										metaFile);
-
-								Log.i(TAG, "Receiving web meta data");
-								mHanlder.receiveFullMetaData(path);
-
-								Log.i(TAG, "Sending web meta data");
-								mHanlder.sendFullMetaData(
-										Constants.WEB_META_DATA_FULL,
-										webMetaFile);
-
-								transcState = Constants.FILE_DATA_EXCHANGE;
-								break;
+								try {
+									Log.i(TAG, "Receiving videos meta data");
+									mHanlder.receiveFullMetaData(path);
+	
+									Log.i(TAG, "Sending videos meta data");
+									mHanlder.sendFullMetaData(
+											Constants.VIDEO_META_DATA_FULL,
+											metaFile);
+	
+									Log.i(TAG, "Receiving web meta data");
+									mHanlder.receiveFullMetaData(path);
+	
+									Log.i(TAG, "Sending web meta data");
+									mHanlder.sendFullMetaData(
+											Constants.WEB_META_DATA_FULL,
+											webMetaFile);
+	
+									transcState = Constants.FILE_DATA_EXCHANGE;
+									break;
+								} catch (BluetoothDisconnectedException e){
+									terminate = true;
+									disconnected = true;
+									break;
+								}
 
 							case Constants.FILE_DATA_EXCHANGE:
-								File xferDir = new File(path,
-										Constants.xferDirName + "/"
-												+ device.getName());
-								xferDir.mkdirs();
-								Log.i(TAG, "Start sending videos");
-								mHanlder.sendVideos(path);
-								Log.i(TAG, "Finished sending videos");
-
-								Log.i(TAG, "Start receiving videos");
-								mHanlder.receiveFiles(xferDir);
-								Log.i(TAG, "Finished receiving videos");
-
-								Log.i(TAG, "Start sending web contents");
-								mHanlder.sendWebContent(path);
-								Log.i(TAG, "Finished sending web contents");
-
-								Log.i(TAG, "Start receiving web contents");
-								mHanlder.receiveFiles(xferDir);
-								Log.i(TAG, "Finished receiving web contents");
-
-								transcState = Constants.SYNC_COMPLETE;
-								terminate = true;
-								break;
+								try {
+									File xferDir = new File(path,
+											Constants.xferDirName + "/"
+													+ device.getName());
+									xferDir.mkdirs();
+									Log.i(TAG, "Start sending videos");
+									mHanlder.sendVideos(path);
+									Log.i(TAG, "Finished sending videos");
+	
+									Log.i(TAG, "Start receiving videos");
+									mHanlder.receiveFiles(xferDir);
+									Log.i(TAG, "Finished receiving videos");
+	
+									Log.i(TAG, "Start sending web contents");
+									mHanlder.sendWebContent(path);
+									Log.i(TAG, "Finished sending web contents");
+	
+									Log.i(TAG, "Start receiving web contents");
+									mHanlder.receiveFiles(xferDir);
+									Log.i(TAG, "Finished receiving web contents");
+	
+									transcState = Constants.SYNC_COMPLETE;
+									terminate = true;
+									break;
+								} catch (BluetoothDisconnectedException e){
+									terminate = true;
+									disconnected = true;
+									break;
+								}
+									
 							}
 						}
 
 					}
 
 					if (terminate) {
+						String message;
+						if (disconnected)  // got disconnected in the middle of transfer
+							message = "File sync incomplete.";
+						else 
+							message = "File sync is successful. Closing the session";
+							
 						BackpackUtils.broadcastMessage(ConnectionService.this,
-								"File sync is successful. Closing the session");
+								message);
+						
 						Log.i(TAG, "Close socket");
 						try {
 							Thread.sleep(2000);
@@ -254,7 +277,10 @@ public class ConnectionService extends Service {
 						} catch (IOException e) {
 							Log.e(TAG, "Unable to disconnect socket", e);
 						}
-						sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
+						
+						Intent i = new Intent(Constants.BT_DISCONNECTED_ACTION);
+						i.putExtra(ExtraConstants.STATUS, message);
+						sendBroadcast(i);
 					}
 				}
 				// To stop the service
