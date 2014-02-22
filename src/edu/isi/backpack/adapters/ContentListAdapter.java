@@ -149,7 +149,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 			String title = article.getTitle();
 			holder.titleView.setText(title);
 			holder.catView.setText("news"); // TODO need category for articles
-			holder.descView.setText("");
+			holder.descView.setText(article.getDomain());
 			holder.playButtonView.setVisibility(View.GONE);
 			
 			// TODO need thumbnail for articles
