@@ -224,14 +224,6 @@ public class ConnectionService extends Service {
 											Constants.xferDirName + "/"
 													+ device.getName());
 									xferDir.mkdirs();
-									Log.i(TAG, "Start sending videos");
-									mHanlder.sendVideos(path);
-									Log.i(TAG, "Finished sending videos");
-	
-									Log.i(TAG, "Start receiving videos");
-									mHanlder.receiveFiles(xferDir);
-									Log.i(TAG, "Finished receiving videos");
-	
 									Log.i(TAG, "Start sending web contents");
 									mHanlder.sendWebContent(path);
 									Log.i(TAG, "Finished sending web contents");
@@ -239,6 +231,14 @@ public class ConnectionService extends Service {
 									Log.i(TAG, "Start receiving web contents");
 									mHanlder.receiveFiles(xferDir);
 									Log.i(TAG, "Finished receiving web contents");
+									
+									Log.i(TAG, "Start sending videos");
+									mHanlder.sendVideos(path);
+									Log.i(TAG, "Finished sending videos");
+	
+									Log.i(TAG, "Start receiving videos");
+									mHanlder.receiveFiles(xferDir);
+									Log.i(TAG, "Finished receiving videos");
 	
 									transcState = Constants.SYNC_COMPLETE;
 									terminate = true;
