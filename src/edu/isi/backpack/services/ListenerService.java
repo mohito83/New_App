@@ -13,7 +13,10 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
@@ -46,9 +49,42 @@ public class ListenerService extends Service {
 														// UUID for SPP
 
 	private BluetoothAdapter mAdapter;
+	
 	private BluetoothServerSocket mmServerSocket;
 
 	private File path, metaFile, webMetaFile;
+	
+	private boolean btOn = false;
+	
+	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        final String action = intent.getAction();
+
+	        if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+	            final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+	                                                 BluetoothAdapter.ERROR);
+	            switch (state) {
+	            case BluetoothAdapter.STATE_OFF:
+	            	btOn = false;
+	                break;
+	            case BluetoothAdapter.STATE_TURNING_OFF:
+	            	btOn = false;
+	                break;
+	            case BluetoothAdapter.STATE_ON:
+	            	mAdapter = BluetoothAdapter.getDefaultAdapter();
+	            	mmServerSocket = null;
+	        		if (mAdapter != null && mAdapter.isEnabled()) {
+	        			Log.i(TAG, "Bluetooth turned on");
+	        			btOn = true;
+	        		}
+	                break;
+	            case BluetoothAdapter.STATE_TURNING_ON:
+	                break;
+	            }
+	        }
+	    }
+	};
 
 	/**
 	 * Consturctor for the class.
@@ -57,6 +93,10 @@ public class ListenerService extends Service {
 	 */
 	public void onCreate() {
 //		Debug.waitForDebugger();
+		
+		// register bluetooth listener
+		IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+	    registerReceiver(mReceiver, filter);
 
 		File sdr = Environment.getExternalStorageDirectory();
 		path = new File(sdr, Constants.contentDirName);
@@ -81,21 +121,28 @@ public class ListenerService extends Service {
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		Log.i(TAG, "listener service started");
-
-		Thread t = new Thread(new Runnable() {
-
+		Log.i(TAG, "starting listener service");
+		
+		mAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mAdapter != null && mAdapter.isEnabled()) 
+			btOn = true;
+		else
+			btOn = false;
+		
+		Thread t = new Thread(new Runnable(){
+			
 			@Override
 			public void run() {
-
-				Looper.prepare();
+				
+				Looper.prepare(); // @mohit Do we need this? 
+				
 				// start the server socket for listening the incoming
 				// connections
-				mAdapter = BluetoothAdapter.getDefaultAdapter();
-				if (mAdapter != null && mAdapter.isEnabled()) {
-
-					while (true) {
-
+				while (true) {
+					if (btOn){
+						
+						Log.i(TAG, "Bluetooth is on");
+						
 						// create server socket if not created
 						if (mmServerSocket == null) {
 							mmServerSocket = createServerSocket();
@@ -103,41 +150,44 @@ public class ListenerService extends Service {
 						BluetoothSocket socket = null;
 						if (mmServerSocket != null) {
 							Log.i(TAG, "Server Socket created");
-							while (socket == null) {
-								try {
-									// This is a blocking call and will only
-									// return on a
-									// successful connection or an exception
-									Log.i(TAG,
-											"Listening for incoming connection requests");
-									socket = mmServerSocket.accept();
-								} catch (IOException e) { // timed out
-									socket = null;
-									Log.e(TAG,
-											"Incoming Connection failed"
-													+ e.getMessage());
-								}
+							try {
+								// This is a blocking call and will only
+								// return on a
+								// successful connection or an exception
+								Log.i(TAG,
+										"Listening for incoming connection requests");
+								socket = mmServerSocket.accept();
+							} catch (IOException e) { // bluetooth turned off while waiting for connection
+								socket = null;
+								Log.e(TAG, "Bluetooth turned off while waiting for connection");
+								continue;
 							}
-
 						}
-
+		
 						// connection established
 						Log.i(TAG, "Connection established");
 						sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
-
+		
 						if (socket != null) {
 							Thread commThread = new Thread(
 									new CommunicationSocket(socket));
 							commThread.start();
+							
+							// wait for commThread to finish
+							// since we only need to keep one connection at a time
+							try {
+								commThread.join();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							Log.i(TAG, "Sync Complete");
 						}
-
 					}
 				}
 			}
-
 		});
-
 		t.start();
+
 		return START_STICKY;
 
 	}
@@ -298,6 +348,7 @@ public class ListenerService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(mReceiver);
 		Log.i(TAG, "listener service destroyed");
 	}
 
@@ -305,5 +356,6 @@ public class ListenerService extends Service {
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
+	
 
 }
