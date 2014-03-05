@@ -1,17 +1,16 @@
 
 package edu.isi.backpack.tasks;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * @author jenniferchen This task takes the given URI of an image and displays
@@ -70,8 +69,6 @@ public class BitmapTask extends AsyncTask<Uri, Integer, Bitmap> {
             if (bm == null) {
                 // FIXME: Spundun: If we have more images in the folder and we
                 // couldn't decode this image, then we should try the others.
-                Log.e(this.getClass().getSimpleName(), "Couldn't decode the bitmap for file:"
-                        + uri[0].toString());
                 return null;
             }
             float sampleSize = getSampleSize(bm.getWidth(), bm.getHeight(), width, height);

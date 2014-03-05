@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -66,7 +65,6 @@ import org.toosheh.android.R;
  * </ul>
  */
 public class VideoControllerView extends FrameLayout {
-    private static final String TAG = "VideoControllerView";
 
     private MediaPlayerControl mPlayer;
 
@@ -122,22 +120,16 @@ public class VideoControllerView extends FrameLayout {
         mContext = context;
         mUseFastForward = true;
         mFromXml = true;
-
-        Log.i(TAG, TAG);
     }
 
     public VideoControllerView(Context context, boolean useFastForward) {
         super(context);
         mContext = context;
         mUseFastForward = useFastForward;
-
-        Log.i(TAG, TAG);
     }
 
     public VideoControllerView(Context context) {
         this(context, true);
-
-        Log.i(TAG, TAG);
     }
 
     @Override
@@ -333,7 +325,6 @@ public class VideoControllerView extends FrameLayout {
             mAnchor.removeView(this);
             mHandler.removeMessages(SHOW_PROGRESS);
         } catch (IllegalArgumentException ex) {
-            Log.w("MediaController", "already removed");
         }
         mShowing = false;
     }

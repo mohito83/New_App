@@ -11,7 +11,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.util.Log;
 
 import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
@@ -35,7 +34,6 @@ import java.util.UUID;
  * @author mohit aggarwl
  */
 public class ConnectionService extends Service {
-    private static final String TAG = "BackPackConnectionService";
 
     // Name for the SDP record when creating server socket
     private static final UUID MY_UUID = UUID
@@ -70,7 +68,6 @@ public class ConnectionService extends Service {
                 metaFile.createNewFile();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
         }
 
     }
@@ -94,9 +91,6 @@ public class ConnectionService extends Service {
                     // connect to slave
                     try {
                         // get the socket from the device
-                        Log.i(TAG, "Connecting");
-                        // mmSocket =
-                        // device.createRfcommSocketToServiceRecord(MY_UUID);
                         mmSocket = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
                         mAdapter.cancelDiscovery();
                         mmSocket.connect();
@@ -104,7 +98,6 @@ public class ConnectionService extends Service {
                         try {
                             mmSocket.close();
                         } catch (Exception e2) {
-                            Log.e(TAG, "unable to close() socket during connection failure", e2);
                         }
                     }
 
@@ -145,9 +138,6 @@ public class ConnectionService extends Service {
                 // connect to slave
                 try {
                     // get the socket from the device
-                    Log.i(TAG, "Connecting");
-                    // mmSocket =
-                    // device.createRfcommSocketToServiceRecord(MY_UUID);
                     mmSocket = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
                     mAdapter.cancelDiscovery();
                     mmSocket.connect();
@@ -188,11 +178,8 @@ public class ConnectionService extends Service {
                                 + " " + getString(R.string.connection_failed));
 
                         try {
-                            Log.e(TAG, "unable to connect, closing socket");
-                            Log.e(TAG, e.getMessage());
                             mmSocket.close();
                         } catch (IOException e2) {
-                            Log.e(TAG, "unable to close() socket during connection failure", e2);
                         }
 
                         return;
@@ -203,7 +190,6 @@ public class ConnectionService extends Service {
                 // freezed)
                 timer.start();
                 // connection established
-                Log.i(TAG, "Connection established");
                 sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
                 BackpackUtils.broadcastMessage(ConnectionService.this, "Successfully connected to "
                         + device.getName());
@@ -216,7 +202,6 @@ public class ConnectionService extends Service {
                         conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
                         mHandler = new MessageHandler(conn, ConnectionService.this, metaFile);
                     } catch (IOException e) {
-                        Log.e(TAG, "unable to get in/out put streams", e);
                         sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
                         BackpackUtils.broadcastMessage(ConnectionService.this,
                                 "Error in initiating connection");
@@ -230,7 +215,6 @@ public class ConnectionService extends Service {
 
                     // transaction ended
                     // disconnect
-                    Log.i(TAG, "Close socket");
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e1) {
@@ -242,7 +226,6 @@ public class ConnectionService extends Service {
                         mmSocket.close();
                         timer.cancel();
                     } catch (IOException e) {
-                        Log.e(TAG, "Unable to disconnect socket", e);
                     }
 
                     Intent i = new Intent(Constants.BT_DISCONNECTED_ACTION);

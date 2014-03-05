@@ -4,8 +4,6 @@ package edu.isi.backpack;
 import android.content.Intent;
 import android.os.FileObserver;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.tasks.ContentManagementTask;
@@ -16,8 +14,6 @@ import java.util.ArrayList;
 
 public class CustomFileObserver extends FileObserver {
     public static final String META_FILE_LOCATION = Constants.metaFileName;
-
-    private static String TAG = "CustomFileObserver";
 
     private static String contentDirPath;
 
@@ -80,7 +76,6 @@ public class CustomFileObserver extends FileObserver {
         if (path == null)
             return;
 
-        // Log.d(TAG, "Got event for " + path);
         if (path.endsWith(".tmp")) // this file is still being written, ignore
             return;
 
@@ -117,13 +112,11 @@ public class CustomFileObserver extends FileObserver {
 
     @Override
     public void startWatching() {
-        Log.d(TAG, "Start watching " + this.observedPath);
         super.startWatching();
     }
 
     @Override
     public void stopWatching() {
-        Log.d(TAG, "Stop watching " + this.observedPath);
         super.startWatching();
     }
 }

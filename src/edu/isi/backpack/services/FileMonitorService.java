@@ -32,5 +32,4 @@ public class FileMonitorService extends Service {
         customFileObserver = new CustomFileObserver(contentDir.getAbsolutePath(), this, true);
         customFileObserver.startWatching();
     }
-
 }

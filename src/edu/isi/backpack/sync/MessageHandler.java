@@ -5,7 +5,6 @@
 package edu.isi.backpack.sync;
 
 import android.content.ContextWrapper;
-import android.util.Log;
 
 import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
@@ -24,13 +23,12 @@ import java.util.List;
  * @author mohit aggarwl
  */
 public class MessageHandler {
+
     private Connector conn;
 
     private ContextWrapper wrapper; // to be used for broadcasting
                                     // messaged to the
                                     // ContentListActivity
-
-    private static final String TAG = "BackPackMessageHandler";
 
     private List<Media.Item> contentList;
 
@@ -73,10 +71,8 @@ public class MessageHandler {
                 if (payload.getAck() == Constants.OK_RESPONSE) {
                     BackpackUtils.broadcastMessage(wrapper,
                             "Sent metadata file: " + metaFile.getName());
-                    Log.i(TAG, "Successfully sent meta data file: " + metaFile.getName());
                 } else {
                     result = -1;
-                    Log.i(TAG, "Failed to sent meta data file: " + metaFile.getName());
                 }
             } else {
                 result = -1;
@@ -111,12 +107,6 @@ public class MessageHandler {
             BackpackUtils.broadcastMessage(wrapper, "Received metadata file: "
                     + ((InfoPayload) info.getPayload()).getFileName());
 
-            Log.i(TAG,
-                    "Successfully received metadata file: "
-                            + ((InfoPayload) info.getPayload()).getFileName());
-
-            Log.i(TAG, "Calculating the Delta for this file");
-
             try {
                 if (info.getType() == Constants.META_DATA_FULL) {
                     File newMetaFile = new File(sdir, tempMetaFName);
@@ -124,7 +114,6 @@ public class MessageHandler {
                     newMetaFile.delete();
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Error while caculating delta for meta data file: " + e.getMessage());
                 result = -1;
             }
         }
@@ -179,9 +168,7 @@ public class MessageHandler {
                     if (ackMsg.getType() == Constants.ACK_DATA) {
                         AckPayload payload = (AckPayload) ackMsg.getPayload();
                         if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent file: " + f.getName());
                         } else {
-                            Log.i(TAG, "Failed to sent file: " + f.getName());
                             continue;
                         }
                     }
@@ -201,9 +188,7 @@ public class MessageHandler {
                     if (ackMsg.getType() == Constants.ACK_DATA) {
                         AckPayload payload = (AckPayload) ackMsg.getPayload();
                         if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent bitmap image: " + f.getName());
                         } else {
-                            Log.i(TAG, "Failed to sent bitmap image: " + f.getName());
                         }
                     }
 
@@ -220,11 +205,9 @@ public class MessageHandler {
                     if (ackMsg.getType() == Constants.ACK_DATA) {
                         AckPayload payload = (AckPayload) ackMsg.getPayload();
                         if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent tmp meta data");
                             BackpackUtils.broadcastMessage(wrapper,
                                     "Sent video file: " + v.getFilename());
                         } else {
-                            Log.i(TAG, "Failed to sent meta data");
                             continue;
                         }
                     }
@@ -249,9 +232,7 @@ public class MessageHandler {
                     if (ackMsg.getType() == Constants.ACK_DATA) {
                         AckPayload payload = (AckPayload) ackMsg.getPayload();
                         if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent file: " + f.getName());
                         } else {
-                            Log.i(TAG, "Failed to sent file: " + f.getName());
                             continue;
                         }
                     }
@@ -278,9 +259,7 @@ public class MessageHandler {
                         if (ackMsg.getType() == Constants.ACK_DATA) {
                             AckPayload payload = (AckPayload) ackMsg.getPayload();
                             if (payload.getAck() == Constants.OK_RESPONSE) {
-                                Log.i(TAG, "Successfully sent bitmap image: " + img.getName());
                             } else {
-                                Log.i(TAG, "Failed to sent bitmap image: " + img.getName());
                             }
                         }
 
@@ -301,11 +280,9 @@ public class MessageHandler {
                     if (ackMsg.getType() == Constants.ACK_DATA) {
                         AckPayload payload = (AckPayload) ackMsg.getPayload();
                         if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent tmp meta data");
                             BackpackUtils.broadcastMessage(wrapper,
                                     "Sent web content: " + v.getFilename());
                         } else {
-                            Log.i(TAG, "Failed to sent meta data");
                             continue;
                         }
                     }
@@ -321,7 +298,6 @@ public class MessageHandler {
         if (bulkMsg.getType() == Constants.ACK_DATA) {
             AckPayload payload = (AckPayload) bulkAckMsg.getPayload();
             if (payload.getAck() == Constants.OK_RESPONSE) {
-                Log.i(TAG, "Bulk transfer of video files finishes");
             }
         }
     }

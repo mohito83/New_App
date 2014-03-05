@@ -7,7 +7,6 @@ package edu.isi.backpack.sync;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.google.protobuf.GeneratedMessage;
@@ -37,8 +36,6 @@ import java.util.Date;
  * @author mohit aggarwl
  */
 public class Connector {
-
-    private static final String TAG = "BackPackConnector";
 
     private Context context;
 
@@ -109,12 +106,10 @@ public class Connector {
      * @return 0 if successful else -1 for failure
      */
     public int sendInfoMessage(InfoMessage infoMessage) {
-        Log.i(TAG, "Sending InfoMEssage:" + infoMessage.displayInfoData());
         try {
             ObjectOutputStream oOutStream = new ObjectOutputStream(mmOutputSteam);
             oOutStream.writeObject(infoMessage);
         } catch (IOException e) {
-            Log.e(TAG, "Error occured while sending InfoMessage object:" + e.getMessage());
             return -1;
         }
         return 0;
@@ -133,13 +128,9 @@ public class Connector {
             ObjectInputStream oInputStream = new ObjectInputStream(mmInputStream);
             info = (InfoMessage) oInputStream.readObject();
         } catch (StreamCorruptedException e) {
-            Log.e(TAG, "Error reading InfoMEssage Object:" + e.getMessage());
         } catch (OptionalDataException e) {
-            Log.e(TAG, "Error reading InfoMEssage Object:" + e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG, "Error reading InfoMEssage Object:" + e.getMessage());
         } catch (ClassNotFoundException e) {
-            Log.e(TAG, "Error reading InfoMEssage Object:" + e.getMessage());
         }
 
         // bt disconnection occurred
@@ -147,7 +138,6 @@ public class Connector {
             throw new BluetoothDisconnectedException("Bluetooth Disconnected");
         }
 
-        Log.i(TAG, "Received InfoMEssage:" + info != null ? info.displayInfoData() : "NULL");
         return info;
     }
 
@@ -159,7 +149,6 @@ public class Connector {
      * @return -1 if failure else number of bytes sent
      */
     public int sendFileData(File f, InfoMessage info) {
-        Log.i(TAG, "Start Sending file:" + f.getName());
         int result = -1;
         int totalBytesSent = 0;
         int len = 0;
@@ -187,12 +176,9 @@ public class Connector {
             mOutputSteam.flush();
             mmOutputSteam.flush();
             result = totalBytesSent;
-            Log.i(TAG, "Finished sending file:" + f.getName() + "(" + result + " bytes)");
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Error reading file (" + f.getName() + "):" + e.getMessage());
             result = -1;
         } catch (IOException e) {
-            Log.e(TAG, "Error while reading or sending file contents:" + e.getMessage());
             result = -1;
         }
 
@@ -212,14 +198,10 @@ public class Connector {
         InfoPayload payload = (InfoPayload) info.getPayload();
 
         String fName = payload.getFileName();
-        Log.i(TAG, "Start receiving file:" + fName);
 
         String tmpFName = fName + ".tmp";
-        Log.i(TAG, "File name: " + fName);
         long fLen = payload.getLength();
-        Log.i(TAG, "File size: " + fLen);
         // create a file
-        Log.i(TAG, "Creating local file");
         // append .tmp to the file name before the file transfer starts
         File f = new File(sdir, tmpFName);
         if (f.exists())
@@ -284,11 +266,8 @@ public class Connector {
                 fos.close();
                 result = bytesRead;
             }
-            Log.i(TAG, "Finished receiving file:" + fName + "(" + result + " bytes)");
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Error while writing to  file (" + fName + "):" + e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG, "Error while reading or writing file contents:" + e.getMessage());
         }
 
         // after file transfer is complete then rename the file to drop
@@ -296,7 +275,6 @@ public class Connector {
         if (result >= 0) {
             File finalFile = new File(sdir, fName);
             boolean isSuccess = f.renameTo(finalFile);
-            Log.i(TAG, "File (" + fName + ") tranfer:" + isSuccess);
         }
 
         return result;
@@ -331,20 +309,11 @@ public class Connector {
 
                 File finalMetaFile = new File(sdir, metafile);
                 isSuccess = metaTemp.renameTo(finalMetaFile);
-                Log.i(TAG, "MetadataFile tranfer:" + isSuccess);
-                Log.i(TAG, "Video Meta data file (" + fName + ") transfer is successfull");
             } else {
-                Log.w(TAG, "Video Meta data file (" + fName + ") transfer fails");
             }
             result = 1;
         } catch (FileNotFoundException e) {
-            Log.e(TAG,
-                    "Error while writing to temp meta data ile file (" + fName + "):"
-                            + e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG,
-                    "Error while reading or writing file (" + fName + ") contents:"
-                            + e.getMessage());
         }
 
         return result;
@@ -366,10 +335,8 @@ public class Connector {
             mediaBuilder.build().writeDelimitedTo(mmOutputSteam);
             result = 1;
         } catch (IOException e) {
-            Log.e(TAG, "Exception while sending protobuf file", e);
         }
 
         return result;
     }
-
 }

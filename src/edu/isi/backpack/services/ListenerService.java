@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
@@ -39,8 +38,6 @@ import java.util.UUID;
  * @author mohit aggarwal
  */
 public class ListenerService extends Service {
-
-    private static final String TAG = "BackPackListenerService";
 
     // Name for the SDP record when creating server socket
     private static final String FTP_SERVICE = "CustomFTPService";
@@ -90,7 +87,6 @@ public class ListenerService extends Service {
                         mAdapter = BluetoothAdapter.getDefaultAdapter();
                         mmServerSocket = null;
                         if (mAdapter != null && mAdapter.isEnabled()) {
-                            Log.i(TAG, "Bluetooth turned on");
                             synchronized (btOn) {
                                 btOn.setVal(true);
                                 btOn.notifyAll();
@@ -125,13 +121,10 @@ public class ListenerService extends Service {
                 metaFile.createNewFile();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
         }
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.i(TAG, "starting listener service");
 
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         // Spundun: Didn't put btOn access in synchronize block because Noone
@@ -153,36 +146,28 @@ public class ListenerService extends Service {
                 while (true) {
                     if (btOn.isVal()) {
 
-                        Log.i(TAG, "Bluetooth is on");
-
                         // create server socket if not created
                         if (mmServerSocket == null) {
                             mmServerSocket = createServerSocket();
                         }
                         BluetoothSocket socket = null;
                         if (mmServerSocket != null) {
-                            Log.i(TAG, "Server Socket created");
                             try {
                                 // This is a blocking call and will only
                                 // return on a
                                 // successful connection or an exception
-                                Log.i(TAG, "Listening for incoming connection requests");
                                 socket = mmServerSocket.accept();
                             } catch (IOException e) { // bluetooth turned off
                                                       // while waiting for
                                                       // connection
                                 socket = null;
-                                Log.e(TAG, "Bluetooth turned off while waiting for connection");
                                 continue;
                             }
                         }
 
-                        // if socket is null, accept was canceled because
-                        // bluetooth was turned off
                         if (socket != null) {
 
                             // connection established
-                            Log.i(TAG, "Connection established");
                             sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
 
                             Thread commThread = new Thread(new CommunicationSocket(socket));
@@ -196,7 +181,6 @@ public class ListenerService extends Service {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            Log.i(TAG, "Sync Complete");
                         }
                     } else {
                         synchronized (btOn) {
@@ -204,7 +188,6 @@ public class ListenerService extends Service {
                                 try {
                                     btOn.wait();
                                 } catch (InterruptedException e) {
-                                    Log.w(TAG, "Interrupted while waiting for Bluetooth to turn On");
                                     e.printStackTrace();
                                 }
                             }
@@ -228,7 +211,6 @@ public class ListenerService extends Service {
              */
             tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(FTP_SERVICE, MY_UUID);
         } catch (IOException e) {
-            Log.e(TAG, "AcceptThread: Socket listen() failed", e);
         }
         return tmp;
     }
@@ -264,9 +246,6 @@ public class ListenerService extends Service {
                 mHandler = new MessageHandler(conn, ListenerService.this, metaFile);
             } catch (IOException e) {
                 socket = null;
-                Log.e(TAG,
-                        "Trying to get socket IOStream while socket is not connected"
-                                + e.getMessage());
                 sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
             }
         }
@@ -296,14 +275,12 @@ public class ListenerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
-        Log.i(TAG, "listener service destroyed");
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-
 }
 
 /**

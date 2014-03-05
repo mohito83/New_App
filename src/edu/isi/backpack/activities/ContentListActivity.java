@@ -34,7 +34,6 @@ import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -94,8 +93,6 @@ import java.util.Set;
  */
 @SuppressLint("NewApi")
 public class ContentListActivity extends Activity implements BookmarkManager {
-
-    public static final String TAG = "ContentListActivity";
 
     public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
@@ -356,7 +353,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             // representation of that from the raw IBinder object.
             wifiListenerMessenger = new Messenger(service);
             boundWifiListener = true;
-            Log.i(TAG, "bounded to service, request service name");
             // request serviceName WifiListenerService
             Message msg = Message.obtain(null, WifiListenerService.MSG_REQUEST_SERVICE_NAME, 0, 0);
             msg.replyTo = incomingMessenger;
@@ -665,7 +661,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 String packageName = info.activityInfo.applicationInfo.packageName;
                 if (packageName.equals(getPackageName())) {
                     File apk = new File(info.activityInfo.applicationInfo.publicSourceDir);
-                    Log.d(TAG, apk.getAbsolutePath());
 
                     // share apk using bluetooth
                     Intent shareIntent = new Intent();
@@ -1151,10 +1146,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         bts.clear();
         /* To check if the device has the bluetooth hardware */
-        String TAG = "BluetoothFileTransferActivity";
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
-            Log.e(TAG, "No bluetooth capabilities available on the device. Exiting!!");
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             // finish();
             return;
@@ -1180,7 +1173,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             startActivityForResult(makeDiscoverable, SYNC_REQUEST_ENABLE_BT);
             return;
         } else {
-            Log.d(TAG, "Bluetooth is already enabled. Setting up the file transfer");
         }
 
         searchForBTDevices();
