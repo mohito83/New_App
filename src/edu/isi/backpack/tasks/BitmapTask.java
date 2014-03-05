@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -67,6 +68,12 @@ public class BitmapTask extends AsyncTask<Uri, Integer, Bitmap>{
 			// decode the image 
 			InputStream is = cr.openInputStream(uri[0]);
 			Bitmap bm = BitmapFactory.decodeStream(is);
+			if(bm == null) {
+				//FIXME: Spundun: If we have more images in the folder and we
+				//         couldn't decode this image, then we should try the others.
+				Log.e(this.getClass().getSimpleName(), "Couldn't decode the bitmap for file:" + uri[0].toString());
+				return null;
+			}
 			float sampleSize = getSampleSize(bm.getWidth(), bm.getHeight(), width, height);
 			
 			// resize
@@ -76,11 +83,15 @@ public class BitmapTask extends AsyncTask<Uri, Integer, Bitmap>{
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	protected void onPostExecute(Bitmap result) {
+		//FYI, passing null into this call is ok.
+		//It keeps the previous image that was set in this view.
 		imageView.setImageBitmap(result);
     }
 	
