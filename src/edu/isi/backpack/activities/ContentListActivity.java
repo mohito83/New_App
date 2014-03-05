@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
@@ -137,7 +138,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	
 	private Object currentContent = null;
 	
-	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd");
+	private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
 	
 	private Menu optionMenu;
 	
