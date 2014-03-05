@@ -155,7 +155,6 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 	             getClass().getName());
-	        wl.acquire();
 	        
 	        InputStream input = null;
 	        OutputStream output = null;
@@ -163,13 +162,13 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	
 	        // download the file
 	        try {
+		        wl.acquire();
 	        	URL u = new URL(packageUrl);
 	            connection = (HttpURLConnection) u.openConnection();
 	            connection.connect();
 	            	
 	            // unable to connect
 	            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK){
-	            	wl.release();
 	            	return ERROR_CONNECT;
 	            }
 	
@@ -188,7 +187,6 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	        			input.close();
 	        			output.close();
 	        			packageFile.delete();
-	        			wl.release();
 	        			return ERROR_ABORTED;
 	                }
 	        		
@@ -211,12 +209,11 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 				
 				if (connection != null)
 					connection.disconnect();
-	            wl.release();
-	            
 	        } catch (Exception e) {
-	    		wl.release();
 				e.printStackTrace();
 				return ERROR_DOWNLOAD;
+			} finally {
+	    		wl.release();
 			}
 		} // if packageUrl != null
 		
