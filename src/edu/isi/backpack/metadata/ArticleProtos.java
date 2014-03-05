@@ -2891,7 +2891,8 @@ public final class ArticleProtos {
 
       public edu.isi.backpack.metadata.ArticleProtos.Articles buildPartial() {
         edu.isi.backpack.metadata.ArticleProtos.Articles result = new edu.isi.backpack.metadata.ArticleProtos.Articles(this);
-        int from_bitField0_ = bitField0_;
+        @SuppressWarnings("unused")
+		int from_bitField0_ = bitField0_;
         if (articleBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             article_ = java.util.Collections.unmodifiableList(article_);
