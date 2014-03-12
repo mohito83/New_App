@@ -352,10 +352,11 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			
 			// merge if both meta exist
 			Videos srcVideoDat;
+			Videos dstVideoDat = null;
 			ArrayList<String> oldVideoNames = new ArrayList<String>();
 			if (srcVideoMeta.exists() && dstVideoMeta.exists()){
 				FileInputStream is = new FileInputStream(dstVideoMeta);
-				Videos dstVideoDat = Videos.parseFrom(is);
+				dstVideoDat = Videos.parseFrom(is);
 				srcVideoDat = Videos.parseFrom(new FileInputStream(srcVideoMeta));
 				is.close();
 				
@@ -363,8 +364,8 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 				for (Video oldVideo : dstVideoDat.getVideoList())
 					oldVideoNames.add(oldVideo.getFilename()); // assume unique filename, add new only, no update
 				
-				// create new metadata from the old one
-				videos.mergeFrom(dstVideoDat);
+//				// create new metadata from the old one
+//				videos.mergeFrom(dstVideoDat);
 			}
 			else if (srcVideoMeta.exists()){ 
 				srcVideoDat = Videos.parseFrom(new FileInputStream(srcVideoMeta));
@@ -394,6 +395,10 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 					thumbFile.delete();
 				}
 			}
+			
+			// merge with old one (so new entries are first)
+			if (dstVideoDat != null)
+				videos.mergeFrom(dstVideoDat);
 
 			// write out merged metadata
 			FileOutputStream out = new FileOutputStream(dstVideoMeta);
@@ -422,19 +427,17 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			
 			// merge if both meta exist
 			Articles srcArticleDat;
+			Articles dstArticleDat = null;
 			ArrayList<String> oldArticleNames = new ArrayList<String>();
 			if (srcArticleMeta.exists() && dstArticleMeta.exists()){
 				FileInputStream is = new FileInputStream(dstArticleMeta);
-				Articles dstArticleDat = Articles.parseFrom(is);
+				dstArticleDat = Articles.parseFrom(is);
 				is.close();
 				srcArticleDat = Articles.parseFrom(new FileInputStream(srcArticleMeta));
 				
 				// get a list of old article file names
 				for (Article oldArticle : dstArticleDat.getArticleList())
 					oldArticleNames.add(oldArticle.getFilename()); // assume unique filename, add new only, no update
-				
-				// create new metadata from the old one
-				articles.mergeFrom(dstArticleDat);
 				
 			} 
 			else if (srcArticleMeta.exists()){ 
@@ -473,6 +476,9 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 						FileUtils.deleteDirectory(imageDir);
 				}
 			}
+			
+			// merge with old entries (so new entries on top)
+			articles.mergeFrom(dstArticleDat);
 			
 			// write out merged metadata
 			FileOutputStream out = new FileOutputStream(dstArticleMeta);
