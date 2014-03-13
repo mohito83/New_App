@@ -24,6 +24,8 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -217,6 +219,11 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			}
 		} // if packageUrl != null
 		
+		if (isCancelled()){
+			packageFile.delete();
+			return ERROR_ABORTED;
+		}
+			
 		
 		// extract file to a temporary folder
 		publishProgress(PROGRESS_EXTRACT);
@@ -237,6 +244,17 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 			return ERROR_EXTRACT;
 		}
 		
+		if (isCancelled()){
+			packageFile.delete();
+			try {
+				FileUtils.cleanDirectory(tmpDir);
+				tmpDir.delete();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return ERROR_ABORTED;
+		}
+		
 		// delete old content and bookmarks if overwrite is true
 		if (overwrite){
 			try {
@@ -246,7 +264,6 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 				e.printStackTrace();
 			}
 		}
-		
 		
 		// merge
 		publishProgress(PROGRESS_MERGE);
@@ -498,6 +515,17 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 	@Override
 	protected void onPreExecute() {
 	    super.onPreExecute();
+	    
+	    // if user canceled
+	    progressDialog.setOnDismissListener(new OnDismissListener(){
+
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				cancel(true);
+				Toast.makeText(context, "Download Canceled", Toast.LENGTH_SHORT).show();
+			}
+			
+		});
 	    progressDialog.show();
 	}
 	
