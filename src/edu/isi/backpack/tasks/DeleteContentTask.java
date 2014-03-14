@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	
 	private File vFile, aFile;
 	
+	private static final int STATUS_DELETE_CONTENT = 1000;
+	
+	private static final int STATUS_NEW_METADATA = 2000;
+	
 	public DeleteContentTask(
 			ContentListActivity parent,
 			File contentDir, 
@@ -59,7 +64,9 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	 */
 	@Override
 	protected Void doInBackground(Object... entries) {
+		publishProgress(STATUS_DELETE_CONTENT);
 		int count = entries.length;
+		ArrayList<String> deleted = new ArrayList<String>();
 		for (int i = 0; i < count; i++){
 			Object o = entries[i];
 			if (o instanceof Video){
@@ -76,6 +83,8 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				// delete from bookmark 
 				if (parent.isBookmarked(video.getFilepath()))
 					parent.removeBookmark(video.getFilepath(), false);
+				
+				deleted.add(video.getId());
 			}
 			else if (o instanceof Article){
 				Article article = (Article)o;
@@ -103,25 +112,22 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 				// delete from bookmark 
 				if (parent.isBookmarked(path))
 					parent.removeBookmark(path, false);
+				
+				deleted.add(article.getFilename());
 			}
 			
-//			publishProgress((int) ((i / (float) count) * 100));
 		}
 		
-		List<Object> entriesList = Arrays.asList(entries);
 		
 		// build new metadata
 		// copy original video metadata except selected video
+		publishProgress(STATUS_NEW_METADATA);
 		Videos.Builder newVideos = Videos.newBuilder();
 		for (Video v : vMeta.getVideoList()){
 			
 			// if not selected video
-			if (!entriesList.contains(v)){
-				
-				// copy from original
-				Video.Builder videoBuilder = Video.newBuilder();
-				videoBuilder.mergeFrom(v);
-				newVideos.addVideo(videoBuilder);
+			if (!deleted.contains(v.getId())){
+				newVideos.addVideo(v);
 			}
 		}
 		
@@ -130,12 +136,8 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 		for (Article a : aMeta.getArticleList()){
 			
 			// if not selected article
-			if (!entriesList.contains(a)){
-				
-				// copy from original
-				Article.Builder articleBuilder = Article.newBuilder();
-				articleBuilder.mergeFrom(a);
-				newArticles.addArticle(articleBuilder);
+			if (!deleted.contains(a.getFilename())){
+				newArticles.addArticle(a);
 			}
 		}
 		
@@ -155,7 +157,10 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	}
 	
 	protected void onProgressUpdate(Integer... progress) {
-        dialog.setProgress(progress[0]);
+		if (progress[0] == STATUS_DELETE_CONTENT)
+			dialog.setMessage("Deleting Files...");
+		else if (progress[0] == STATUS_NEW_METADATA)
+			dialog.setMessage("Updating metadata...");
     }
 	
 	protected void onPostExecute(Void v) {
