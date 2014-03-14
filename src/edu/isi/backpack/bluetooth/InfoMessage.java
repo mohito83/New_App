@@ -82,6 +82,10 @@ public class InfoMessage implements Serializable, Cloneable {
 		}
 		return builder.toString();
 	}
+	
+	public int getFileSize() {
+		return (int)((InfoPayload) payload).getLength();
+	}
 
 	public InfoMessage copy(InfoMessage message) {
 		message.setType(getType());

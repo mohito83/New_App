@@ -3,6 +3,8 @@
  */
 package edu.isi.backpack.bluetooth;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,11 +19,17 @@ import java.io.StreamCorruptedException;
 
 import com.google.protobuf.GeneratedMessage;
 
+import edu.isi.backpack.R;
+import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.ArticleProtos.Articles;
 import edu.isi.backpack.metadata.VideoProtos.Video;
 import edu.isi.backpack.metadata.VideoProtos.Videos;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 /**
  * This class defines methods to perform data transaction
@@ -35,15 +43,56 @@ public class Connector {
 
 	private InputStream mmInputStream;
 	private OutputStream mmOutputSteam;
+	private Notification notification=null;
+	private NotificationManager notificationManager = null;
+	private boolean  notify= true,destroy = false;
+	private Thread t ;
+	
 
-	private static byte buffer[] = new byte[16 * 1024];
+	private static byte buffer[] = new byte[8192];
 
 	/**
 	 * 
 	 */
-	public Connector(InputStream in, OutputStream out) {
+	public Connector(InputStream in, OutputStream out,Context c) {
 		mmInputStream = in;
 		mmOutputSteam = out;
+		notification = new Notification();
+		notification.icon = edu.isi.backpack.R.drawable.ic_launcher;
+		notification.tickerText = "BackPack";
+		notification.when =System
+                .currentTimeMillis();
+        notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
+        notification.contentView = new RemoteViews(c.getPackageName(), R.layout.download_progress);
+        //notification.contentIntent = pendingIntent;
+        notification.contentView.setImageViewResource(edu.isi.backpack.R.drawable.ic_launcher, edu.isi.backpack.R.drawable.ic_action_share);
+        notification.contentView.setTextViewText(R.id.status_text, "simulation in progress");
+        notification.contentView.setProgressBar(R.id.status_progress, 100, 2, false);
+        notificationManager = (NotificationManager) c.getSystemService(
+               Context.NOTIFICATION_SERVICE);
+        t =  new Thread(new Runnable() {
+ 	        @Override
+ 	        public void run() {
+ 	            while (true) {
+ 	                try {
+ 	                	if(destroy)
+ 	                		break;
+ 	                    Thread.sleep(2500);
+ 	                	notify = true;
+ 	                   } catch (Exception e) {
+ 	                    // TODO: handle exception
+ 	                }
+ 	            }
+ 	        }
+ 	    });
+        t.start();
+	}
+	
+	public void cancelNotification(){
+		if(notificationManager != null){
+			notificationManager.cancel(42);
+		}
+		destroy = true;
 	}
 
 	/**
@@ -108,18 +157,29 @@ public class Connector {
 	 * @param f
 	 * @return -1 if failure else number of bytes sent
 	 */
-	public int sendFileData(File f) {
+	public int sendFileData(File f,InfoMessage info) {
 		Log.i(TAG, "Start Sending file:" + f.getName());
 		int result = -1;
 		int totalBytesSent = 0;
 		int len = 0;
 		try {
 			FileInputStream fin = new FileInputStream(f);
-			while ((len = fin.read(buffer)) != -1) {
-				mmOutputSteam.write(buffer, 0, len);
-				totalBytesSent += len;
+			BufferedInputStream bis = new BufferedInputStream(fin, 8 * 1024);
+			BufferedOutputStream mOutputSteam = new BufferedOutputStream(mmOutputSteam);
+			while ((len = bis.read(buffer)) != -1) {				
+				if(notify){
+					notify = false;
+					notification.contentView.setTextViewText(R.id.status_text, "Sending file : "+f.getName()+"("+(totalBytesSent/1000)+"Kb/"
+																			+(info.getFileSize()/1000)+"Kb)");
+					notification.contentView.setProgressBar(R.id.status_progress,  info.getFileSize(), (int)totalBytesSent+info.getFileSize()/15, false);
+					notificationManager.notify(42, notification);
+				}
+				mOutputSteam.write(buffer, 0, len);
+				totalBytesSent += len;			
 			}
+			bis.close();
 			fin.close();
+			mOutputSteam.flush();
 			mmOutputSteam.flush();
 			result = totalBytesSent;
 			Log.i(TAG, "Finished sending file:" + f.getName() + "(" + result
@@ -162,10 +222,10 @@ public class Connector {
 		Log.i(TAG, "Creating local file");
 		// append .tmp to the file name before the file transfer starts
 		File f = new File(sdir, tmpFName);
-		boolean saveToFile = false;
+		boolean saveToFile = true;
 		try {
 			try {
-				saveToFile = f.createNewFile();
+				f.createNewFile();
 			} catch (Exception e) {
 				saveToFile = false;
 			}
@@ -174,18 +234,30 @@ public class Connector {
 			if(saveToFile){
 				fos = new FileOutputStream(f);
 			}
+			BufferedOutputStream bos = new BufferedOutputStream(fos, 8 * 1024);
 			int bytesRead = 0;
-
-			while (bytesRead < fLen) { // read exactly fLen
-				int read = mmInputStream.read(buffer, 0,
+			BufferedInputStream mInputStream = new BufferedInputStream(mmInputStream);
+			while (bytesRead < fLen) { // read exactly fLen				
+				if(notify){
+					notify = false;
+					notification.contentView.setTextViewText(R.id.status_text, "Receiving file : "+fName+"("+(bytesRead/1000)+"Kb/"
+																			+(fLen/1000)+"Kb)");
+					notification.contentView.setProgressBar(R.id.status_progress,  (int)fLen, (int)bytesRead+info.getFileSize()/15, false);
+					notificationManager.notify(42, notification);
+				}
+				int read = mInputStream.read(buffer, 0,
 						Math.min((int) fLen - bytesRead, buffer.length));
 				if(saveToFile){
-					fos.write(buffer, 0, read);
+					bos.write(buffer, 0, read);
 				}
 				bytesRead += read;
 			}
+			
+
 
 			if(saveToFile && fos != null){
+				bos.flush();
+				bos.close();
 				fos.flush();
 				fos.close();
 				result = bytesRead;

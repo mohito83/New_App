@@ -63,7 +63,7 @@ public class MessageHandler {
 		conn.sendInfoMessage(infomessage);
 
 		// 2. send actual meta data content
-		result = conn.sendFileData(metaFile);
+		result = conn.sendFileData(metaFile,infomessage);
 
 		// 3. Receive the ACK message
 		if (result >= 0) {
@@ -182,7 +182,7 @@ public class MessageHandler {
 				conn.sendInfoMessage(info);
 
 				// 1.2. send video contents
-				conn.sendFileData(f);
+				conn.sendFileData(f,info);
 
 				// 1.3. receive ACK from the receiver
 				InfoMessage ackMsg = conn.receiveInfoMessage();
@@ -205,7 +205,7 @@ public class MessageHandler {
 				conn.sendInfoMessage(info);
 
 				// 2.2 send bitmap content
-				conn.sendFileData(thumbNailFile);
+				conn.sendFileData(thumbNailFile,info);
 
 				// 2.3 receive an ACK
 				ackMsg = conn.receiveInfoMessage();
@@ -408,7 +408,7 @@ public class MessageHandler {
 				conn.sendInfoMessage(info);
 
 				// 1.2 send the actual web content file
-				conn.sendFileData(f);
+				conn.sendFileData(f,info);
 
 				// 1.3. receive ACK from the receiver
 				InfoMessage ackMsg = conn.receiveInfoMessage();
@@ -438,7 +438,7 @@ public class MessageHandler {
 					conn.sendInfoMessage(info);
 
 					// 2.2 Send actual image data
-					conn.sendFileData(img);
+					conn.sendFileData(img,info);
 
 					// 2.3 receive ack from the receiver
 					ackMsg = conn.receiveInfoMessage();
