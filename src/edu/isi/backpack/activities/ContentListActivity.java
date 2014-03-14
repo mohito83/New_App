@@ -589,7 +589,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     		new AlertDialog.Builder(this)
     			.setTitle("About " + appName)
     			.setMessage(appName + 
-    					" v." + version + "\n\n" + 
+    					" v." + version + "\n"+getLocalBluetoothName()+"\n\n" + 
     					getString(R.string.license))
     			.setNeutralButton("Close", null)
     			.show();
@@ -1036,9 +1036,30 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			}
 		});
 		dialog.setList(bts);
+		dialog.setDeviceTitle(getLocalBluetoothName()); 
+		dialog.setDeviceVisibility(getLocalBluetoothVisibility());
 		dialog.show(getFragmentManager(), "BluetoothListDialog");
 		
 
+	}
+	
+	public boolean getLocalBluetoothVisibility(){
+	if(mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
+    	return false;
+	return true;
+	}
+	
+	public String getLocalBluetoothName(){
+	    if(mBluetoothAdapter == null){
+	        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	    }
+	    String name = mBluetoothAdapter.getName();
+	    if(name == null){
+	        name = mBluetoothAdapter.getAddress();
+	    }else{
+	    	name = "Device name: "+name;
+	    }
+	    return name;
 	}
 
 	private void searchForBTDevices() {

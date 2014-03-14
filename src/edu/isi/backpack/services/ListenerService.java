@@ -228,7 +228,7 @@ public class ListenerService extends Service {
 			try {
 				mmInStream = socket.getInputStream();
 				mmOutStream = socket.getOutputStream();
-				conn = new Connector(mmInStream, mmOutStream);
+				conn = new Connector(mmInStream, mmOutStream,getApplicationContext());
 				mHanlder = new MessageHandler(conn, ListenerService.this,
 						metaFile, webMetaFile);
 				transcState = Constants.META_DATA_EXCHANGE;
@@ -315,7 +315,7 @@ public class ListenerService extends Service {
 						message = "File sync incomplete.";
 					else 
 						message = "File sync is successful. Closing the session";
-					
+					conn.cancelNotification();
 					BackpackUtils.broadcastMessage(ListenerService.this,
 							message);
 					

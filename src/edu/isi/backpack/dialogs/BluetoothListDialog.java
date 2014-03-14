@@ -9,9 +9,19 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ScaleXSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -28,6 +38,8 @@ public class BluetoothListDialog extends DialogFragment {
 	
 	private ArrayList<BluetoothDevice> btItems;
 	private TextView titleView;
+	private String Devicetitle = "No Device Name";
+	private boolean DeviceVisibility = false;
 	private ListView listView;
 	private ArrayAdapter<BluetoothDevice> adapter;
 	public static interface IHandler{
@@ -51,11 +63,38 @@ public class BluetoothListDialog extends DialogFragment {
 		View view = inflater.inflate(R.layout.dialog_bluetooth, null);
 		titleView = (TextView)view.findViewById(R.id.bluetoothTitle);
 		listView = (ListView) view.findViewById(R.id.bluetoothList);
+		TextView Lview = (TextView) view.findViewById(R.id.bluetoothVisibility);
+		if(!DeviceVisibility)
+			Lview.setVisibility(View.VISIBLE);
+		else
+			Lview.setVisibility(View.GONE);
 		adapter = new BluetoothListAdapter(getActivity(), btItems);
 		listView.setAdapter(adapter);
 		builder.setView(view);
-
-		return builder.create();
+		SpannableStringBuilder ssBuilser = new SpannableStringBuilder(Devicetitle);
+		ScaleXSpan span1 = new ScaleXSpan(0);
+		ssBuilser.setSpan(span1, 0, ssBuilser.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+		builder.setTitle(ssBuilser);
+		builder.setNegativeButton("Cancel", new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		builder.setPositiveButton("Edit Bluetooth Settings ", new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Intent intentBluetooth = new Intent();
+			    intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+			    startActivity(intentBluetooth); 
+				
+			}
+		});
+		AlertDialog myBuilder = builder.create();
+		return myBuilder;
 	}
 	
 	public void redraw(ArrayList<BluetoothDevice> btItemss) {		
@@ -67,6 +106,13 @@ public class BluetoothListDialog extends DialogFragment {
 	
 	public void setTitle(String title){
 		titleView.setText(title);
+	}
+	public void setDeviceTitle(String title){
+		if(title != null)
+		Devicetitle = title;
+	}
+	public void setDeviceVisibility(boolean val){
+		DeviceVisibility = val;
 	}
 	 @Override
 	  public void onResume() {

@@ -16,6 +16,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -48,6 +49,7 @@ public class ConnectionService extends Service {
 
 	private File metaFile;
 	private File webMetaFile;
+	private Intent mIntent;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -80,10 +82,52 @@ public class ConnectionService extends Service {
 		}
 
 	}
+	
+	CountDownTimer timer = new CountDownTimer( Long.MAX_VALUE , 15000) {
+					        // This is called every interval. (Every 15 seconds in this example)
+			        public void onTick(long millisUntilFinished) {
+			        	
+			            	Thread t = new Thread(new Runnable() {
+			            		final BluetoothDevice item = mIntent.getExtras().getParcelable("Device");
+			        			private BluetoothSocket mmSocket;
+			        			@Override
+			        			public void run() {
+			        				// get the slave bluetooth device
+
+			        				BluetoothDevice device = mAdapter.getRemoteDevice(item
+			        						.getAddress());
+
+			        				// connect to slave
+			        				try {
+			        					// get the socket from the device
+			        					Log.i(TAG, "Connecting");
+			        					mmSocket = device
+			        							.createRfcommSocketToServiceRecord(MY_UUID);
+			        					mAdapter.cancelDiscovery();
+			        					mmSocket.connect();
+			        				} catch (IOException e) {
+			        					try {
+		        							mmSocket.close();
+		        						} catch (Exception e2) {
+		        							Log.e(TAG,
+		        									"unable to close() socket during connection failure",
+		        									e2);
+		        						}
+			        				}
+
+			        			}
+			        		});
+			            	t.start();	
+			        }
+			        public void onFinish() {           
+			            start();
+			        }
+			     };
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		// Debug.waitForDebugger();
+		mIntent = intent;
 		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
 
 		// use a seaparate thread for connection and data transfer
@@ -160,7 +204,8 @@ public class ConnectionService extends Service {
 					}
 
 				}
-
+				// periodically hit the socket to resume its task (when sync freezed)
+				timer.start();
 				// connection established
 				Log.i(TAG, "Connection established");
 				sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
@@ -172,7 +217,7 @@ public class ConnectionService extends Service {
 					try {
 						mmInStream = mmSocket.getInputStream();
 						mmOutStream = mmSocket.getOutputStream();
-						conn = new Connector(mmInStream, mmOutStream);
+						conn = new Connector(mmInStream, mmOutStream,getApplicationContext());
 						mHanlder = new MessageHandler(conn,
 								ConnectionService.this, metaFile, webMetaFile);
 					} catch (IOException e) {
@@ -260,7 +305,7 @@ public class ConnectionService extends Service {
 							message = "File sync incomplete.";
 						else 
 							message = "File sync is successful. Closing the session";
-							
+						conn.cancelNotification();
 						BackpackUtils.broadcastMessage(ConnectionService.this,
 								message);
 						
@@ -274,6 +319,7 @@ public class ConnectionService extends Service {
 							mmInStream.close();
 							mmOutStream.close();
 							mmSocket.close();
+							timer.cancel();
 						} catch (IOException e) {
 							Log.e(TAG, "Unable to disconnect socket", e);
 						}

@@ -5,6 +5,15 @@
     android:orientation="vertical" >
     
     <TextView 
+        android:id="@+id/bluetoothVisibility"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textColor="@color/red"
+        android:text="Visible to only paired device"/>
+    
+    <TextView 
         android:id="@+id/bluetoothTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,9 +24,11 @@
     <ListView 
         android:id="@+id/bluetoothList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="150dp"
         android:listSelector="@drawable/bluetooth_list_selector"
-        android:choiceMode="singleChoice">
+        android:choiceMode="singleChoice"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical">
     </ListView>
     
 
