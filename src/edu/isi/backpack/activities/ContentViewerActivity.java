@@ -153,14 +153,30 @@ public class ContentViewerActivity extends FragmentActivity {
 			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_selected);
 		else
 			menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_unselected);
+		
+		if (video != null)
+			menu.findItem(R.id.action_web).setVisible(false);
+		else
+			menu.findItem(R.id.action_web).setVisible(true);
+		
 		return true;
 	}
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 		
+		if (item.getItemId() == R.id.action_web){
+			// go to website
+			if (article != null){
+				String url = article.getUrl();
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				startActivity(i);
+			}
+			return true;
+		}
 		// user clicked on star
-    	if (item.getItemId() == R.id.action_star){
+		else if (item.getItemId() == R.id.action_star){
     		
     		// toggle bookmark
     		bookmark = !bookmark;
