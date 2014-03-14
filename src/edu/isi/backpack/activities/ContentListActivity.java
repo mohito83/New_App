@@ -841,9 +841,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					// local file (could exist or not)
 		        	
 		        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
-	        		pd.setMessage("Download Content Package");
+		        	pd.setTitle("Download Content Package");
+	        		pd.setMessage("Downloading");
 	        		pd.setIndeterminate(true);
 	        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	        		pd.setCanceledOnTouchOutside(false);
 	        		pd.setCancelable(true);
 	        		
 	        		// if file doesn't exist, download
