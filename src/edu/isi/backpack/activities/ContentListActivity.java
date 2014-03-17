@@ -51,6 +51,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import edu.isi.backpack.BookmarkManager;
 import edu.isi.backpack.R;
@@ -123,6 +124,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	private Articles webMetadata;
 
 	private ListView contentList;
+	
+	private TextView categoryFilter;
 
 	private ArrayList<String> categories;
 
@@ -331,6 +334,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 		contentList = (ListView) findViewById(R.id.listing);
+		categoryFilter = (TextView) findViewById(R.id.category);
+		categoryFilter.setVisibility(View.GONE);
 
 		// reload content
 		reload(true);
@@ -729,7 +734,33 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			contentList.setAdapter(contentListAdapter);
 		} else
 			contentListAdapter.notifyDataSetChanged();
+		updateFilter();
 
+	}
+	
+	private String setFilter(String filter,String select){
+		if(!select.contains("All"))
+			if(filter.isEmpty())
+				filter = filter+" "+select;
+			else
+				filter = filter+","+select;
+		return filter;		
+	}
+	
+	private void updateFilter(){
+		if(contentListAdapter.isEmpty()){
+			categoryFilter.setVisibility(View.GONE);
+			return;
+		}else
+			categoryFilter.setVisibility(View.VISIBLE);
+		String filter = "";
+		filter = setFilter(filter, selectedBookmark);
+		filter = setFilter(filter, selectedType);
+		filter = setFilter(filter, selectedCat);
+		if(filter.length() != 0)
+			categoryFilter.setText(" Filters:"+filter);
+		else
+			categoryFilter.setVisibility(View.GONE);
 	}
 	
 	/**
@@ -819,6 +850,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		
 		// update list
 		contentListAdapter.notifyDataSetChanged();
+		updateFilter();
 	}
 	
 	/**

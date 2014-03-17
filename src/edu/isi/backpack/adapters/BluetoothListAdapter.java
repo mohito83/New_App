@@ -5,8 +5,10 @@ package edu.isi.backpack.adapters;
 
 import java.util.List;
 
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +52,12 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 			TextView textView = (TextView)view.findViewById(R.id.btItemText);
 			//This is to ensure that for Bluetooth device with no name should have their address displayed.
 			String itemTxt = item.getName()!=null?item.getName():item.getAddress();
-			textView.setText(itemTxt);
+			String text;
+			if(item.getBondState() == BluetoothDevice.BOND_BONDED)
+				text =  itemTxt+" (<font color=#41A317>paired</font>)";
+			else
+				text =  itemTxt+" (<font color=#FF0000>unpaired</font>)";
+			textView.setText(Html.fromHtml(text));
 	//	}
 
         return view;
