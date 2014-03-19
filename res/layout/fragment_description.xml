@@ -16,7 +16,7 @@
 	        android:layout_marginBottom="5dp"
 	        android:textSize="16sp"
 	        android:textStyle="bold"
-	        android:text="Published Date" />
+	        android:text="@string/description_pubdate" />
         <TextView
             android:id="@+id/publishDate"
 	        android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
 	        android:layout_marginBottom="5dp"
 	        android:textSize="16sp"
 	        android:textStyle="bold"
-	        android:text="Description" />
+	        android:text="@string/description_desc" />
         <TextView
             android:id="@+id/fullDescription"
 	        android:layout_width="wrap_content"

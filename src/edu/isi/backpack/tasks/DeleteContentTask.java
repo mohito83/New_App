@@ -8,11 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import edu.isi.backpack.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.ArticleProtos.Articles;
@@ -158,9 +157,9 @@ public class DeleteContentTask extends AsyncTask<Object, Integer, Void> {
 	
 	protected void onProgressUpdate(Integer... progress) {
 		if (progress[0] == STATUS_DELETE_CONTENT)
-			dialog.setMessage("Deleting Files...");
+			dialog.setMessage(parent.getString(R.string.deleting_files));
 		else if (progress[0] == STATUS_NEW_METADATA)
-			dialog.setMessage("Updating metadata...");
+			dialog.setMessage(parent.getString(R.string.updating_metadata));
     }
 	
 	protected void onPostExecute(Void v) {

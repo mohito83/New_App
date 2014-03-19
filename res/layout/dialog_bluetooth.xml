@@ -11,7 +11,7 @@
         android:padding="5dp"
         android:textStyle="bold"
         android:textColor="@color/red"
-        android:text="Visible to only paired device"/>
+        android:text="@string/btdialog_visibleToParied"/>
     
     <TextView 
         android:id="@+id/bluetoothTitle"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:textStyle="bold"
-        android:text="Scanning..."/>
+        android:text="@string/btdialog_scanning"/>
         
     <ListView 
         android:id="@+id/bluetoothList"

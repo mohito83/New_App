@@ -20,6 +20,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
+import edu.isi.backpack.R;
 import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
 import edu.isi.backpack.bluetooth.MessageHandler;
@@ -88,7 +89,7 @@ public class ConnectionService extends Service {
 			        public void onTick(long millisUntilFinished) {
 			        	
 			            	Thread t = new Thread(new Runnable() {
-			            		final BluetoothDevice item = mIntent.getExtras().getParcelable("Device");
+			            		final BluetoothDevice item = mIntent.getExtras().getParcelable(ExtraConstants.DEVICE);
 			        			private BluetoothSocket mmSocket;
 			        			@Override
 			        			public void run() {
@@ -128,7 +129,7 @@ public class ConnectionService extends Service {
 
 		// Debug.waitForDebugger();
 		mIntent = intent;
-		final BluetoothDevice item = intent.getExtras().getParcelable("Device");
+		final BluetoothDevice item = intent.getExtras().getParcelable(ExtraConstants.DEVICE);
 
 		// use a seaparate thread for connection and data transfer
 		Thread t = new Thread(new Runnable() {
@@ -181,14 +182,12 @@ public class ConnectionService extends Service {
 						} catch (IOException e1) {
 							e1.printStackTrace();
 							BackpackUtils.broadcastMessage(ConnectionService.this,
-									"Connection with " + device.getName()
-											+ "Failed");
+									device.getName() + " " + getString(R.string.connection_failed));
 							return;
 						}
 					} else {
 						BackpackUtils.broadcastMessage(ConnectionService.this,
-								"Connection with " + device.getName()
-										+ "Failed");
+									device.getName() + " " + getString(R.string.connection_failed));
 
 						try {
 							Log.e(TAG, "unable to connect, closing socket");
@@ -302,9 +301,9 @@ public class ConnectionService extends Service {
 					if (terminate) {
 						String message;
 						if (disconnected)  // got disconnected in the middle of transfer
-							message = "File sync incomplete.";
+							message = getString(R.string.file_sync_incomplete);
 						else 
-							message = "File sync is successful. Closing the session";
+							message = getString(R.string.file_sync_successful);
 						conn.cancelNotification();
 						BackpackUtils.broadcastMessage(ConnectionService.this,
 								message);

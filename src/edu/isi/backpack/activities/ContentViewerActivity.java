@@ -109,9 +109,9 @@ public class ContentViewerActivity extends FragmentActivity {
 		};
 		
 		// create tabs, specifying the tab's text and TabListener
-        getActionBar().addTab(getActionBar().newTab().setText("View Content").setTabListener(tabListener));
-        getActionBar().addTab(getActionBar().newTab().setText("Description").setTabListener(tabListener));
-        getActionBar().addTab(getActionBar().newTab().setText("Comments").setTabListener(tabListener));
+        getActionBar().addTab(getActionBar().newTab().setText(getString(R.string.tab_content)).setTabListener(tabListener));
+        getActionBar().addTab(getActionBar().newTab().setText(getString(R.string.tab_desc)).setTabListener(tabListener));
+        getActionBar().addTab(getActionBar().newTab().setText(getString(R.string.tab_comments)).setTabListener(tabListener));
 
         // swip listener
         pager.setOnPageChangeListener(new OnPageChangeListener(){

@@ -6,5 +6,5 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_delete"
-        android:title="delete"/>
+        android:title="@string/action_delRow"/>
 </menu>

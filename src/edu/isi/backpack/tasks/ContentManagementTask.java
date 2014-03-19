@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.widget.Toast;
+import edu.isi.backpack.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
@@ -534,15 +535,15 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String>{
 		super.onProgressUpdate(progress);
 	    
 	    if (progress[0] == PROGRESS_UNKNOWN_SIZE)
-	    	progressDialog.setMessage("Downloading Content (file size unknown)");
+	    	progressDialog.setMessage(context.getString(R.string.progress_unknown_size));
 	    else if (progress[0] == PROGRESS_EXTRACT)
-	    	progressDialog.setMessage("Extracting Package");
+	    	progressDialog.setMessage(context.getString(R.string.progress_extracting));
 	    else if (progress[0] == PROGRESS_MERGE)
-	    	progressDialog.setMessage("Merging content");
+	    	progressDialog.setMessage(context.getString(R.string.progress_merging));
 	    else if (progress[0] == PROGRESS_CLEANUP)
-	    	progressDialog.setMessage("Clean Up");
+	    	progressDialog.setMessage(context.getString(R.string.progress_cleanup));
 	    else
-		    progressDialog.setMessage("Downloading Content (" + progress[0] + "%)");
+		    progressDialog.setMessage(context.getString(R.string.progress_downloading) + " " + progress[0] + "%");
     }
 	
 	@Override

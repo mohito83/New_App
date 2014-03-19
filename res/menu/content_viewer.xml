@@ -5,12 +5,12 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_web"
-        android:title="Open URL in Browser"/>
+        android:title="@string/action_web"/>
     <item
         android:id="@+id/action_star"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:title="Bookmark"
+        android:title="@string/action_bookmark"
         android:icon="@drawable/ic_fav_unselected"/>
 
 </menu>

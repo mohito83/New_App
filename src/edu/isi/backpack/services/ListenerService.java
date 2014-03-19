@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import edu.isi.backpack.R;
 import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
 import edu.isi.backpack.bluetooth.MessageHandler;
@@ -246,8 +247,7 @@ public class ListenerService extends Service {
 			if (commSock != null) {
 
 				BackpackUtils.broadcastMessage(ListenerService.this,
-						"Successfully connected to "
-								+ commSock.getRemoteDevice().getName());
+						commSock.getRemoteDevice().getName() + " " + getString(R.string.connection_successful));
 
 				boolean terminate = false;
 				boolean disconnected = false;
@@ -312,9 +312,9 @@ public class ListenerService extends Service {
 				if (terminate) {
 					String message;
 					if (disconnected)  // got disconnected in the middle of transfer
-						message = "File sync incomplete.";
+						message = getString(R.string.file_sync_incomplete);
 					else 
-						message = "File sync is successful. Closing the session";
+						message = getString(R.string.file_sync_successful);
 					conn.cancelNotification();
 					BackpackUtils.broadcastMessage(ListenerService.this,
 							message);

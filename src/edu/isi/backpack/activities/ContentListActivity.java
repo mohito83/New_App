@@ -182,9 +182,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				String msg = i.getStringExtra(ExtraConstants.STATUS);
 				if (msg != null)
 					new AlertDialog.Builder(ContentListActivity.this)
-						.setTitle("Sync Report")
+						.setTitle(R.string.sync_report)
 						.setMessage(msg)
-						.setNeutralButton("OK", null)
+						.setNeutralButton(R.string.button_ok, null)
 						.show();
 			} else if (i.getAction().equals(Constants.BOOKMARK_ACTION)){
 				String id = i.getStringExtra(ExtraConstants.ID);
@@ -226,7 +226,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				 * = getResources().getText(R.string.none_found).toString();
 				 * mNewDevicesArrayAdapter.add(noDevices); }
 				 */
-				dialog.setTitle("Finished Scanning. Found " + bts.size() + " device(s)");
+				dialog.setTitle(bts.size() + " " + getString(R.string.devices_found));
 				ContentListActivity.this.unregisterReceiver(mReceiver);
 			}
 		}
@@ -284,8 +284,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				
 				
 				final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
-				progress.setTitle("Deletion in Progress");
-				progress.setMessage("Deleting...");
+				progress.setTitle(getString(R.string.deletion_in_progress));
+				progress.setMessage(getString(R.string.deleting));
 				progress.setCancelable(false);
 				progress.show();
 				DeleteContentTask task = new DeleteContentTask(
@@ -403,7 +403,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					}
 					else if (currentContent instanceof Article){
 						intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-						intent.putExtra("content", ((Article)currentContent).toByteArray());
+						intent.putExtra(ExtraConstants.CONTENT, ((Article)currentContent).toByteArray());
 						intent.putExtra(ExtraConstants.BOOKMARK, bookmarks.contains(((Article)currentContent).getFilename()));
 					}
 					
@@ -512,9 +512,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
                 
     		// apk not found (should not happen)
     		new AlertDialog.Builder(this)
-    				.setTitle("File Missing")
-    				.setMessage("Cannot share app, the file is not found.")
-    				.setNeutralButton("OK", null)
+    				.setTitle(R.string.file_missing)
+    				.setMessage(R.string.cant_share_app)
+    				.setNeutralButton(R.string.button_ok, null)
     				.show();
     		return true;
     	}
@@ -552,15 +552,15 @@ public class ContentListActivity extends Activity implements BookmarkManager{
     	else if (item.getItemId() == R.id.action_delete_all){
     		// confirm deletion
     		new AlertDialog.Builder(this)
-    		.setTitle("Delete All Content")
-    		.setMessage("Are you sure you want to remove all the content?")
-    		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    		.setTitle(R.string.delete_all_contents)
+    		.setMessage(R.string.confirm_delete_all)
+    		.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
-					progress.setTitle("Deletion in Progress");
-					progress.setMessage("Deleting...");
+					progress.setTitle(R.string.deletion_in_progress);
+					progress.setMessage(getString(R.string.deleting));
 					progress.setCancelable(false);
 					progress.show();
 					DeleteAllContentTask task = new DeleteAllContentTask(
@@ -575,13 +575,13 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 
 				}
 			})
-			.setNegativeButton("No", null).show();
+			.setNegativeButton(R.string.button_no, null).show();
     		return true;
     	}
     	else if (item.getItemId() == R.id.action_about){
     		
-    		String appName = "Backpack";
-    		String version = "Unknown";
+    		String appName = getString(R.string.app_name);
+    		String version = getString(R.string.app_version);
     		try {
     			PackageManager pm = getPackageManager();
         		ApplicationInfo info = pm.getApplicationInfo(getPackageName(), 0);
@@ -592,11 +592,11 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 			}
     		
     		new AlertDialog.Builder(this)
-    			.setTitle("About " + appName)
+    			.setTitle(getString(R.string.about) + " " + appName)
     			.setMessage(appName + 
     					" v." + version + "\n"+getLocalBluetoothName()+"\n\n" + 
     					getString(R.string.license))
-    			.setNeutralButton("Close", null)
+    			.setNeutralButton(R.string.button_close, null)
     			.show();
     		return true;
     	}
@@ -706,15 +706,15 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 
 		// setup menu drawer
         drawerItems.clear();
-        drawerItems.add(new DrawerItem("Bookmarks", DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem("All", DrawerItem.BOOKMARKS, selectedBookmark.equals("All")));
+        drawerItems.add(new DrawerItem(getString(R.string.bookmarks), DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.BOOKMARKS, selectedBookmark.equals("All")));
         drawerItems.add(new DrawerItem(STARRED_BOOKMARK, DrawerItem.BOOKMARKS, selectedBookmark.equals(STARRED_BOOKMARK)));
-		drawerItems.add(new DrawerItem("Content Type", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CONTENT_TYPE, selectedType.equals("All")));
+		drawerItems.add(new DrawerItem(getString(R.string.content_type), DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CONTENT_TYPE, selectedType.equals("All")));
 		drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(VIDEO_CONTENT)));
 		drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, selectedType.equals(WEB_CONTENT)));
-		drawerItems.add(new DrawerItem("Categories", DrawerItem.HEADER, false));
-		drawerItems.add(new DrawerItem("All", DrawerItem.CATEGORY, selectedCat.equals("All")));
+		drawerItems.add(new DrawerItem(getString(R.string.categories), DrawerItem.HEADER, false));
+		drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CATEGORY, selectedCat.equals("All")));
 		for (String cat : cats){
 			drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
 		}
@@ -758,7 +758,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		filter = setFilter(filter, selectedType);
 		filter = setFilter(filter, selectedCat);
 		if(filter.length() != 0)
-			categoryFilter.setText(" Filters:"+filter);
+			categoryFilter.setText(getString(R.string.filters) + filter);
 		else
 			categoryFilter.setVisibility(View.GONE);
 	}
@@ -863,9 +863,9 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		
 		// confirm download
 		new AlertDialog.Builder(this)
-			.setTitle("Download Content")
-			.setMessage("Do you want to download and merge the new content?")
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			.setTitle(R.string.download_content)
+			.setMessage(R.string.confirm_download)
+			.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -873,8 +873,8 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 					// local file (could exist or not)
 		        	
 		        	ProgressDialog pd = new ProgressDialog(ContentListActivity.this);
-		        	pd.setTitle("Download Content Package");
-	        		pd.setMessage("Downloading");
+		        	pd.setTitle(R.string.download_content_package);
+	        		pd.setMessage(getString(R.string.downloading));
 	        		pd.setIndeterminate(true);
 	        		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	        		pd.setCanceledOnTouchOutside(false);
@@ -904,7 +904,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 		        	}
 				}
 			})
-			.setNeutralButton("No", null)
+			.setNeutralButton(R.string.button_no, null)
 			.show();
 	}
 
@@ -1063,7 +1063,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 				mBluetoothAdapter.cancelDiscovery();
 				Intent bluetoothServiceIntent = new Intent(getBaseContext(),
 						ConnectionService.class);
-				bluetoothServiceIntent.putExtra("Device", device);
+				bluetoothServiceIntent.putExtra(ExtraConstants.DEVICE, device);
 				startService(bluetoothServiceIntent);
 			}
 		});
@@ -1089,7 +1089,7 @@ public class ContentListActivity extends Activity implements BookmarkManager{
 	    if(name == null){
 	        name = mBluetoothAdapter.getAddress();
 	    }else{
-	    	name = "Device name: "+name;
+	    	name = getString(R.string.device_name) + ": " + name;
 	    }
 	    return name;
 	}

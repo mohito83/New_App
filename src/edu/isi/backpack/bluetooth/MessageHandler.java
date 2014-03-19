@@ -9,6 +9,7 @@ import java.util.List;
 
 import android.content.ContextWrapper;
 import android.util.Log;
+import edu.isi.backpack.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.VideoProtos.Video;
@@ -347,8 +348,8 @@ public class MessageHandler {
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				if (result > 0) {
-					BackpackUtils.broadcastMessage(wrapper, "Received file: "
-							+ ((InfoPayload) info.getPayload()).getFileName());
+					BackpackUtils.broadcastMessage(wrapper, wrapper.getString(R.string.received_file) + ": " +
+							 ((InfoPayload) info.getPayload()).getFileName());
 				}
 				conn.sendInfoMessage(ackMsg);
 				break;
@@ -359,8 +360,8 @@ public class MessageHandler {
 						type, result > 0 ? Constants.OK_RESPONSE
 								: Constants.FAIL_RESPONSE);
 				if (result > 0) {
-					BackpackUtils.broadcastMessage(wrapper, "Received file: "
-							+ ((InfoPayload) info.getPayload()).getFileName());
+					BackpackUtils.broadcastMessage(wrapper, wrapper.getString(R.string.received_file) + ": " +
+							((InfoPayload) info.getPayload()).getFileName());
 				}
 				conn.sendInfoMessage(ackMsg);
 				break;

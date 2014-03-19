@@ -5,7 +5,6 @@ package edu.isi.backpack.adapters;
 
 import java.util.List;
 
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.text.Html;
@@ -21,6 +20,8 @@ import edu.isi.backpack.R;
  *
  */
 public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
+	
+	private Context context;
 
 	/**
 	 * @param context
@@ -30,6 +31,7 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 	 */
 	public BluetoothListAdapter(Context context, List<BluetoothDevice> objects) {
 		super(context, R.layout.bluetooth_list_item, objects);
+		this.context = context;
 	}
 
 	@Override
@@ -54,9 +56,9 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 			String itemTxt = item.getName()!=null?item.getName():item.getAddress();
 			String text;
 			if(item.getBondState() == BluetoothDevice.BOND_BONDED)
-				text =  itemTxt+" (<font color=#41A317>paired</font>)";
+				text =  itemTxt+" (<font color=#41A317>" + context.getString(R.string.paired) + "</font>)";
 			else
-				text =  itemTxt+" (<font color=#FF0000>unpaired</font>)";
+				text =  itemTxt+" (<font color=#FF0000>" + context.getString(R.string.unpaired) + "</font>)";
 			textView.setText(Html.fromHtml(text));
 	//	}
 

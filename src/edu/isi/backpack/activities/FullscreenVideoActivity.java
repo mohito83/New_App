@@ -9,7 +9,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
@@ -76,13 +75,6 @@ public class FullscreenVideoActivity extends Activity implements VideoController
         controller.show();
         return false;
     }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.fullscreen_video, menu);
-		return true;
-	}
 
     @Override
     public boolean canPause() {

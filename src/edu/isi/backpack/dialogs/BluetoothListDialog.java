@@ -12,16 +12,12 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ScaleXSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -38,7 +34,7 @@ public class BluetoothListDialog extends DialogFragment {
 	
 	private ArrayList<BluetoothDevice> btItems;
 	private TextView titleView;
-	private String Devicetitle = "No Device Name";
+	private String Devicetitle;
 	private boolean DeviceVisibility = false;
 	private ListView listView;
 	private ArrayAdapter<BluetoothDevice> adapter;
@@ -60,6 +56,7 @@ public class BluetoothListDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
+		Devicetitle = getActivity().getString(R.string.default_device_title);
 		View view = inflater.inflate(R.layout.dialog_bluetooth, null);
 		titleView = (TextView)view.findViewById(R.id.bluetoothTitle);
 		listView = (ListView) view.findViewById(R.id.bluetoothList);
@@ -75,7 +72,7 @@ public class BluetoothListDialog extends DialogFragment {
 		ScaleXSpan span1 = new ScaleXSpan(0);
 		ssBuilser.setSpan(span1, 0, ssBuilser.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 		builder.setTitle(ssBuilser);
-		builder.setNegativeButton("Cancel", new OnClickListener() {
+		builder.setNegativeButton(R.string.button_cancel, new OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -83,7 +80,7 @@ public class BluetoothListDialog extends DialogFragment {
 				
 			}
 		});
-		builder.setPositiveButton("Edit Bluetooth Settings ", new OnClickListener() {
+		builder.setPositiveButton(R.string.button_setting, new OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

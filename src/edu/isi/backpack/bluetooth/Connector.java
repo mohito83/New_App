@@ -17,19 +17,19 @@ import java.io.OptionalDataException;
 import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 
-import com.google.protobuf.GeneratedMessage;
-
-import edu.isi.backpack.R;
-import edu.isi.backpack.constants.Constants;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import com.google.protobuf.GeneratedMessage;
+
+import edu.isi.backpack.R;
+import edu.isi.backpack.metadata.ArticleProtos.Article;
+import edu.isi.backpack.metadata.ArticleProtos.Articles;
+import edu.isi.backpack.metadata.VideoProtos.Video;
+import edu.isi.backpack.metadata.VideoProtos.Videos;
 
 /**
  * This class defines methods to perform data transaction
@@ -41,6 +41,8 @@ public class Connector {
 
 	private static final String TAG = "BackPackConnector";
 
+	private Context context;
+	
 	private InputStream mmInputStream;
 	private OutputStream mmOutputSteam;
 	private Notification notification=null;
@@ -55,6 +57,7 @@ public class Connector {
 	 * 
 	 */
 	public Connector(InputStream in, OutputStream out,Context c) {
+		context = c;
 		mmInputStream = in;
 		mmOutputSteam = out;
 		notification = new Notification();
@@ -66,7 +69,7 @@ public class Connector {
         notification.contentView = new RemoteViews(c.getPackageName(), R.layout.download_progress);
         //notification.contentIntent = pendingIntent;
         notification.contentView.setImageViewResource(edu.isi.backpack.R.drawable.ic_launcher, edu.isi.backpack.R.drawable.ic_action_share);
-        notification.contentView.setTextViewText(R.id.status_text, "simulation in progress");
+        notification.contentView.setTextViewText(R.id.status_text, c.getString(R.string.sync_in_progress));
         notification.contentView.setProgressBar(R.id.status_progress, 100, 2, false);
         notificationManager = (NotificationManager) c.getSystemService(
                Context.NOTIFICATION_SERVICE);
@@ -169,8 +172,9 @@ public class Connector {
 			while ((len = bis.read(buffer)) != -1) {				
 				if(notify){
 					notify = false;
-					notification.contentView.setTextViewText(R.id.status_text, "Sending file : "+f.getName()+"("+(totalBytesSent/1000)+"Kb/"
-																			+(info.getFileSize()/1000)+"Kb)");
+					notification.contentView.setTextViewText(R.id.status_text, context.getString(R.string.sending_file) + ": " + 
+							f.getName()+"("+(totalBytesSent/1000)+"Kb/" + 
+							(info.getFileSize()/1000)+"Kb)");
 					notification.contentView.setProgressBar(R.id.status_progress,  info.getFileSize(), (int)totalBytesSent+info.getFileSize()/15, false);
 					notificationManager.notify(42, notification);
 				}
@@ -240,8 +244,10 @@ public class Connector {
 			while (bytesRead < fLen) { // read exactly fLen				
 				if(notify){
 					notify = false;
-					notification.contentView.setTextViewText(R.id.status_text, "Receiving file : "+fName+"("+(bytesRead/1000)+"Kb/"
-																			+(fLen/1000)+"Kb)");
+					notification.contentView.setTextViewText(R.id.status_text, 
+							context.getString(R.string.receiving_file) +
+							": " + fName+"("+(bytesRead/1000)+"Kb/" +
+									(fLen/1000)+"Kb)");
 					notification.contentView.setProgressBar(R.id.status_progress,  (int)fLen, (int)bytesRead+info.getFileSize()/15, false);
 					notificationManager.notify(42, notification);
 				}

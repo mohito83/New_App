@@ -44,5 +44,7 @@ public class ExtraConstants {
 	public static final String BOOKMARK = "bookmark";
 	
 	public static final String ON = "on";
+	
+	public static final String DEVICE = "device";
 
 }

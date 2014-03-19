@@ -2,16 +2,112 @@
 <resources>
 
     <string name="app_name">Backpack</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_video_player">PiFi</string>
-    <string name="title_activity_fullscreen_video">PiFi</string>
-    <string name="description">PiFi</string>
-    <string name="title_activity_test_video">TestVideoActivity</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_video_player2">VideoPlayer2Activity</string>
-    <string name="title_activity_html">HtmlActivity</string>
-    <string name="title_activity_content_viewer">Content Viewer</string>
+    <string name="app_version">Unknown</string>
+    <string name="title_activity_fullscreen_video">Fullscreen Video Activity</string>
+    <string name="title_activity_content_viewer">Content Viewer Activity</string>
+    
+	
+	<!-- VIDEO CONTROLLER LAYOUT -->
+	<string name="vplayer_playpause">Play/Pause</string>
+	<string name="vplayer_previous">Previous</string>
+	<string name="vplayer_rewind">Rewind</string>
+	<string name="vplayer_next">Next</string>
+	<string name="vplayer_fastforward">Fast Forward</string>
+	<string name="vplayer_fullscreen">Fullscreen</string>
+	
+	<!-- BLUETOOTH DIALOG LAYOUT -->
+	<string name="btdialog_visibleToParied">Visible to only paired device</string>
+	<string name="btdialog_visibleToAll">Visible to all</string>
+	<string name="btdialog_scanning">Scanning\.\.\.</string>
+	
+	<!-- COMMENT FRAGMENT LAYOUT -->
+	<string name="comment_add">Add</string>
+	
+	<!-- DESCRIPTION FRAGMENT LAYOUT -->
+	<string name="description_pubdate">Published Date</string>
+	<string name="description_desc">Description</string>
+	
+	<!-- ACTION BAR ITEMS -->
+	<string name="action_refresh">Refresh</string>
+	<string name="action_sync">Sync</string>
+	<string name="action_dev">Developer</string>
+	<string name="action_shareapp">Share App</string>
+	<string name="action_dltoday">Today\'s Content</string>
+	<string name="action_dl1day">1 Day Ago</string>
+	<string name="action_dl2day">2 Days Ago</string>
+	<string name="action_dltest1">Test Content 1</string>
+	<string name="action_dltest2">Test Content 2</string>
+	<string name="action_dltest3">Test Content 3</string>
+	<string name="action_deleteAll">Delete All Contents</string>
+	<string name="action_info">About</string>
+	<string name="action_web">View Original Article</string>
+	<string name="action_bookmark">Bookmark</string>
+	<string name="action_delRow">Delete</string>
+	
+	<!-- MENU DRAWER -->
     <string name="open_drawer">Open Drawer</string>
 	<string name="close_drawer">Close Drawer</string>
+	<string name="bookmarks">Bookmarks</string>
+	<string name="content_type">Content Type</string>
+	<string name="categories">Categories</string>
+	<string name="all">All</string>
+	
+	
+	<!-- INFO -->
+	<string name="about">About</string>
 	<string name="license">USC Viterbi School of Engineering, Information Sciences Institute</string>
+	
+	<string name="sync_report">Sync Report</string>
+	<string name="devices_found">devices Found</string>
+	<string name="deletion_in_progress">Delection in progress</string>
+	<string name="deleting">Delecting</string>
+	<string name="file_missing">File missing</string>
+	<string name="cant_share_app">Cannot share app\, the file is not found</string>
+	<string name="delete_all_contents">Delete all contents</string>
+	<string name="confirm_delete_all">Are you sure you want to remove all the content\?</string>
+	<string name="download_content">Download Content</string>
+	<string name="confirm_download">Do you want to download and merge the new content?</string>
+	<string name="download_content_package">Download Content Package</string>
+	<string name="downloading">Downloading</string>
+	<string name="default_device_title">No device name</string>
+	<string name="filters">Filters\: </string>
+	<string name="news">News</string>
+	<string name="device_name">Device name</string>
+	<string name="paired">paired</string>
+	<string name="unpaired">unpaired</string>
+	
+	<string name="sync_in_progress">Sync in progress</string>
+	<string name="sending_file">Sending file</string>
+	<string name="receiving_file">Receiving file</string>
+	
+	<!-- SYNC PROGGRESS -->
+	<string name="connection_failed">Connection Failed</string>
+	<string name="connection_successful">Connection Successful</string>
+	<string name="file_sync_incomplete">File sync incomplete</string>
+	<string name="file_sync_successful">File sync complete</string>
+	<string name="received_file">Received file</string>
+	
+	<!-- DELETE PROGRESS -->
+	<string name="deleting_files">Deleting Files\.\.\.</string>
+	<string name="updating_metadata">Updating Metadata\.\.\.</string>
+	
+	<!-- TABS -->
+	<string name="tab_content">View Content</string>
+	<string name="tab_desc">Description</string>
+	<string name="tab_comments">Comments</string>
+	
+	<!-- PROGRESS BAR -->
+	<string name="progress_unknown_size">Downloading content (file size unknown)</string>
+	<string name="progress_extracting">Extracting package</string>
+	<string name="progress_merging">Merging content</string>
+	<string name="progress_cleanup">Clean up</string>
+	<string name="progress_downloading">Downloading content</string>
+	
+	<!-- BUTTONS -->
+	<string name="button_ok">OK</string>
+	<string name="button_yes">Yes</string>
+	<string name="button_no">No</string>
+	<string name="button_cancel">Cancel</string>
+	<string name="button_close">Close</string>
+	<string name="button_setting">Edit Setting</string>
 </resources>

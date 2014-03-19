@@ -28,24 +28,24 @@
         android:orientation="horizontal">
 
         <ImageButton android:id="@+id/prev"
-            style="@android:style/MediaButton.Previous"
-            android:contentDescription="@string/description" />
+            style="@android:style/MediaButton.Previous" 
+            android:contentDescription="@string/vplayer_previous" />
         
         <ImageButton android:id="@+id/rew"
             style="@android:style/MediaButton.Rew"
-            android:contentDescription="@string/description" />
+            android:contentDescription="@string/vplayer_rewind" />
         
         <ImageButton android:id="@+id/pause"
             style="@android:style/MediaButton.Play"
-            android:contentDescription="@string/description" />
+            android:contentDescription="@string/vplayer_playpause" />
         
         <ImageButton android:id="@+id/ffwd"
             style="@android:style/MediaButton.Ffwd"
-            android:contentDescription="@string/description" />
+            android:contentDescription="@string/vplayer_fastforward" />
         
         <ImageButton android:id="@+id/next"
             style="@android:style/MediaButton.Next"
-            android:contentDescription="@string/description" />
+            android:contentDescription="@string/vplayer_next" />
 
     </LinearLayout>
 
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/description" />
+            android:contentDescription="@string/vplayer_fullscreen" />
         
     </LinearLayout>
 
