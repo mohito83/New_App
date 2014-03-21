@@ -1,20 +1,20 @@
 /**
  * 
  */
+
 package edu.isi.backpack.bluetooth;
 
 /**
  * @author jenniferchen
- *
  */
 public class BluetoothDisconnectedException extends Exception {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public BluetoothDisconnectedException(String message) {
+    public BluetoothDisconnectedException(String message) {
         super(message);
     }
 

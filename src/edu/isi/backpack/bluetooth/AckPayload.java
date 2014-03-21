@@ -1,61 +1,60 @@
 /**
  * 
  */
-package edu.isi.backpack.bluetooth;
 
+package edu.isi.backpack.bluetooth;
 
 /**
  * This class defines the ACK payload to be sent after each transaction
  * 
  * @author mohit aggarwl
- * 
  */
 public class AckPayload implements Payload {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private short ack;
-	private short orgMsgType;
+    private static final long serialVersionUID = 1L;
 
-	public AckPayload() {
+    private short ack;
 
-	}
+    private short orgMsgType;
 
-	/**
-	 * @return the ack
-	 */
-	public short getAck() {
-		return ack;
-	}
+    public AckPayload() {
 
-	/**
-	 * @param ack
-	 *            the ack to set
-	 */
-	public void setAck(short ack) {
-		this.ack = ack;
-	}
+    }
 
-	/**
-	 * @return the orgMsgType
-	 */
-	public short getOrgMsgType() {
-		return orgMsgType;
-	}
+    /**
+     * @return the ack
+     */
+    public short getAck() {
+        return ack;
+    }
 
-	/**
-	 * @param orgMsgType
-	 *            the orgMsgType to set
-	 */
-	public void setOrgMsgType(short orgMsgType) {
-		this.orgMsgType = orgMsgType;
-	}
+    /**
+     * @param ack the ack to set
+     */
+    public void setAck(short ack) {
+        this.ack = ack;
+    }
 
-	public AckPayload clone(){
-		AckPayload payload = new AckPayload();
-		payload.setAck(getAck());
-		payload.setOrgMsgType(getOrgMsgType());
-		return payload;
-	}
+    /**
+     * @return the orgMsgType
+     */
+    public short getOrgMsgType() {
+        return orgMsgType;
+    }
+
+    /**
+     * @param orgMsgType the orgMsgType to set
+     */
+    public void setOrgMsgType(short orgMsgType) {
+        this.orgMsgType = orgMsgType;
+    }
+
+    public AckPayload clone() {
+        AckPayload payload = new AckPayload();
+        payload.setAck(getAck());
+        payload.setOrgMsgType(getOrgMsgType());
+        return payload;
+    }
 }

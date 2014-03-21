@@ -1,3 +1,4 @@
+
 package edu.isi.backpack.activities;
 
 import android.app.Activity;
@@ -16,61 +17,58 @@ import edu.isi.backpack.R;
 import edu.isi.backpack.VideoControllerView;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
-/**
- * 
- * @author jenniferchen
- * 
- * This activity is a fullscreen video view
- * 
- */
-public class FullscreenVideoActivity extends Activity implements VideoControllerView.MediaPlayerControl {
-	
-	private VideoView videoView;
-	
-	private VideoControllerView controller;
-	
-	private String videoSource;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_fullscreen_video);
-		
-		videoView = (VideoView)findViewById(R.id.fullVideoSurface);
-		videoSource = getIntent().getStringExtra(ExtraConstants.PATH);
-		videoView.setVideoPath(videoSource);
-		int pos = getIntent().getIntExtra(ExtraConstants.POSITION, 0);
-		boolean resume = getIntent().getBooleanExtra(ExtraConstants.RESUME, false);
-		videoView.seekTo(pos); // start where left off
-		
-		controller = new VideoControllerView(this);
+/**
+ * @author jenniferchen This activity is a fullscreen video view
+ */
+public class FullscreenVideoActivity extends Activity implements
+        VideoControllerView.MediaPlayerControl {
+
+    private VideoView videoView;
+
+    private VideoControllerView controller;
+
+    private String videoSource;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fullscreen_video);
+
+        videoView = (VideoView) findViewById(R.id.fullVideoSurface);
+        videoSource = getIntent().getStringExtra(ExtraConstants.PATH);
+        videoView.setVideoPath(videoSource);
+        int pos = getIntent().getIntExtra(ExtraConstants.POSITION, 0);
+        boolean resume = getIntent().getBooleanExtra(ExtraConstants.RESUME, false);
+        videoView.seekTo(pos); // start where left off
+
+        controller = new VideoControllerView(this);
         controller.setMediaPlayer(this);
         controller.setAnchorView((FrameLayout) findViewById(R.id.fullVideoSurfaceContainer));
-        
+
         // if never started the video
         // show preview
-        if (pos == 0 && !resume){
-        	Bitmap preview = ThumbnailUtils.createVideoThumbnail(
-        			videoSource,
-        	        MediaStore.Images.Thumbnails.MINI_KIND);
-        	videoView.setBackground(new BitmapDrawable(getResources(), preview));
+        if (pos == 0 && !resume) {
+            Bitmap preview = ThumbnailUtils.createVideoThumbnail(videoSource,
+                    MediaStore.Images.Thumbnails.MINI_KIND);
+            videoView.setBackground(new BitmapDrawable(getResources(), preview));
         }
-        
-		if (resume)
-			videoView.start();
-		
-		videoView.setOnCompletionListener(new OnCompletionListener(){
 
-			@Override
-			public void onCompletion(MediaPlayer arg0) {
-				finish();
-			}
-			
-		});
-		
-	}
-	
-	@Override
+        if (resume)
+            videoView.start();
+
+        videoView.setOnCompletionListener(new OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer arg0) {
+                finish();
+            }
+
+        });
+
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         controller.show();
         return false;
@@ -98,33 +96,33 @@ public class FullscreenVideoActivity extends Activity implements VideoController
 
     @Override
     public int getCurrentPosition() {
-    	return videoView.getCurrentPosition();
+        return videoView.getCurrentPosition();
     }
 
     @Override
     public int getDuration() {
-    	return videoView.getDuration();
+        return videoView.getDuration();
     }
 
     @Override
     public boolean isPlaying() {
-    	return videoView.isPlaying();
+        return videoView.isPlaying();
     }
 
     @Override
     public void pause() {
-    	videoView.pause();
+        videoView.pause();
     }
 
     @Override
     public void seekTo(int i) {
-    	videoView.seekTo(i);
+        videoView.seekTo(i);
     }
 
     @Override
     public void start() {
-    	videoView.setBackgroundResource(0);
-    	videoView.start();
+        videoView.setBackgroundResource(0);
+        videoView.start();
     }
 
     @Override
@@ -134,21 +132,21 @@ public class FullscreenVideoActivity extends Activity implements VideoController
 
     @Override
     public void toggleFullScreen() {
-    	int pos = videoView.getCurrentPosition();
-    	boolean isPlaying = videoView.isPlaying();
-    	videoView.stopPlayback();
-		Intent i = new Intent(getApplicationContext(), VideoPlayerFragment.class);
-		i.putExtra(ExtraConstants.POSITION, pos);
-		i.putExtra(ExtraConstants.RESUME, isPlaying);
-		setResult(RESULT_OK, i);
-		finish();
+        int pos = videoView.getCurrentPosition();
+        boolean isPlaying = videoView.isPlaying();
+        videoView.stopPlayback();
+        Intent i = new Intent(getApplicationContext(), VideoPlayerFragment.class);
+        i.putExtra(ExtraConstants.POSITION, pos);
+        i.putExtra(ExtraConstants.RESUME, isPlaying);
+        setResult(RESULT_OK, i);
+        finish();
     }
-    
+
     @Override
-	public void onBackPressed() {
-    	videoView.stopPlayback();
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-	}
+    public void onBackPressed() {
+        videoView.stopPlayback();
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
 
 }

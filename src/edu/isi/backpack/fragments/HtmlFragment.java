@@ -1,3 +1,4 @@
+
 package edu.isi.backpack.fragments;
 
 import android.annotation.SuppressLint;
@@ -14,57 +15,51 @@ import edu.isi.backpack.R;
 import edu.isi.backpack.constants.ExtraConstants;
 
 /**
- * 
- * @author jenniferchen
- * 
- * html viewer
- *
+ * @author jenniferchen html viewer
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class HtmlFragment extends Fragment {
-	
-	private WebView webview;
-	
-	public static final HtmlFragment newInstance(String uri, String title){
-		HtmlFragment f = new HtmlFragment();
-		Bundle b = new Bundle(1);
-		b.putString(ExtraConstants.URI, uri);
-		b.putString(ExtraConstants.TITLE, title);
-		f.setArguments(b);
-		return f;
-	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-     	
-	}
-	
-	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    private WebView webview;
+
+    public static final HtmlFragment newInstance(String uri, String title) {
+        HtmlFragment f = new HtmlFragment();
+        Bundle b = new Bundle(1);
+        b.putString(ExtraConstants.URI, uri);
+        b.putString(ExtraConstants.TITLE, title);
+        f.setArguments(b);
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout containing a title and body text.
-        ViewGroup rootView = (ViewGroup) inflater
-                .inflate(R.layout.fragment_html, container, false);
-        
-     	String uri = getArguments().getString(ExtraConstants.URI);
-     	String title = getArguments().getString(ExtraConstants.TITLE);
-     	((TextView)rootView.findViewById(R.id.htmlTitle)).setText(title);
- 		
- 		// settings
- 		webview = (WebView)rootView.findViewById(R.id.webview);
- 		WebSettings settings = webview.getSettings();
- 		settings.setTextZoom(200);
- 		settings.setJavaScriptEnabled(true);
- 		settings.setPluginState(PluginState.ON);
- 		settings.setBuiltInZoomControls(true);
- 		settings.setLoadWithOverviewMode(true);
- 		settings.setUseWideViewPort(true);
-// 		webview.setWebViewClient(new WebViewClient()); // keep using webview when user click on links
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_html, container, false);
 
- 		// load html content
- 		webview.loadUrl(uri);
+        String uri = getArguments().getString(ExtraConstants.URI);
+        String title = getArguments().getString(ExtraConstants.TITLE);
+        ((TextView) rootView.findViewById(R.id.htmlTitle)).setText(title);
+
+        // settings
+        webview = (WebView) rootView.findViewById(R.id.webview);
+        WebSettings settings = webview.getSettings();
+        settings.setTextZoom(200);
+        settings.setJavaScriptEnabled(true);
+        settings.setPluginState(PluginState.ON);
+        settings.setBuiltInZoomControls(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        // webview.setWebViewClient(new WebViewClient()); // keep using webview
+        // when user click on links
+
+        // load html content
+        webview.loadUrl(uri);
 
         return rootView;
     }
