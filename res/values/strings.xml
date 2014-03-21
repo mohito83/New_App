@@ -69,6 +69,7 @@
 	<string name="confirm_download">Do you want to download and merge the new content?</string>
 	<string name="download_content_package">Download Content Package</string>
 	<string name="downloading">Downloading</string>
+	<string name="download_cancel">Download Canceled</string>
 	<string name="default_device_title">No device name</string>
 	<string name="filters">Filters\: </string>
 	<string name="news">News</string>

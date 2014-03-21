@@ -26,7 +26,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -514,12 +514,13 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
         super.onPreExecute();
 
         // if user canceled
-        progressDialog.setOnDismissListener(new OnDismissListener() {
+        progressDialog.setOnCancelListener(new OnCancelListener() {
 
             @Override
-            public void onDismiss(DialogInterface dialog) {
+            public void onCancel(DialogInterface dialog) {
                 cancel(true);
-                Toast.makeText(context, "Download Canceled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.download_cancel),
+                        Toast.LENGTH_SHORT).show();
             }
 
         });
