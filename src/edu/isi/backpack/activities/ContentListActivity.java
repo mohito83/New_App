@@ -48,7 +48,7 @@ import edu.isi.backpack.adapters.ContentListAdapter;
 import edu.isi.backpack.adapters.DrawerItem;
 import edu.isi.backpack.adapters.DrawerListAdapter;
 import edu.isi.backpack.constants.Constants;
-import edu.isi.backpack.constants.DevelopersConstants;
+import edu.isi.backpack.constants.DownloadConstants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.dialogs.BluetoothListDialog;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
@@ -551,19 +551,19 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             return true;
         } else if (item.getItemId() == R.id.action_download_today) {
             String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
-            downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+            downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_download_yesterday) {
             Calendar yesterday = Calendar.getInstance();
             yesterday.add(Calendar.DATE, -1);
             String packageName = packageDateFormat.format(yesterday.getTime());
-            downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+            downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_download_2days) {
             Calendar twoDaysAgo = Calendar.getInstance();
             twoDaysAgo.add(Calendar.DATE, -2);
             String packageName = packageDateFormat.format(twoDaysAgo.getTime());
-            downloadContent(DevelopersConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+            downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_delete_all) {
             // confirm deletion

@@ -5,9 +5,9 @@
 package edu.isi.backpack.constants;
 
 /**
- * @author jenniferchen constants used for testing by developers
+ * @author jenniferchen constants used for downloads
  */
-public class DevelopersConstants {
+public class DownloadConstants {
 
     public static final String dailyPackageURLPrefix = "http://107.20.184.189/daily/";
 

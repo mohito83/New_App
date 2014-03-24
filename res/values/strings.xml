@@ -33,7 +33,7 @@
 	<!-- ACTION BAR ITEMS -->
 	<string name="action_refresh">Refresh</string>
 	<string name="action_sync">Sync</string>
-	<string name="action_dev">Developer</string>
+	<string name="action_download">Download</string>
 	<string name="action_shareapp">Share App</string>
 	<string name="action_dltoday">Today\'s Content</string>
 	<string name="action_dl1day">1 Day Ago</string>
@@ -42,7 +42,7 @@
 	<string name="action_dltest2">Test Content 2</string>
 	<string name="action_dltest3">Test Content 3</string>
 	<string name="action_deleteAll">Delete All Contents</string>
-	<string name="action_info">About</string>
+	<string name="action_about">About</string>
 	<string name="action_web">View Original Article</string>
 	<string name="action_bookmark">Bookmark</string>
 	<string name="action_delRow">Delete</string>

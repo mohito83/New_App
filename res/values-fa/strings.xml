@@ -33,7 +33,7 @@
     <!-- ACTION BAR ITEMS -->
     <string name="action_refresh">بروزرسانی صفحه</string>
     <string name="action_sync"> تبادل توشه</string>
-    <string name="action_dev">مدیریت محتوا</string>
+    <string name="action_download">Download</string>
     <string name="action_shareapp">اشتراک‌گذاری برنامه</string>
     <string name="action_dltoday">امروز چی توشه؟</string>
     <string name="action_dl1day">توشه دیروز</string>
@@ -42,7 +42,7 @@
     <string name="action_dltest2">تست محتویات دو</string>
     <string name="action_dltest3">تست محتویات سه</string>
     <string name="action_deleteAll">حذف هرچی توشه</string>
-    <string name="action_info">درباره</string>
+    <string name="action_about">درباره</string>
     <string name="action_web"> لینک مستقیم</string>
     <string name="action_bookmark">ستاره بگذار</string>
     <string name="action_delRow">حذف کن</string>
