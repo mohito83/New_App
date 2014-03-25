@@ -98,7 +98,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
             holder.titleView.setText(title);
             holder.catView.setText(cat);
-            holder.descView.setText(desc);
+            holder.descView.setText(check_for_www(desc));
             holder.playButtonView.setVisibility(View.VISIBLE);
 
             imageLoader.displayImage(uri, holder.imageView, imageOptions);
@@ -129,7 +129,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             holder.titleView.setText(article.getTitle());
             holder.catView.setText(R.string.news); // TODO need category for
                                                    // articles
-            holder.descView.setText(article.getDomain());
+            holder.descView.setText(check_for_www(article.getDomain()));
             holder.playButtonView.setVisibility(View.GONE);
 
             // TODO need thumbnail for articles
@@ -193,6 +193,14 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             convertView.setActivated(false);
 
         return convertView;
+    }
+    
+    private String check_for_www(String desc){
+    	if(desc.startsWith("www."))
+    		desc = desc.replace("www.", "");
+    	else if(desc.startsWith("WWW."))
+    		desc = desc.replace("WWW.", "");
+		return desc;
     }
 
     private static class ViewHolder {
