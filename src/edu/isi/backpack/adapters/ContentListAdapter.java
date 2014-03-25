@@ -1,15 +1,8 @@
 
 package edu.isi.backpack.adapters;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.LruCache;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +11,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import edu.isi.backpack.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.tasks.BitmapTask;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author jenniferchen Handles the content list
@@ -33,39 +34,27 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
     private File contentDirectory;
 
-    private LruCache<String, Bitmap> bitmapCache;
-
     private SparseBooleanArray selected = new SparseBooleanArray();
 
-    private Bitmap defaultBitmap;
+    // TODO this map is never cleared except clear() is called
+    // Need to manage this list to better manager memory
+    private HashMap<String, String> thumbs = new HashMap<String, String>();
+
+    private DisplayImageOptions imageOptions;
+
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+
+    private String defaultNewsThumb;
 
     public ContentListAdapter(ContentListActivity context, List<Object> objects, String directory) {
         super(context, R.layout.content_list_item, objects);
 
         this.context = context;
         contentDirectory = new File(directory);
+        defaultNewsThumb = "drawable://" + R.drawable.news;
+        imageOptions = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.news)
+                .cacheInMemory(true).cacheOnDisc(true).build();
 
-        // create a cache for bitmaps
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024); // kb
-        final int cacheSize = maxMemory / 8;
-        bitmapCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                return bitmap.getByteCount() / 1024;
-            }
-        };
-
-        // default bitmap
-        defaultBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.news);
-    }
-
-    public void addBitmapToCache(String key, Bitmap bitmap) {
-        if (bitmapCache.get(key) == null)
-            bitmapCache.put(key, bitmap);
-    }
-
-    public Bitmap getBitmapFromCache(String key) {
-        return bitmapCache.get(key);
     }
 
     @Override
@@ -98,24 +87,21 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             String title = video.getSnippet().getTitle();
             String id = video.getId();
             String cat = video.getSnippet().getCategoryId();
-            String thumb = id + "_default.jpg";
+            String uri = thumbs.get(id);
+            if (uri == null) {
+                String thumb = id + "_default.jpg";
+                uri = Uri.fromFile(new File(contentDirectory, thumb)).toString();
+                thumbs.put(id, uri);
+            }
+
             String desc = video.getSnippet().getDescription();
-            Uri uri = Uri.fromFile(new File(contentDirectory, thumb));
+
             holder.titleView.setText(title);
             holder.catView.setText(cat);
             holder.descView.setText(desc);
             holder.playButtonView.setVisibility(View.VISIBLE);
 
-            // try to find the image from cache first
-            Bitmap bitmap = getBitmapFromCache(uri.toString());
-            if (bitmap != null)
-                holder.imageView.setImageBitmap(bitmap);
-            else {
-                BitmapTask task = BitmapTask.BitmapTaskByHeight(holder.imageView, getContext()
-                        .getContentResolver(), holder.imageView.getLayoutParams().height,
-                        bitmapCache);
-                task.execute(uri);
-            }
+            imageLoader.displayImage(uri, holder.imageView, imageOptions);
 
             // bookmark
             if (context.isBookmarked(video.getFilepath()))
@@ -140,8 +126,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
         } else if (content instanceof Article) {
             final Article article = (Article) content;
-            String title = article.getTitle();
-            holder.titleView.setText(title);
+            holder.titleView.setText(article.getTitle());
             holder.catView.setText(R.string.news); // TODO need category for
                                                    // articles
             holder.descView.setText(article.getDomain());
@@ -150,34 +135,34 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             // TODO need thumbnail for articles
             // right now randomly pick one from image folder
             // try to find the image from cache first
-            Bitmap bitmap = null;
-            String name = article.getFilename();
-            String assetsPath = name.substring(0, name.indexOf(".htm"));
-            File assetDir = new File(contentDirectory, assetsPath);
-            if (assetDir.exists()) {
-                File[] files = assetDir.listFiles();
-                Arrays.sort(files);
-                for (File f : assetDir.listFiles()) {
-                    String fileName = f.getName();
-                    if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG")
-                            || fileName.endsWith(".png") || fileName.endsWith(".PNG")) {
-                        Uri uri = Uri.fromFile(f);
-                        bitmap = getBitmapFromCache(uri.toString());
-                        if (bitmap == null) {
-                            BitmapTask task = new BitmapTask(holder.imageView, getContext()
-                                    .getContentResolver(),
-                                    holder.imageView.getLayoutParams().width,
-                                    holder.imageView.getLayoutParams().height, bitmapCache);
-                            task.execute(uri);
+            // Bitmap bitmap = null;
+            final String name = article.getFilename();
+            String uri = thumbs.get(name);
+            if (uri == null) {
+                String assetsPath = name.substring(0, name.indexOf(".htm"));
+                File assetDir = new File(contentDirectory, assetsPath);
+                if (assetDir.exists()) {
+                    File[] files = assetDir.listFiles();
+                    Arrays.sort(files);
+                    for (File f : assetDir.listFiles()) {
+                        String fileName = f.getName();
+                        if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG")
+                                || fileName.endsWith(".png") || fileName.endsWith(".PNG")) {
+                            uri = Uri.fromFile(f).toString();
+                            break;
                         }
-                        break;
                     }
                 }
-            }
 
-            if (bitmap == null)
-                bitmap = defaultBitmap;
-            holder.imageView.setImageBitmap(bitmap);
+                if (uri == null || uri.contains("%2")) // TODO bug in content
+                                                       // package, bad image
+                                                       // name
+                    uri = defaultNewsThumb;
+
+                thumbs.put(name, uri);
+
+            }
+            imageLoader.displayImage(uri, holder.imageView, imageOptions);
 
             // bookmark
             if (context.isBookmarked(article.getFilename()))
@@ -242,4 +227,9 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
         notifyDataSetChanged();
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        thumbs.clear();
+    }
 }
