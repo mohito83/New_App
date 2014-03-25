@@ -62,7 +62,7 @@ public class BluetoothListDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        Devicetitle = getActivity().getString(R.string.default_device_title);
+        //Devicetitle = getActivity().getString(R.string.default_device_title);
         View view = inflater.inflate(R.layout.dialog_bluetooth, null);
         titleView = (TextView) view.findViewById(R.id.bluetoothTitle);
         listView = (ListView) view.findViewById(R.id.bluetoothList);
