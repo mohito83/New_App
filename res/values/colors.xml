@@ -16,6 +16,7 @@
  <color name="blue">#0000FF</color>
  <color name="navy">#000080</color>
  <color name="black">#000000</color>
+ <color name="card_border">#ffdedede</color>
  <color name="White">#FFFFFF</color>
  <color name="Ivory">#FFFFF0</color>
  <color name="LightYellow">#FFFFE0</color>
@@ -92,7 +93,7 @@
  <color name="LightSteelBlue">#B0C4DE</color>
  <color name="PaleTurquoise">#AFEEEE</color>
  <color name="GreenYellow">#ADFF2F</color>
- <color name="LightBlue">#ADD8E6</color>
+ <color name="LightBlue">#ADDFFF</color>
  <color name="DarkGray">#A9A9A9</color>
  <color name="Brown">#A52A2A</color>
  <color name="Sienna">#A0522D</color>
