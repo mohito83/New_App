@@ -59,8 +59,8 @@
 	
 	<string name="sync_report">Sync Report</string>
 	<string name="devices_found">devices Found</string>
-	<string name="deletion_in_progress">Delection in progress</string>
-	<string name="deleting">Delecting</string>
+	<string name="deletion_in_progress">Deletion in progress</string>
+	<string name="deleting">Deleting</string>
 	<string name="file_missing">File missing</string>
 	<string name="cant_share_app">Cannot share app\, the file is not found</string>
 	<string name="delete_all_contents">Delete all contents</string>
