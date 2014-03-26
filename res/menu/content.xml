@@ -47,18 +47,6 @@
 		        android:icon="@drawable/ic_action_download"
 		        android:title="@string/action_dl2day"/>
 	        <item
-		        android:id="@+id/action_download_test1"
-		        android:icon="@drawable/ic_action_download"
-		        android:title="@string/action_dltest1"/>
-	        <item
-		        android:id="@+id/action_download_test2"
-		        android:icon="@drawable/ic_action_download"
-		        android:title="@string/action_dltest2"/>
-	        <item
-		        android:id="@+id/action_download_test3"
-		        android:icon="@drawable/ic_action_download"
-		        android:title="@string/action_dltest3"/>
-	        <item
 		        android:id="@+id/action_delete_all"
 		        android:icon="@drawable/ic_action_delete"
 		        android:title="@string/action_deleteAll"/>
