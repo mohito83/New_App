@@ -4,20 +4,6 @@
 
 package edu.isi.backpack.bluetooth;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.OutputStream;
-import java.io.StreamCorruptedException;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -31,6 +17,21 @@ import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.ArticleProtos.Articles;
 import edu.isi.backpack.metadata.VideoProtos.Video;
 import edu.isi.backpack.metadata.VideoProtos.Videos;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.OutputStream;
+import java.io.StreamCorruptedException;
+import java.util.Date;
 
 /**
  * This class defines methods to perform data transaction
@@ -223,6 +224,8 @@ public class Connector {
         Log.i(TAG, "Creating local file");
         // append .tmp to the file name before the file transfer starts
         File f = new File(sdir, tmpFName);
+        if (f.exists())
+            f.delete(); // delete any existing unfinished file
         boolean saveToFile = true;
         try {
             try {
@@ -238,6 +241,11 @@ public class Connector {
             BufferedOutputStream bos = new BufferedOutputStream(fos, 8 * 1024);
             int bytesRead = 0;
             BufferedInputStream mInputStream = new BufferedInputStream(mmInputStream);
+
+            // track when we have been blocked for too long
+            Date blockStart = null;
+            Date now = null;
+
             while (bytesRead < fLen) { // read exactly fLen
                 if (notify) {
                     notify = false;
@@ -248,12 +256,27 @@ public class Connector {
                             (int) bytesRead + info.getFileSize() / 15, false);
                     notificationManager.notify(42, notification);
                 }
-                int read = mInputStream.read(buffer, 0,
-                        Math.min((int) fLen - bytesRead, buffer.length));
-                if (saveToFile) {
-                    bos.write(buffer, 0, read);
+
+                if (mmInputStream.available() > 0) {
+                    blockStart = null;
+
+                    int read = mInputStream.read(buffer, 0,
+                            Math.min((int) fLen - bytesRead, buffer.length));
+                    if (saveToFile) {
+                        bos.write(buffer, 0, read);
+                    }
+                    bytesRead += read;
+                } else if (blockStart == null) {
+                    blockStart = new Date(); // started blocking
+                } else {
+                    now = new Date();
+                    // if we have been block for 15 seconds
+                    // quit this file
+                    if ((now.getTime() - blockStart.getTime()) > 15000) {
+                        bytesRead = -1;
+                        break; // quit receiving this file
+                    }
                 }
-                bytesRead += read;
             }
 
             if (saveToFile && fos != null) {
