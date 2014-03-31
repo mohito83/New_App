@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.widget.TextView;
+
 import edu.isi.backpack.R;
 import edu.isi.backpack.constants.ExtraConstants;
 
@@ -50,11 +50,12 @@ public class HtmlFragment extends Fragment {
         webview = (WebView) rootView.findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
         settings.setTextZoom(200);
-        settings.setJavaScriptEnabled(true);
-        settings.setPluginState(PluginState.ON);
+        settings.setJavaScriptEnabled(false);
         settings.setBuiltInZoomControls(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
+        settings.setBlockNetworkLoads(true); // disable loading external
+                                             // resources
         // webview.setWebViewClient(new WebViewClient()); // keep using webview
         // when user click on links
 
