@@ -139,7 +139,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private Menu optionMenu;
 
-    private boolean btDebugMsg = true;
+    private boolean btDebugMsg = false;
 
     // register to receive message when a new comment is added
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
