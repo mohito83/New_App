@@ -461,10 +461,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            reload(false);
-            return true;
-        } else if (item.getItemId() == R.id.action_sync) {
+        if (item.getItemId() == R.id.action_sync) {
             sync();
             return true;
         } else if (item.getItemId() == R.id.action_share_app) {
