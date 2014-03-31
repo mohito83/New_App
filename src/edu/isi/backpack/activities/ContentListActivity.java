@@ -290,10 +290,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("ContentListActivity", "Printing the startup message");
-        Intent intent = new Intent(this, FileMonitorService.class);
-        startService(intent);
-        setContentView(R.layout.activity_content);
 
         // restore user preferences
         settings = getPreferences(MODE_PRIVATE);
@@ -305,6 +301,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         contentDirectory = new File(sdDir, Constants.contentDirName);
         if (!contentDirectory.exists())
             contentDirectory.mkdir();
+
+        // start file monitor service
+        Intent intent = new Intent(this, FileMonitorService.class);
+        startService(intent);
+        setContentView(R.layout.activity_content);
 
         // Set up the action bar to show a dropdown list for categories
         final ActionBar actionBar = getActionBar();
