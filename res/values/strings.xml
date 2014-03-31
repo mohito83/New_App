@@ -16,7 +16,7 @@
 	<string name="vplayer_fullscreen">Fullscreen</string>
 	
 	<!-- BLUETOOTH DIALOG LAYOUT -->
-	<string name="btdialog_visibleToParied">Visible to only paired device</string>
+	<string name="btdialog_visibleToPaired">Only visible to paired devices</string>
 	<string name="btdialog_visibleToAll">Visible to all</string>
 	<string name="btdialog_scanning">Scanning\.\.\.</string>
 	
@@ -51,6 +51,9 @@
 	<string name="content_type">Content Type</string>
 	<string name="categories">Categories</string>
 	<string name="all">All</string>
+	<string name="video">Video</string>
+	<string name="article">Web</string>
+	<string name="starred">Starred</string>
 	
 	
 	<!-- INFO -->

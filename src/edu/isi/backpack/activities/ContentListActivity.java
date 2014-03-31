@@ -662,14 +662,14 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         drawerItems.add(new DrawerItem(getString(R.string.bookmarks), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.BOOKMARKS,
                 selectedBookmark.equals("All")));
-        drawerItems.add(new DrawerItem(STARRED_BOOKMARK, DrawerItem.BOOKMARKS, selectedBookmark
+        drawerItems.add(new DrawerItem(getString(R.string.starred), DrawerItem.BOOKMARKS, selectedBookmark
                 .equals(STARRED_BOOKMARK)));
         drawerItems.add(new DrawerItem(getString(R.string.content_type), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CONTENT_TYPE,
                 selectedType.equals("All")));
-        drawerItems.add(new DrawerItem(VIDEO_CONTENT, DrawerItem.CONTENT_TYPE, selectedType
+        drawerItems.add(new DrawerItem(getString(R.string.video), DrawerItem.CONTENT_TYPE, selectedType
                 .equals(VIDEO_CONTENT)));
-        drawerItems.add(new DrawerItem(WEB_CONTENT, DrawerItem.CONTENT_TYPE, selectedType
+        drawerItems.add(new DrawerItem(getString(R.string.article), DrawerItem.CONTENT_TYPE, selectedType
                 .equals(WEB_CONTENT)));
         drawerItems.add(new DrawerItem(getString(R.string.categories), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CATEGORY, selectedCat

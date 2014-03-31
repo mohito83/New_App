@@ -11,7 +11,7 @@
         android:padding="5dp"
         android:textStyle="bold"
         android:textColor="@color/red"
-        android:text="@string/btdialog_visibleToParied"/>
+        android:text="@string/btdialog_visibleToPaired"/>
     
     <TextView 
         android:id="@+id/bluetoothTitle"
