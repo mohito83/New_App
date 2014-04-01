@@ -23,6 +23,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -61,6 +62,7 @@ import edu.isi.backpack.services.ListenerService;
 import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
 import edu.isi.backpack.tasks.DeleteContentTask;
+import edu.isi.backpack.tasks.UpdateTask;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -299,8 +301,24 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         // content directory
         File appDir = getExternalFilesDir(null);
         contentDirectory = new File(appDir, Constants.contentDirName);
-        if (!contentDirectory.exists())
+        if (!contentDirectory.exists()) {
             contentDirectory.mkdir();
+
+            // TODO this code will eventually go away
+            // check if user has old content directory,
+            // if so, move everything to new directory
+            File sdDir = Environment.getExternalStorageDirectory();
+            File oldContentDir = new File(sdDir, Constants.contentDirName);
+            if (oldContentDir.exists()) {
+                ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
+                progress.setTitle(R.string.updating_title);
+                progress.setMessage(getString(R.string.updating_msg));
+                progress.setCancelable(false);
+                progress.show();
+                UpdateTask task = new UpdateTask(this, oldContentDir, contentDirectory, progress);
+                task.execute();
+            }
+        }
 
         // start file monitor service
         Intent intent = new Intent(this, FileMonitorService.class);

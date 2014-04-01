@@ -56,7 +56,6 @@ public class CustomFileObserver extends FileObserver {
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -83,7 +82,7 @@ public class CustomFileObserver extends FileObserver {
         if (path == null)
             return;
 
-        Log.d(TAG, "Got event for " + path);
+        // Log.d(TAG, "Got event for " + path);
         if (path.endsWith(".tmp")) // this file is still being written, ignore
             return;
 

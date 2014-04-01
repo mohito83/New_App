@@ -6,6 +6,9 @@
     <string name="title_activity_fullscreen_video">Fullscreen Video Activity</string>
     <string name="title_activity_content_viewer">Content Viewer Activity</string>
     
+    <!-- TEMP -->
+    <string name="updating_title">Updating</string>
+    <string name="updating_msg">Updating data, please wait</string>
 	
 	<!-- VIDEO CONTROLLER LAYOUT -->
 	<string name="vplayer_playpause">Play/Pause</string>
