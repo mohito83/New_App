@@ -4,12 +4,6 @@
 
 package edu.isi.backpack.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
-
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -18,10 +12,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+
 import edu.isi.backpack.R;
 import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
@@ -29,6 +23,12 @@ import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.util.BackpackUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -98,8 +98,8 @@ public class ListenerService extends Service {
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
 
-        File sdr = Environment.getExternalStorageDirectory();
-        path = new File(sdr, Constants.contentDirName);
+        File appDir = getExternalFilesDir(null);
+        path = new File(appDir, Constants.contentDirName);
         if (!path.exists()) {
             path.mkdir();
         }

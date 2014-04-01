@@ -1,18 +1,18 @@
 
 package edu.isi.backpack;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import android.content.Intent;
-import android.os.Environment;
 import android.os.FileObserver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.tasks.ContentManagementTask;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class CustomFileObserver extends FileObserver {
     public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
@@ -21,10 +21,9 @@ public class CustomFileObserver extends FileObserver {
 
     private static String TAG = "CustomFileObserver";
 
-    private final String contentDirPath = Environment.getExternalStorageDirectory() + "/"
-            + Constants.contentDirName;
+    private static String contentDirPath;
 
-    private final String xferDirPath = contentDirPath + "/" + "xfer";
+    private static String xferDirPath;
 
     private String observedPath = null;
 
@@ -32,10 +31,14 @@ public class CustomFileObserver extends FileObserver {
 
     private ArrayList<CustomFileObserver> childObservers = new ArrayList<CustomFileObserver>();
 
-    public CustomFileObserver(String path, FileMonitorService fileMonitorService) {
+    public CustomFileObserver(String path, FileMonitorService fileMonitorService, boolean root) {
         super(path, FileObserver.CREATE | FileObserver.MOVED_TO);
         observedPath = path;
         this.fileMonitorService = fileMonitorService;
+        if (root) {
+            contentDirPath = path;
+            xferDirPath = contentDirPath + "/xfer";
+        }
 
         try {
             // if this is the root of content directory
@@ -59,7 +62,8 @@ public class CustomFileObserver extends FileObserver {
     }
 
     private void addWatcher(String path) {
-        CustomFileObserver transferDirObserver = new CustomFileObserver(path, fileMonitorService);
+        CustomFileObserver transferDirObserver = new CustomFileObserver(path, fileMonitorService,
+                false);
         childObservers.add(transferDirObserver); // keep them from being garbage
                                                  // collected
         transferDirObserver.startWatching();

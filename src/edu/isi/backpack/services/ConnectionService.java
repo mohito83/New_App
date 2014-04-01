@@ -4,23 +4,15 @@
 
 package edu.isi.backpack.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.UUID;
-
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
+
 import edu.isi.backpack.R;
 import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
 import edu.isi.backpack.bluetooth.Connector;
@@ -28,6 +20,14 @@ import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.util.BackpackUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * This class is a service which initiates the connection to the remote server
@@ -45,8 +45,6 @@ public class ConnectionService extends Service {
 
     private BluetoothAdapter mAdapter;
 
-    private boolean isExtDrMounted;
-
     private File path;
 
     private File metaFile;
@@ -63,9 +61,8 @@ public class ConnectionService extends Service {
     public void onCreate() {
         // Debug.waitForDebugger();
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        isExtDrMounted = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
-        File sdr = Environment.getExternalStorageDirectory();
-        path = new File(sdr, Constants.contentDirName);
+        File appDir = getExternalFilesDir(null);
+        path = new File(appDir, Constants.contentDirName);
         if (!path.exists()) {
             path.mkdir();
         }
@@ -233,65 +230,62 @@ public class ConnectionService extends Service {
                     while (!terminate) {
 
                         // try {
-                        if (isExtDrMounted) {
-                            switch (transcState) {
-                                case Constants.META_DATA_EXCHANGE:
-                                    try {
-                                        Log.i(TAG, "Receiving videos meta data");
-                                        mHanlder.receiveFullMetaData(path);
+                        switch (transcState) {
+                            case Constants.META_DATA_EXCHANGE:
+                                try {
+                                    Log.i(TAG, "Receiving videos meta data");
+                                    mHanlder.receiveFullMetaData(path);
 
-                                        Log.i(TAG, "Sending videos meta data");
-                                        mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL,
-                                                metaFile);
+                                    Log.i(TAG, "Sending videos meta data");
+                                    mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL,
+                                            metaFile);
 
-                                        Log.i(TAG, "Receiving web meta data");
-                                        mHanlder.receiveFullMetaData(path);
+                                    Log.i(TAG, "Receiving web meta data");
+                                    mHanlder.receiveFullMetaData(path);
 
-                                        Log.i(TAG, "Sending web meta data");
-                                        mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL,
-                                                webMetaFile);
+                                    Log.i(TAG, "Sending web meta data");
+                                    mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL,
+                                            webMetaFile);
 
-                                        transcState = Constants.FILE_DATA_EXCHANGE;
-                                        break;
-                                    } catch (BluetoothDisconnectedException e) {
-                                        terminate = true;
-                                        disconnected = true;
-                                        break;
-                                    }
+                                    transcState = Constants.FILE_DATA_EXCHANGE;
+                                    break;
+                                } catch (BluetoothDisconnectedException e) {
+                                    terminate = true;
+                                    disconnected = true;
+                                    break;
+                                }
 
-                                case Constants.FILE_DATA_EXCHANGE:
-                                    try {
-                                        File xferDir = new File(path, Constants.xferDirName + "/"
-                                                + device.getName());
-                                        xferDir.mkdirs();
-                                        Log.i(TAG, "Start sending web contents");
-                                        mHanlder.sendWebContent(path);
-                                        Log.i(TAG, "Finished sending web contents");
+                            case Constants.FILE_DATA_EXCHANGE:
+                                try {
+                                    File xferDir = new File(path, Constants.xferDirName + "/"
+                                            + device.getName());
+                                    xferDir.mkdirs();
+                                    Log.i(TAG, "Start sending web contents");
+                                    mHanlder.sendWebContent(path);
+                                    Log.i(TAG, "Finished sending web contents");
 
-                                        Log.i(TAG, "Start receiving web contents");
-                                        mHanlder.receiveFiles(xferDir);
-                                        Log.i(TAG, "Finished receiving web contents");
+                                    Log.i(TAG, "Start receiving web contents");
+                                    mHanlder.receiveFiles(xferDir);
+                                    Log.i(TAG, "Finished receiving web contents");
 
-                                        Log.i(TAG, "Start sending videos");
-                                        mHanlder.sendVideos(path);
-                                        Log.i(TAG, "Finished sending videos");
+                                    Log.i(TAG, "Start sending videos");
+                                    mHanlder.sendVideos(path);
+                                    Log.i(TAG, "Finished sending videos");
 
-                                        Log.i(TAG, "Start receiving videos");
-                                        mHanlder.receiveFiles(xferDir);
-                                        Log.i(TAG, "Finished receiving videos");
+                                    Log.i(TAG, "Start receiving videos");
+                                    mHanlder.receiveFiles(xferDir);
+                                    Log.i(TAG, "Finished receiving videos");
 
-                                        transcState = Constants.SYNC_COMPLETE;
-                                        terminate = true;
-                                        break;
-                                    } catch (BluetoothDisconnectedException e) {
-                                        terminate = true;
-                                        disconnected = true;
-                                        break;
-                                    }
+                                    transcState = Constants.SYNC_COMPLETE;
+                                    terminate = true;
+                                    break;
+                                } catch (BluetoothDisconnectedException e) {
+                                    terminate = true;
+                                    disconnected = true;
+                                    break;
+                                }
 
-                            }
                         }
-
                     }
 
                     if (terminate) {

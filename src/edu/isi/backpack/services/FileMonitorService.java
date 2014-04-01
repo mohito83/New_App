@@ -3,7 +3,6 @@ package edu.isi.backpack.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.IBinder;
 
 import edu.isi.backpack.CustomFileObserver;
@@ -29,9 +28,8 @@ public class FileMonitorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        File contentDir = new File(Environment.getExternalStorageDirectory(),
-                Constants.contentDirName);
-        customFileObserver = new CustomFileObserver(contentDir.getAbsolutePath(), this);
+        File contentDir = new File(getExternalFilesDir(null), Constants.contentDirName);
+        customFileObserver = new CustomFileObserver(contentDir.getAbsolutePath(), this, true);
         customFileObserver.startWatching();
     }
 

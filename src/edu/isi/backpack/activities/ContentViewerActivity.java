@@ -1,15 +1,10 @@
 
 package edu.isi.backpack.activities;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +27,10 @@ import edu.isi.backpack.fragments.HtmlFragment;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.VideoProtos.Video;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jenniferchen viewer for individual content using sliding pages
@@ -74,8 +73,8 @@ public class ContentViewerActivity extends FragmentActivity {
 
         bookmark = getIntent().getBooleanExtra(ExtraConstants.BOOKMARK, false);
 
-        File sdDir = Environment.getExternalStorageDirectory();
-        contentDirectory = new File(sdDir, Constants.contentDirName);
+        File appDir = getExternalFilesDir(null);
+        contentDirectory = new File(appDir, Constants.contentDirName);
         if (!contentDirectory.exists())
             contentDirectory.mkdir();
 

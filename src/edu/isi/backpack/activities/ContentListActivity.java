@@ -1,19 +1,6 @@
 
 package edu.isi.backpack.activities;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -36,7 +23,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -54,6 +40,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import edu.isi.backpack.BookmarkManager;
 import edu.isi.backpack.R;
 import edu.isi.backpack.adapters.ContentListAdapter;
@@ -74,6 +61,19 @@ import edu.isi.backpack.services.ListenerService;
 import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
 import edu.isi.backpack.tasks.DeleteContentTask;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * @author jenniferchen This is the main activity of the app. It shows a list of
@@ -297,8 +297,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         bts = new ArrayList<BluetoothDevice>();
         // content directory
-        File sdDir = Environment.getExternalStorageDirectory();
-        contentDirectory = new File(sdDir, Constants.contentDirName);
+        File appDir = getExternalFilesDir(null);
+        contentDirectory = new File(appDir, Constants.contentDirName);
         if (!contentDirectory.exists())
             contentDirectory.mkdir();
 
@@ -662,15 +662,15 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         drawerItems.add(new DrawerItem(getString(R.string.bookmarks), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.BOOKMARKS,
                 selectedBookmark.equals("All")));
-        drawerItems.add(new DrawerItem(getString(R.string.starred), DrawerItem.BOOKMARKS, selectedBookmark
-                .equals(STARRED_BOOKMARK)));
+        drawerItems.add(new DrawerItem(getString(R.string.starred), DrawerItem.BOOKMARKS,
+                selectedBookmark.equals(STARRED_BOOKMARK)));
         drawerItems.add(new DrawerItem(getString(R.string.content_type), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CONTENT_TYPE,
                 selectedType.equals("All")));
-        drawerItems.add(new DrawerItem(getString(R.string.video), DrawerItem.CONTENT_TYPE, selectedType
-                .equals(VIDEO_CONTENT)));
-        drawerItems.add(new DrawerItem(getString(R.string.article), DrawerItem.CONTENT_TYPE, selectedType
-                .equals(WEB_CONTENT)));
+        drawerItems.add(new DrawerItem(getString(R.string.video), DrawerItem.CONTENT_TYPE,
+                selectedType.equals(VIDEO_CONTENT)));
+        drawerItems.add(new DrawerItem(getString(R.string.article), DrawerItem.CONTENT_TYPE,
+                selectedType.equals(WEB_CONTENT)));
         drawerItems.add(new DrawerItem(getString(R.string.categories), DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CATEGORY, selectedCat
                 .equals("All")));
