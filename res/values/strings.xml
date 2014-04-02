@@ -48,15 +48,15 @@
 	<string name="action_delRow">Delete</string>
 	
 	<!-- MENU DRAWER -->
-    <string name="open_drawer">Open Drawer</string>
-	<string name="close_drawer">Close Drawer</string>
-	<string name="bookmarks">Bookmarks</string>
-	<string name="content_type">Content Type</string>
-	<string name="categories">Categories</string>
-	<string name="all">All</string>
-	<string name="video">Video</string>
-	<string name="article">Web</string>
-	<string name="starred">Starred</string>
+    <string name="drawer_open">Open Drawer</string>
+	<string name="drawer_close">Close Drawer</string>
+	<string name="drawer_bookmarks">Bookmarks</string>
+	<string name="drawer_content_type">Content Type</string>
+	<string name="drawer_categories">Categories</string>
+	<string name="drawer_all">All</string>
+	<string name="drawer_video">Video</string>
+	<string name="drawer_article">Web</string>
+	<string name="drawer_starred">Starred</string>
 	
 	
 	<!-- INFO -->

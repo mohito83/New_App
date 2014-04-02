@@ -72,6 +72,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -91,13 +92,23 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
-    public static final String VIDEO_CONTENT = "Video";
+    /** drawer keywords **/
 
-    public static final String WEB_CONTENT = "Web";
+    public static final String FILTER_ID_VIDEO = "Video";
 
-    public static final String STARRED_BOOKMARK = "Starred";
+    public static final String FILTER_ID_WEB = "Web";
+
+    public static final String FILTER_ID_ALL = "All";
+
+    public static final String FILTER_ID_STARRED = "Starred";
 
     private static final String SETTING_BOOKMARKS = "bookmarks";
+
+    /**
+     * drawer keyword : lable label is different depending on phone's language
+     * setting
+     **/
+    private HashMap<String, String> drawerLabels = new HashMap<String, String>();
 
     private DrawerLayout drawerLayout;
 
@@ -129,11 +140,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private ContentListAdapter contentListAdapter;
 
-    private String selectedCat = "All";
+    private String selectedCat = FILTER_ID_ALL;
 
-    private String selectedType = "All";
+    private String selectedType = FILTER_ID_ALL;
 
-    private String selectedBookmark = "All";
+    private String selectedBookmark = FILTER_ID_ALL;
 
     private Object currentContent = null;
 
@@ -320,6 +331,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             }
         }
 
+        drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
+        drawerLabels.put(FILTER_ID_VIDEO, getString(R.string.drawer_video));
+        drawerLabels.put(FILTER_ID_WEB, getString(R.string.drawer_article));
+        drawerLabels.put(FILTER_ID_STARRED, getString(R.string.drawer_starred));
+
         // start file monitor service
         Intent intent = new Intent(this, FileMonitorService.class);
         startService(intent);
@@ -342,7 +358,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // setup menu drawer
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer,
-                R.string.open_drawer, R.string.close_drawer) {
+                R.string.drawer_open, R.string.drawer_close) {
             public void onDrawerClosed(View view) {
                 invalidateOptionsMenu(); // creates call to
                                          // onPrepareOptionsMenu()
@@ -677,23 +693,26 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // setup menu drawer
         drawerItems.clear();
-        drawerItems.add(new DrawerItem(getString(R.string.bookmarks), DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.BOOKMARKS,
-                selectedBookmark.equals("All")));
-        drawerItems.add(new DrawerItem(getString(R.string.starred), DrawerItem.BOOKMARKS,
-                selectedBookmark.equals(STARRED_BOOKMARK)));
-        drawerItems.add(new DrawerItem(getString(R.string.content_type), DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CONTENT_TYPE,
-                selectedType.equals("All")));
-        drawerItems.add(new DrawerItem(getString(R.string.video), DrawerItem.CONTENT_TYPE,
-                selectedType.equals(VIDEO_CONTENT)));
-        drawerItems.add(new DrawerItem(getString(R.string.article), DrawerItem.CONTENT_TYPE,
-                selectedType.equals(WEB_CONTENT)));
-        drawerItems.add(new DrawerItem(getString(R.string.categories), DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(getString(R.string.all), DrawerItem.CATEGORY, selectedCat
-                .equals("All")));
+        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_bookmarks),
+                DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
+                DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_ALL)));
+        drawerItems.add(new DrawerItem(FILTER_ID_STARRED, getString(R.string.drawer_starred),
+                DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_STARRED)));
+        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_content_type),
+                DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
+                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_ALL)));
+        drawerItems.add(new DrawerItem(FILTER_ID_VIDEO, getString(R.string.drawer_video),
+                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_VIDEO)));
+        drawerItems.add(new DrawerItem(FILTER_ID_WEB, getString(R.string.drawer_article),
+                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_WEB)));
+        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_categories),
+                DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
+                DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
         for (String cat : cats) {
-            drawerItems.add(new DrawerItem(cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
+            drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
         }
         if (!firsttime)
             applyListFilter();
@@ -716,7 +735,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     }
 
     private String setFilter(String filter, String select) {
-        if (!select.contains("All"))
+        if (!select.contains(FILTER_ID_ALL))
             if (filter.isEmpty())
                 filter = filter + " " + select;
             else
@@ -755,7 +774,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 return;
 
             if (item.getType() == DrawerItem.BOOKMARKS) {
-                String newBookmark = item.getLabel();
+                String newBookmark = item.getId();
                 if (!newBookmark.equals(selectedBookmark))
                     selectedBookmark = newBookmark;
                 else
@@ -763,13 +782,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             }
 
             if (item.getType() == DrawerItem.CONTENT_TYPE) {
-                String newType = item.getLabel();
+                String newType = item.getId();
                 if (!newType.equals(selectedType)) {
                     selectedType = newType;
                 } else
                     return;
             } else if (item.getType() == DrawerItem.CATEGORY) {
-                String newCat = item.getLabel();
+                String newCat = item.getId();
                 if (!newCat.equals(selectedCat)) {
                     selectedCat = newCat;
                 } else
@@ -781,8 +800,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // TODO nothing being taken care of for web category
         ArrayList<Object> list = new ArrayList<Object>();
-        if (selectedType.equals("All")) {
-            if (selectedCat.equals("All")) {
+        if (selectedType.equals(FILTER_ID_ALL)) {
+            if (selectedCat.equals(FILTER_ID_ALL)) {
                 list.addAll(metadata.getVideoList());
                 list.addAll(webMetadata.getArticleList());
             } else {
@@ -791,8 +810,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                         list.add(v);
                 }
             }
-        } else if (selectedType.equals(VIDEO_CONTENT)) {
-            if (selectedCat.equals("All"))
+        } else if (selectedType.equals(FILTER_ID_VIDEO)) {
+            if (selectedCat.equals(FILTER_ID_ALL))
                 list.addAll(metadata.getVideoList());
             else {
                 for (Video v : metadata.getVideoList()) {
@@ -800,13 +819,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                         list.add(v);
                 }
             }
-        } else if (selectedType.equals(WEB_CONTENT)) {
-            if (selectedCat.equals("All"))
+        } else if (selectedType.equals(FILTER_ID_WEB)) {
+            if (selectedCat.equals(FILTER_ID_ALL))
                 list.addAll(webMetadata.getArticleList());
         }
 
         // if selected starred
-        if (selectedBookmark.equals("All"))
+        if (selectedBookmark.equals(FILTER_ID_ALL))
             contentListAdapter.addAll(list);
         else {
             for (Object o : list) {

@@ -19,16 +19,23 @@ public class DrawerItem implements Checkable {
 
     public static final int BOOKMARKS = 3;
 
+    private String id;
+
     private String label;
 
     private int type;
 
     private boolean checked = false;
 
-    public DrawerItem(String label, int type, boolean checked) {
+    public DrawerItem(String id, String label, int type, boolean checked) {
+        this.id = id;
         this.label = label;
         this.type = type;
         this.checked = checked;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getLabel() {

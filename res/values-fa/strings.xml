@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Backpack</string>
+    <string name="app_version">ناشناخته</string>
+    <string name="title_activity_fullscreen_video">نمایش تمام صفحه</string>
+    <string name="title_activity_content_viewer">نمایش محتوا</string>
+
+    <!-- TEMP -->
+    <string name="updating_title">بروزرسانی</string>
+    <string name="updating_msg">در حال بروزرسانی٬ لطفا صبر کنید</string>
+
+    <!-- VIDEO CONTROLLER LAYOUT -->
+    <string name="vplayer_playpause"> پخش / مکث</string>
+    <string name="vplayer_previous">قبلی</string>
+    <string name="vplayer_rewind"> عقب</string>
+    <string name="vplayer_next">بعدی</string>
+    <string name="vplayer_fastforward">سریع</string>
+    <string name="vplayer_fullscreen">تمام صفحه </string>
+
+    <!-- BLUETOOTH DIALOG LAYOUT -->
+    <string name="btdialog_visibleToPaired">قابل رویت برای دستگاه‌های جفت شده</string>
+    <string name="btdialog_visibleToAll">قابل رویت برای همه </string>
+    <string name="btdialog_scanning">در حال جستجو </string>
+
+    <!-- COMMENT FRAGMENT LAYOUT -->
+    <string name="comment_add">نظر بده </string>
+
+    <!-- DESCRIPTION FRAGMENT LAYOUT -->
+    <string name="description_pubdate">تاریخ انتشار</string>
+    <string name="description_desc">توضیحات</string>
+
+    <!-- ACTION BAR ITEMS -->
+    <string name="action_refresh">بروزرسانی صفحه</string>
+    <string name="action_sync"> تبادل توشه</string>
+    <string name="action_dev">مدیریت محتوا</string>
+    <string name="action_shareapp">اشتراک‌گذاری برنامه</string>
+    <string name="action_dltoday">امروز چی توشه؟</string>
+    <string name="action_dl1day">توشه دیروز</string>
+    <string name="action_dl2day"> توشه پریروز</string>
+    <string name="action_dltest1">تست محتویات یک</string>
+    <string name="action_dltest2">تست محتویات دو</string>
+    <string name="action_dltest3">تست محتویات سه</string>
+    <string name="action_deleteAll">حذف هرچی توشه</string>
+    <string name="action_info">درباره</string>
+    <string name="action_web"> لینک مستقیم</string>
+    <string name="action_bookmark">ستاره بگذار</string>
+    <string name="action_delRow">حذف کن</string>
+
+    <!-- MENU DRAWER -->
+    <string name="drawer_open">منو را باز کن</string>
+    <string name="drawer_close">منو را ببند</string>
+    <string name="drawer_bookmarks">صفحات ستاره‌دار </string>
+    <string name="drawer_content_type">انواع محتوا</string>
+    <string name="drawer_categories">دسته بندی ها</string>
+    <string name="drawer_all">همه محتویات</string>
+    <string name="drawer_video">ديدنى</string>
+    <string name="drawer_article">خواندنى</string>
+    <string name="drawer_starred">​‌ستاره‌دار</string>
+
+    <!-- INFO -->
+    <string name="about">درباره</string>
+    <string name="license">USC Viterbi School of Engineering, Information Sciences Institute</string>
+    <string name="sync_report"> گزارش تبادل فایلها</string>
+    <string name="devices_found">دستگاههای موجود</string>
+    <string name="deletion_in_progress">حذف</string>
+    <string name="deleting">در حال حذف</string>
+    <string name="file_missing">فایل موجود نیست</string>
+    <string name="cant_share_app">امکان اشتراک‌گذاری وجود ندارد.</string>
+    <string name="delete_all_contents">حذف تمام فایلها</string>
+    <string name="confirm_delete_all">همه فایلها حذف خواهند شد٬ تایید می‌کنید؟</string>
+    <string name="download_content">فایلها را دریافت کن</string>
+    <string name="confirm_download"> فایلهای جدید دریافت و ادغام خواهند شد٬تایید می‌کنید؟</string>
+    <string name="download_content_package"> توشه امروز را دریافت کن</string>
+    <string name="downloading">در حال دریافت</string>
+    <string name="download_cancel">دريافت فايلها لغو شد</string>
+    <string name="default_device_title">دستگاه اسم ندارد</string>
+    <string name="filters">فیلترها\: </string>
+    <string name="news">اخبار</string>
+    <string name="device_name">اسم دستگاه</string>
+    <string name="paired">قبلا جفت شده</string>
+    <string name="unpaired">جفت نشده</string>
+    <string name="sync_in_progress">در حال تبادل</string>
+    <string name="sending_file">در حال فرستادن فایل</string>
+    <string name="receiving_file">در حال دریافت فایل</string>
+
+    <!-- SYNC PROGGRESS -->
+    <string name="connection_failed"> وصل نشد</string>
+    <string name="connection_successful"> وصل شد</string>
+    <string name="file_sync_incomplete">تبادل فایل انجام نشد </string>
+    <string name="file_sync_successful">تبادل فایل انجام شد</string>
+    <string name="received_file">فایل دریافت شد</string>
+
+    <!-- DELETE PROGRESS -->
+    <string name="deleting_files">درحال حذف فایلها\.\.\.</string>
+    <string name="updating_metadata">درحال بروزرسانی اطلاعات\.\.\.</string>
+
+    <!-- TABS -->
+    <string name="tab_content">ببین چی توشه</string>
+    <string name="tab_desc">توضیحات</string>
+    <string name="tab_comments">نظرات</string>
+
+    <!-- PROGRESS BAR -->
+    <string name="progress_unknown_size">در حال دریافت فایلها(حجم فایلها مشخص نیست)ه</string>
+    <string name="progress_extracting">در حال خواندن بسته</string>
+    <string name="progress_merging">در حال ادغام فایلها</string>
+    <string name="progress_cleanup">در حال پاک‌کردن فایلهای غیرقابل‌استفاده</string>
+    <string name="progress_downloading">درحال دریافت فایلها</string>
+
+    <!-- BUTTONS -->
+    <string name="button_ok">تایید میکنم</string>
+    <string name="button_yes">بله</string>
+    <string name="button_no">خیر</string>
+    <string name="button_cancel">لغو کن</string>
+    <string name="button_close">بستن</string>
+    <string name="button_setting">ویرایش تنظیمات</string>
+
+</resources>
