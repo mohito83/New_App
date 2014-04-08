@@ -72,6 +72,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -103,6 +104,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     public static final String FILTER_ID_STARRED = "Starred";
 
     private static final String SETTING_BOOKMARKS = "bookmarks";
+
+    private String debugBuildId = "dev";
+
+    private boolean releaseMode = true;
 
     /**
      * drawer keyword : lable label is different depending on phone's language
@@ -303,6 +308,19 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // check release/debug mode
+        try {
+            ApplicationInfo info = getPackageManager().getApplicationInfo(getPackageName(), 0);
+            releaseMode = (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) == 0;
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // init build id
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", getResources()
+                .getConfiguration().locale);
+        debugBuildId = "dev_" + sdf.format(new Date());
 
         // restore user preferences
         settings = getPreferences(MODE_PRIVATE);
@@ -571,13 +589,18 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             return true;
         } else if (item.getItemId() == R.id.action_about) {
 
+            // if running in debug mode
+            // show build_id as version
             String appName = getString(R.string.app_name);
             String version = getString(R.string.app_version);
             try {
                 PackageManager pm = getPackageManager();
                 ApplicationInfo info = pm.getApplicationInfo(getPackageName(), 0);
                 appName = (String) pm.getApplicationLabel(info);
-                version = pm.getPackageInfo(getPackageName(), 0).versionName;
+                if (releaseMode)
+                    version = pm.getPackageInfo(getPackageName(), 0).versionName;
+                else
+                    version = debugBuildId;
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
             }
