@@ -75,6 +75,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             holder.catView = (TextView) convertView.findViewById(R.id.contentCatagory);
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
+            holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
 
             convertView.setTag(holder);
         } else {
@@ -100,7 +101,16 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             holder.catView.setText(cat);
             holder.descView.setText(check_for_www(desc));
             holder.playButtonView.setVisibility(View.VISIBLE);
-
+            String date="";
+            if(video.getSnippet() != null)
+            	if(video.getSnippet().getPublishedAt() != null){
+            		try {
+            			date = video.getSnippet().getPublishedAt().substring(0, 10);
+            		} catch (IndexOutOfBoundsException e) {
+            		}
+            	}
+            holder.publishedDate.setText(date);
+            
             imageLoader.displayImage(uri, holder.imageView, imageOptions);
 
             // bookmark
@@ -131,7 +141,16 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
                                                    // articles
             holder.descView.setText(check_for_www(article.getDomain()));
             holder.playButtonView.setVisibility(View.GONE);
-
+            String date="";
+            if(article.getDatePublished() != null){
+            	try {
+                	date = article.getDatePublished().toString().substring(0, 4)
+                			+"-"+article.getDatePublished().toString().substring(4, 6)
+                			+"-"+article.getDatePublished().toString().substring(6, 8);
+				} catch (IndexOutOfBoundsException e) {
+				}
+            }
+            holder.publishedDate.setText(date);
             // TODO need thumbnail for articles
             // right now randomly pick one from image folder
             // try to find the image from cache first
@@ -215,6 +234,8 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
         public TextView descView;
 
         public ImageView starView;
+        
+        public TextView publishedDate;
     }
 
     public boolean toggleSelection(int pos) {
