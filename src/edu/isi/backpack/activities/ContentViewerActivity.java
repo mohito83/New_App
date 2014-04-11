@@ -1,6 +1,8 @@
 
 package edu.isi.backpack.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -146,13 +148,24 @@ public class ContentViewerActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.action_web) {
-            // go to website
-            if (article != null) {
-                String url = article.getUrl();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            }
+            // confirm
+            new AlertDialog.Builder(ContentViewerActivity.this)
+                    .setTitle(R.string.confirm_open_web_title)
+                    .setMessage(R.string.confirm_open_web)
+                    .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // go to website
+                            if (article != null) {
+                                String url = article.getUrl();
+                                Intent i = new Intent(Intent.ACTION_VIEW);
+                                i.setData(Uri.parse(url));
+                                startActivity(i);
+                            }
+                        }
+                    }).setNegativeButton(R.string.button_cancel, null).show();
+
             return true;
         }
         // user clicked on star

@@ -83,6 +83,8 @@
     <string name="sync_in_progress">در حال تبادل</string>
     <string name="sending_file">در حال فرستادن فایل</string>
     <string name="receiving_file">در حال دریافت فایل</string>
+    <string name="confirm_open_web_title">View Original Article</string>
+    <string name="confirm_open_web">This will open the original article on the internet. Are you sure?</string>
 
     <!-- SYNC PROGGRESS -->
     <string name="connection_failed"> وصل نشد</string>

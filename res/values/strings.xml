@@ -82,10 +82,11 @@
 	<string name="device_name">Device name</string>
 	<string name="paired">paired</string>
 	<string name="unpaired">unpaired</string>
-	
 	<string name="sync_in_progress">Sync in progress</string>
 	<string name="sending_file">Sending file</string>
 	<string name="receiving_file">Receiving file</string>
+	<string name="confirm_open_web_title">View Original Article</string>
+	<string name="confirm_open_web">This will open the original article on the internet. Are you sure?</string>
 	
 	<!-- SYNC PROGGRESS -->
 	<string name="connection_failed">Connection Failed</string>
