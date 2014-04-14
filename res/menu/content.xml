@@ -8,21 +8,19 @@
         android:icon="@drawable/ic_action_refresh"/ -->
 
     <item
-        android:id="@+id/action_sync"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_sync"
-        android:title="@string/action_sync"/>
-    
-    <item
          android:id="@+id/action_share"
 	        android:orderInCategory="100"
 	        android:showAsAction="always"
 	        android:icon="@drawable/ic_action_share"
-	        android:title="@string/action_shareapp">
+	        android:title="@string/action_share">
 	    <menu>
 	        <item
+		        android:id="@+id/action_sync"
+		        android:icon="@drawable/ic_action_sync"
+		        android:title="@string/action_sync"/>
+	        <item
 		        android:id="@+id/action_share_app"
+		        android:icon="@drawable/ic_action_sync"
 		        android:title="@string/action_shareapp"/>
         </menu>
     </item>

@@ -32,8 +32,9 @@
 	
 	<!-- ACTION BAR ITEMS -->
 	<string name="action_refresh">Refresh</string>
-	<string name="action_sync">Sync</string>
+	<string name="action_sync">Share Content</string>
 	<string name="action_download">Download</string>
+	<string name="action_share">Share</string>
 	<string name="action_shareapp">Share App</string>
 	<string name="action_dltoday">Today\'s Content</string>
 	<string name="action_dl1day">1 Day Ago</string>

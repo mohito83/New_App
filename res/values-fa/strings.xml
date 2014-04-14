@@ -34,6 +34,7 @@
     <string name="action_refresh">بروزرسانی صفحه</string>
     <string name="action_sync"> تبادل توشه</string>
     <string name="action_download">Download</string>
+    <string name="action_share">Share</string>
     <string name="action_shareapp">اشتراک‌گذاری برنامه</string>
     <string name="action_dltoday">امروز چی توشه؟</string>
     <string name="action_dl1day">توشه دیروز</string>
