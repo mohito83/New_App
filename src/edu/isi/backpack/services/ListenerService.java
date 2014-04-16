@@ -69,6 +69,12 @@ public class ListenerService extends Service {
                 switch (state) {
                     case BluetoothAdapter.STATE_OFF:
                         btOn = false;
+                        if (mmServerSocket != null)
+                            try {
+                                mmServerSocket.close(); // this cancels accept()
+                                                        // call
+                            } catch (IOException e) {
+                            }
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
                         btOn = false;
@@ -164,11 +170,14 @@ public class ListenerService extends Service {
                             }
                         }
 
-                        // connection established
-                        Log.i(TAG, "Connection established");
-                        sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
-
+                        // if socket is null, accept was canceled because
+                        // bluetooth was turned off
                         if (socket != null) {
+
+                            // connection established
+                            Log.i(TAG, "Connection established");
+                            sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
+
                             Thread commThread = new Thread(new CommunicationSocket(socket));
                             commThread.start();
 
