@@ -46,9 +46,10 @@ public class ListenerService extends Service {
     private static final String FTP_SERVICE = "CustomFTPService";
 
     private static final UUID MY_UUID = UUID
-    /* .fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"); */
-    .fromString("00001101-0000-1000-8000-00805F9B34FB");// this is the correct
-                                                        // UUID for SPP
+            /* .fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"); */
+            .fromString("00001101-0000-1000-8000-00805F9B34FB");// this is the
+                                                                // correct
+                                                                // UUID for SPP
 
     private BluetoothAdapter mAdapter;
 
@@ -56,7 +57,7 @@ public class ListenerService extends Service {
 
     private File path, metaFile, webMetaFile;
 
-    private boolean btOn = false;
+    private SyncBoolean btOn = new SyncBoolean(false);
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -64,11 +65,14 @@ public class ListenerService extends Service {
             final String action = intent.getAction();
 
             if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
+                final int state = intent.getIntExtra(
+                        BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
                 switch (state) {
                     case BluetoothAdapter.STATE_OFF:
-                        btOn = false;
+                        synchronized (btOn) {
+                            btOn.setVal(false);
+                            btOn.notifyAll();
+                        }
                         if (mmServerSocket != null)
                             try {
                                 mmServerSocket.close(); // this cancels accept()
@@ -77,14 +81,20 @@ public class ListenerService extends Service {
                             }
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
-                        btOn = false;
+                        synchronized (btOn) {
+                            btOn.setVal(false);
+                            btOn.notifyAll();
+                        }
                         break;
                     case BluetoothAdapter.STATE_ON:
                         mAdapter = BluetoothAdapter.getDefaultAdapter();
                         mmServerSocket = null;
                         if (mAdapter != null && mAdapter.isEnabled()) {
                             Log.i(TAG, "Bluetooth turned on");
-                            btOn = true;
+                            synchronized (btOn) {
+                                btOn.setVal(true);
+                                btOn.notifyAll();
+                            }
                         }
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
@@ -101,7 +111,8 @@ public class ListenerService extends Service {
         // Debug.waitForDebugger();
 
         // register bluetooth listener
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        IntentFilter filter = new IntentFilter(
+                BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
 
         File appDir = getExternalFilesDir(null);
@@ -120,7 +131,8 @@ public class ListenerService extends Service {
                 metaFile.createNewFile();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
+            Log.e(TAG,
+                    "Unable to create a empty meta data file" + e.getMessage());
         }
     }
 
@@ -129,10 +141,12 @@ public class ListenerService extends Service {
         Log.i(TAG, "starting listener service");
 
         mAdapter = BluetoothAdapter.getDefaultAdapter();
+        // Spundun: Didn't put btOn access in synchronize block because Noone
+        // will be waiting on it at this point in code.
         if (mAdapter != null && mAdapter.isEnabled())
-            btOn = true;
+            btOn.setVal(true);
         else
-            btOn = false;
+            btOn.setVal(false);
 
         Thread t = new Thread(new Runnable() {
 
@@ -144,7 +158,7 @@ public class ListenerService extends Service {
                 // start the server socket for listening the incoming
                 // connections
                 while (true) {
-                    if (btOn) {
+                    if (btOn.isVal()) {
 
                         Log.i(TAG, "Bluetooth is on");
 
@@ -159,13 +173,15 @@ public class ListenerService extends Service {
                                 // This is a blocking call and will only
                                 // return on a
                                 // successful connection or an exception
-                                Log.i(TAG, "Listening for incoming connection requests");
+                                Log.i(TAG,
+                                        "Listening for incoming connection requests");
                                 socket = mmServerSocket.accept();
                             } catch (IOException e) { // bluetooth turned off
                                                       // while waiting for
                                                       // connection
                                 socket = null;
-                                Log.e(TAG, "Bluetooth turned off while waiting for connection");
+                                Log.e(TAG,
+                                        "Bluetooth turned off while waiting for connection");
                                 continue;
                             }
                         }
@@ -176,9 +192,11 @@ public class ListenerService extends Service {
 
                             // connection established
                             Log.i(TAG, "Connection established");
-                            sendBroadcast(new Intent(Constants.BT_CONNECTED_ACTION));
+                            sendBroadcast(new Intent(
+                                    Constants.BT_CONNECTED_ACTION));
 
-                            Thread commThread = new Thread(new CommunicationSocket(socket));
+                            Thread commThread = new Thread(
+                                    new CommunicationSocket(socket));
                             commThread.start();
 
                             // wait for commThread to finish
@@ -190,6 +208,18 @@ public class ListenerService extends Service {
                                 e.printStackTrace();
                             }
                             Log.i(TAG, "Sync Complete");
+                        }
+                    } else {
+                        synchronized (btOn) {
+                            if (!btOn.isVal()) {
+                                try {
+                                    btOn.wait();
+                                } catch (InterruptedException e) {
+                                    Log.w(TAG,
+                                            "Interrupted while waiting for Bluetooth to turn On");
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                 }
@@ -204,7 +234,8 @@ public class ListenerService extends Service {
     private BluetoothServerSocket createServerSocket() {
         BluetoothServerSocket tmp = null;
         try {
-            tmp = mAdapter.listenUsingRfcommWithServiceRecord(FTP_SERVICE, MY_UUID);
+            tmp = mAdapter.listenUsingRfcommWithServiceRecord(FTP_SERVICE,
+                    MY_UUID);
         } catch (IOException e) {
             Log.e(TAG, "AcceptThread: Socket listen() failed", e);
         }
@@ -240,8 +271,10 @@ public class ListenerService extends Service {
             try {
                 mmInStream = socket.getInputStream();
                 mmOutStream = socket.getOutputStream();
-                conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                mHanlder = new MessageHandler(conn, ListenerService.this, metaFile, webMetaFile);
+                conn = new Connector(mmInStream, mmOutStream,
+                        getApplicationContext());
+                mHanlder = new MessageHandler(conn, ListenerService.this,
+                        metaFile, webMetaFile);
                 transcState = Constants.META_DATA_EXCHANGE;
             } catch (IOException e) {
                 socket = null;
@@ -256,8 +289,10 @@ public class ListenerService extends Service {
         public void run() {
             if (commSock != null) {
 
-                BackpackUtils.broadcastMessage(ListenerService.this, commSock.getRemoteDevice()
-                        .getName() + " " + getString(R.string.connection_successful));
+                BackpackUtils.broadcastMessage(ListenerService.this, commSock
+                        .getRemoteDevice().getName()
+                        + " "
+                        + getString(R.string.connection_successful));
 
                 boolean terminate = false;
                 boolean disconnected = false;
@@ -267,12 +302,14 @@ public class ListenerService extends Service {
                         case Constants.META_DATA_EXCHANGE:
                             try {
                                 Log.i(TAG, "Sending videos meta data");
-                                mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL, metaFile);
+                                mHanlder.sendFullMetaData(
+                                        Constants.VIDEO_META_DATA_FULL, metaFile);
                                 Log.i(TAG, "Receiving videos meta data");
                                 mHanlder.receiveFullMetaData(path);
 
                                 Log.i(TAG, "Sending web meta data");
-                                mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL, webMetaFile);
+                                mHanlder.sendFullMetaData(
+                                        Constants.WEB_META_DATA_FULL, webMetaFile);
                                 Log.i(TAG, "Receiving web meta data");
                                 mHanlder.receiveFullMetaData(path);
 
@@ -286,7 +323,8 @@ public class ListenerService extends Service {
 
                         case Constants.FILE_DATA_EXCHANGE:
                             try {
-                                File xferDir = new File(path, Constants.xferDirName + "/"
+                                File xferDir = new File(path, Constants.xferDirName
+                                        + "/"
                                         + commSock.getRemoteDevice().getName());
                                 xferDir.mkdirs();
                                 Log.i(TAG, "Start receiving web contents");
@@ -325,7 +363,8 @@ public class ListenerService extends Service {
                     else
                         message = getString(R.string.file_sync_successful);
                     conn.cancelNotification();
-                    BackpackUtils.broadcastMessage(ListenerService.this, message);
+                    BackpackUtils.broadcastMessage(ListenerService.this,
+                            message);
 
                     Log.i(TAG, "Close socket");
                     try {
@@ -363,6 +402,32 @@ public class ListenerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+}
+
+/**
+ * @author mohit aggarwl
+ */
+class SyncBoolean {
+    private boolean val;
+
+    public SyncBoolean(boolean val) {
+        this.val = val;
+    }
+
+    /**
+     * @return the val
+     */
+    public boolean isVal() {
+        return val;
+    }
+
+    /**
+     * @param val the val to set
+     */
+    public void setVal(boolean val) {
+        this.val = val;
     }
 
 }
