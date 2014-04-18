@@ -234,8 +234,9 @@ public class ListenerService extends Service {
     private BluetoothServerSocket createServerSocket() {
         BluetoothServerSocket tmp = null;
         try {
-            tmp = mAdapter.listenUsingRfcommWithServiceRecord(FTP_SERVICE,
-                    MY_UUID);
+            /*tmp = mAdapter.listenUsingRfcommWithServiceRecord(FTP_SERVICE,
+                    MY_UUID);*/
+            tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(FTP_SERVICE, MY_UUID);
         } catch (IOException e) {
             Log.e(TAG, "AcceptThread: Socket listen() failed", e);
         }

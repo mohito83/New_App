@@ -102,7 +102,8 @@ public class ConnectionService extends Service {
                     try {
                         // get the socket from the device
                         Log.i(TAG, "Connecting");
-                        mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                        //mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                        mmSocket = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
                         mAdapter.cancelDiscovery();
                         mmSocket.connect();
                     } catch (IOException e) {
@@ -153,7 +154,8 @@ public class ConnectionService extends Service {
                 try {
                     // get the socket from the device
                     Log.i(TAG, "Connecting");
-                    mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                    //mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                    mmSocket = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
                     mAdapter.cancelDiscovery();
                     mmSocket.connect();
                 } catch (IOException e) {
