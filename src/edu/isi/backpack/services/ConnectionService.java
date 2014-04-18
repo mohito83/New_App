@@ -165,9 +165,12 @@ public class ConnectionService extends Service {
                     if (e.getMessage().equalsIgnoreCase("Service discovery failed")) {
                         Method m;
                         try {
-                            m = device.getClass().getMethod("createRfcommSocket", new Class[] {
+                           /* m = device.getClass().getMethod("createRfcommSocket", new Class[] {
                                 int.class
-                            });
+                            });*/
+                            m = device.getClass().getMethod("createInsecureRfcommSocket", new Class[] {
+                                    int.class
+                                });
                             mmSocket = (BluetoothSocket) m.invoke(device, 1);
                             mmSocket.connect();
                         } catch (NoSuchMethodException e1) {
