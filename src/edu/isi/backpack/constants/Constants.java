@@ -8,6 +8,8 @@ package edu.isi.backpack.constants;
  * @author jenniferchen
  */
 public class Constants {
+    
+    public static final String WIFI_SERVICE_HEADER = "Backpack_";
 
     public static final int CONTENT_VIEWER_ACTIVITY = 1022;
 
@@ -20,6 +22,10 @@ public class Constants {
     public static final String BT_CONNECTED_ACTION = "edu.isi.backpack.BtConnectedAction";
 
     public static final String BT_DISCONNECTED_ACTION = "edu.isi.backpack.BtDisonnectedAction";
+    
+    public static final String WIFI_DEVICE_FOUND_ACTION = "edu.isi.backpack.WifiDeviceFoundAction";
+    
+    public static final String WIFI_DEVICE_LOST_ACTION = "edu.isi.backpack.WifiDeviceLostAction";
 
     public static final String BOOKMARK_ACTION = "edu.isi.backpack.BookmarkAction";
 

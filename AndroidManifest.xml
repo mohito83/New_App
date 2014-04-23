@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- for file downlading -->
 
     <application
@@ -53,7 +54,9 @@
         </activity>
         <service android:name="edu.isi.backpack.services.ConnectionService"/>
         <service android:name="edu.isi.backpack.services.ListenerService"
-            android:process=":listener_process"/>
+            android:process=":btListener_process"/>
+        <service android:name="edu.isi.backpack.services.WifiListenerService"
+            android:process=":wifiListener_process"/>
         <service android:name="edu.isi.backpack.services.FileMonitorService">   
         </service>
     </application>

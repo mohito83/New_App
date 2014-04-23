@@ -1,0 +1,39 @@
+package metadata;
+
+option java_package = "edu.isi.backpack.metadata";
+option java_outer_classname = "ContentProtos";
+
+
+
+message Content {
+	required string id = 1;
+	required ContentType type = 2;
+	required string filePath = 3;
+	required string publishDate = 4;
+	required string domain = 5; // remove www
+	required string url = 6;
+	required string category = 7;
+	required string title = 8;
+	required string thumbnail = 9; // path to file
+	optional string icon = 10; // path to shared icon
+	optional string description = 11;
+	optional string author = 12;
+	optional int32 favorite_count = 13;
+	repeated Comment comments = 14;
+}
+
+message Contents {
+  repeated Content contents = 1;
+}
+	
+enum ContentType {
+	VIDEO = 0;
+	HTML = 1;
+	AUDIO = 2;
+}
+
+message Comment {
+	required string text = 1;
+	required string user = 2;
+	required string date = 3;
+}
