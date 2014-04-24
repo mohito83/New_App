@@ -23,10 +23,6 @@ public class Constants {
 
     public static final String BT_DISCONNECTED_ACTION = "edu.isi.backpack.BtDisonnectedAction";
     
-    public static final String WIFI_DEVICE_FOUND_ACTION = "edu.isi.backpack.WifiDeviceFoundAction";
-    
-    public static final String WIFI_DEVICE_LOST_ACTION = "edu.isi.backpack.WifiDeviceLostAction";
-
     public static final String BOOKMARK_ACTION = "edu.isi.backpack.BookmarkAction";
 
     public static final String contentDirName = "BackpackContent";

@@ -43,5 +43,7 @@ public class ExtraConstants {
     public static final String ON = "on";
 
     public static final String DEVICE = "device";
+    
+    public static final String SERVICE_NAME = "service_name";
 
 }

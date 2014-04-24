@@ -11,10 +11,12 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -23,6 +25,11 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -49,6 +56,7 @@ import edu.isi.backpack.adapters.DrawerListAdapter;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.DownloadConstants;
 import edu.isi.backpack.constants.ExtraConstants;
+import edu.isi.backpack.constants.WifiConstants;
 import edu.isi.backpack.dialogs.BluetoothListDialog;
 import edu.isi.backpack.dialogs.WifiListDialog;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
@@ -63,7 +71,6 @@ import edu.isi.backpack.services.WifiListenerService;
 import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
 import edu.isi.backpack.tasks.DeleteContentTask;
-import edu.isi.backpack.tasks.UpdateTask;
 import edu.isi.backpack.wifi.WifiServiceManager;
 
 import java.io.File;
@@ -160,11 +167,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     private Menu optionMenu;
 
     private boolean btDebugMsg = false;
-    
+
     private ArrayList<String> wifiListItems = new ArrayList<String>();
-    
+
     private WifiListDialog wifiListDialog;
-    
+
     private WifiServiceManager wifiServiceManager;
 
     // register to receive message when a new comment is added
@@ -210,13 +217,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     addBookmark(id, true);
                 else
                     removeBookmark(id, true);
-            } else if (i.getAction().equals(Constants.WIFI_DEVICE_FOUND_ACTION)) {
+            } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_FOUND_ACTION)) {
                 String device = i.getStringExtra(ExtraConstants.DEVICE);
                 if (device != null && !wifiListItems.contains(device)) {
                     wifiListItems.add(device);
                     wifiListDialog.redraw(wifiListItems);
                 }
-            } else if (i.getAction().equals(Constants.WIFI_DEVICE_LOST_ACTION)) {
+            } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_LOST_ACTION)) {
                 String device = i.getStringExtra(ExtraConstants.DEVICE);
                 if (device != null && wifiListItems.contains(device)) {
                     wifiListItems.remove(device);
@@ -325,9 +332,62 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         }
     };
 
+    private Messenger wifiListenerMessenger;
+
+    private boolean boundWifiListener = false;
+
+    private ServiceConnection wifiListenerServiceConn = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the object we can use to
+            // interact with the service. We are communicating with the
+            // service using a Messenger, so here we get a client-side
+            // representation of that from the raw IBinder object.
+            wifiListenerMessenger = new Messenger(service);
+            boundWifiListener = true;
+            Log.i(TAG, "bounded to service, request service name");
+            // request serviceName WifiListenerService
+            Message msg = Message.obtain(null, WifiListenerService.MSG_REQUEST_SERVICE_NAME, 0, 0);
+            msg.replyTo = incomingMessenger;
+            try {
+                wifiListenerMessenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            wifiListenerMessenger = null;
+            boundWifiListener = false;
+        }
+    };
+
+    final Messenger incomingMessenger = new Messenger(new IncomingHandler());
+
+    @SuppressLint("HandlerLeak")
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case WifiListenerService.MSG_REQUEST_SERVICE_NAME:
+                    String s = msg.getData().getString("service");
+                    wifiServiceManager.setServiceName(s);
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // start WifiListenerService using startService so that it will keep
+        // running even after unbiding
+        startService(new Intent(this, WifiListenerService.class));
 
         // check release/debug mode
         try {
@@ -497,12 +557,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         if (!isBtListenerServiceRunning())
             startService(new Intent(this, ListenerService.class));
 
-        // Start Wifi listener service
-        if (!isWifiListenerServiceRunning())
-            startService(new Intent(this, WifiListenerService.class));
-
-        wifiServiceManager = new WifiServiceManager(this);
-        
         // register broadcast receiver
         // local messages
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
@@ -516,8 +570,23 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_CONNECTED_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_DISCONNECTED_ACTION));
-        registerReceiver(broadcastReceiver, new IntentFilter(Constants.WIFI_DEVICE_FOUND_ACTION));
-        registerReceiver(broadcastReceiver, new IntentFilter(Constants.WIFI_DEVICE_LOST_ACTION));
+        registerReceiver(broadcastReceiver,
+                new IntentFilter(WifiConstants.WIFI_DEVICE_FOUND_ACTION));
+        registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.WIFI_DEVICE_LOST_ACTION));
+
+        wifiServiceManager = new WifiServiceManager(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // bind to wifiListenerService
+        // this will start the service if not already running
+        Log.i(TAG, "bind to service");
+        bindService(new Intent(this, WifiListenerService.class), wifiListenerServiceConn,
+                Context.BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -556,8 +625,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 public void onReturnValue(String device) {
                     // wifi.sendRequest(device);
                     wifiListDialog.dismiss(); // dismiss dialog will also stops
-                                      // discovery
-                                      // wifidataAdapter.clear();
+                    // discovery
+                    // wifidataAdapter.clear();
                     // TODO file transfer
                 }
 
@@ -705,6 +774,16 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         else
             drawerLayout.closeDrawer(Gravity.LEFT);
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (boundWifiListener) {
+            unbindService(wifiListenerServiceConn);
+            boundWifiListener = false;
+        }
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import edu.isi.backpack.constants.Constants;
@@ -36,9 +35,6 @@ public class WifiServiceManager {
         context = c;
 
         nsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-        WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        wifiServiceName = Constants.WIFI_SERVICE_HEADER
-                + wifiMan.getConnectionInfo().getMacAddress();
         resolveListener = new NsdManager.ResolveListener() {
 
             @Override
@@ -52,7 +48,7 @@ public class WifiServiceManager {
                 Log.e(TAG, "Resolve Succeeded: " + serviceInfo);
 
                 if (!serviceInfo.getServiceName().equals(wifiServiceName)) {
-                    Intent i = new Intent(Constants.WIFI_DEVICE_FOUND_ACTION);
+                    Intent i = new Intent(WifiConstants.WIFI_DEVICE_FOUND_ACTION);
                     i.putExtra(ExtraConstants.DEVICE, serviceInfo.getServiceName());
                     context.sendBroadcast(i);
                 }
@@ -74,11 +70,11 @@ public class WifiServiceManager {
                 } else if (service.getServiceName().equals(wifiServiceName)) {
                     Log.d(TAG, "Same machine: " + wifiServiceName);
                 } else if (service.getServiceName().startsWith(Constants.WIFI_SERVICE_HEADER)) {
-                     try {
-                     Thread.sleep(1000);
-                     } catch (InterruptedException e) {
-                     e.printStackTrace();
-                     }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     nsdManager.resolveService(service, resolveListener);
 
@@ -90,9 +86,9 @@ public class WifiServiceManager {
                 // When the network service is no longer available.
                 // Internal bookkeeping code goes here.
                 Log.e(TAG, "service lost" + service);
-                
+
                 if (!service.getServiceName().equals(wifiServiceName)) {
-                    Intent i = new Intent(Constants.WIFI_DEVICE_LOST_ACTION);
+                    Intent i = new Intent(WifiConstants.WIFI_DEVICE_LOST_ACTION);
                     i.putExtra(ExtraConstants.DEVICE, service.getServiceName());
                     context.sendBroadcast(i);
                 }
@@ -117,31 +113,21 @@ public class WifiServiceManager {
         };
     }
 
-    public void startDiscovery() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                nsdManager.discoverServices(WifiConstants.SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
-                        discoveryListener);
-            }
-
-        }).start();
-    }
-
-    public void stopDiscovery() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                nsdManager.stopServiceDiscovery(discoveryListener);
-            }
-
-        }).start();
+    public void setServiceName(String n) {
+        wifiServiceName = n;
     }
 
     public String getServiceName() {
         return wifiServiceName;
+    }
+
+    public void startDiscovery() {
+        nsdManager.discoverServices(WifiConstants.SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
+                discoveryListener);
+    }
+
+    public void stopDiscovery() {
+        nsdManager.stopServiceDiscovery(discoveryListener);
     }
 
 }
