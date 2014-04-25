@@ -19,4 +19,7 @@ public class WifiConstants {
 
     public static final String WIFI_DEVICE_LOST_ACTION = "edu.isi.backpack.WifiDeviceLostAction";
 
+    public static final String CONNECTION_ESTABLISHED_ACTION = "edu.isi.backpack.WifiConnectionEstablished";
+    
+    public static final String CONNECTION_CLOSED_ACTION = "edu.isi.backpack.WifiConnectionClosed";
 }

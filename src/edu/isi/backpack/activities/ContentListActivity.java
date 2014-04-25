@@ -24,6 +24,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -67,6 +68,7 @@ import edu.isi.backpack.metadata.VideoProtos.Videos;
 import edu.isi.backpack.services.ConnectionService;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.services.ListenerService;
+import edu.isi.backpack.services.WifiConnectionService;
 import edu.isi.backpack.services.WifiListenerService;
 import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
@@ -168,7 +170,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private boolean btDebugMsg = false;
 
-    private ArrayList<String> wifiListItems = new ArrayList<String>();
+    private ArrayList<NsdServiceInfo> wifiListItems = new ArrayList<NsdServiceInfo>();
 
     private WifiListDialog wifiListDialog;
 
@@ -210,6 +212,21 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     new AlertDialog.Builder(ContentListActivity.this)
                             .setTitle(R.string.sync_report).setMessage(msg)
                             .setNeutralButton(R.string.button_ok, null).show();
+
+            } else if (i.getAction().equals(WifiConstants.CONNECTION_ESTABLISHED_ACTION)) {
+                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+                item.setIcon(R.drawable.ic_action_sync_wifi_active);
+                item.setEnabled(false);
+            } else if (i.getAction().equals(WifiConstants.CONNECTION_CLOSED_ACTION)) {
+                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+                item.setIcon(R.drawable.ic_action_sync_wifi);
+                item.setEnabled(true);
+
+                String msg = i.getStringExtra(ExtraConstants.STATUS);
+                if (msg != null)
+                    new AlertDialog.Builder(ContentListActivity.this)
+                            .setTitle(R.string.sync_report).setMessage(msg)
+                            .setNeutralButton(R.string.button_ok, null).show();
             } else if (i.getAction().equals(Constants.BOOKMARK_ACTION)) {
                 String id = i.getStringExtra(ExtraConstants.ID);
                 boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
@@ -218,13 +235,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 else
                     removeBookmark(id, true);
             } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_FOUND_ACTION)) {
-                String device = i.getStringExtra(ExtraConstants.DEVICE);
+                NsdServiceInfo device = i.getParcelableExtra(ExtraConstants.DEVICE);
                 if (device != null && !wifiListItems.contains(device)) {
                     wifiListItems.add(device);
                     wifiListDialog.redraw(wifiListItems);
                 }
             } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_LOST_ACTION)) {
-                String device = i.getStringExtra(ExtraConstants.DEVICE);
+                NsdServiceInfo device = i.getParcelableExtra(ExtraConstants.DEVICE);
                 if (device != null && wifiListItems.contains(device)) {
                     wifiListItems.remove(device);
                     wifiListDialog.redraw(wifiListItems);
@@ -570,6 +587,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_CONNECTED_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_DISCONNECTED_ACTION));
+        registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.CONNECTION_ESTABLISHED_ACTION));
+        registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.CONNECTION_CLOSED_ACTION));
         registerReceiver(broadcastReceiver,
                 new IntentFilter(WifiConstants.WIFI_DEVICE_FOUND_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.WIFI_DEVICE_LOST_ACTION));
@@ -622,12 +641,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             wifiListDialog.setHandler(new WifiListDialog.IHandler() {
 
                 @Override
-                public void onReturnValue(String device) {
-                    // wifi.sendRequest(device);
+                public void onReturnValue(NsdServiceInfo device) {
                     wifiListDialog.dismiss(); // dismiss dialog will also stops
-                    // discovery
-                    // wifidataAdapter.clear();
-                    // TODO file transfer
+                    Intent i = new Intent(getBaseContext(), WifiConnectionService.class);
+                    i.putExtra(ExtraConstants.DEVICE, device);
+                    startService(i);
                 }
 
                 @Override
@@ -795,6 +813,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             broadcastReceiver = null;
         }
         stopService(new Intent(getBaseContext(), ConnectionService.class));
+        stopService(new Intent(getBaseContext(), WifiConnectionService.class));
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1234,16 +1253,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (ListenerService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isWifiListenerServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (WifiListenerService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }

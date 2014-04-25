@@ -8,15 +8,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import edu.isi.backpack.R;
+import edu.isi.backpack.adapters.WifiListAdapter;
 
 import java.util.ArrayList;
 
@@ -26,15 +27,16 @@ import java.util.ArrayList;
 public class WifiListDialog extends DialogFragment {
 
     private ListView listView;
-    
-    private ArrayList<String> items;
 
-    private ArrayAdapter<String> deviceListAdapter;
+    private ArrayList<NsdServiceInfo> items;
+
+    private WifiListAdapter deviceListAdapter;
 
     private String serviceName;
 
     public static interface IHandler {
-        public void onReturnValue(String device);
+        public void onReturnValue(NsdServiceInfo device);
+
         public void onDismissed();
     }
 
@@ -48,7 +50,7 @@ public class WifiListDialog extends DialogFragment {
         serviceName = name;
     }
 
-    public void setList(ArrayList<String> items) {
+    public void setList(ArrayList<NsdServiceInfo> items) {
         this.items = items;
     }
 
@@ -60,13 +62,13 @@ public class WifiListDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.wifi_list_dialog, null);
         listView = (ListView) view.findViewById(R.id.wifiDeviceList);
-        
-        deviceListAdapter = new ArrayAdapter<String>(getActivity(), R.layout.bluetooth_list_item, items);
+
+        deviceListAdapter = new WifiListAdapter(getActivity(), items);
         listView.setAdapter(deviceListAdapter);
         listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                String item = (String) listView.getItemAtPosition(arg2);
+                NsdServiceInfo item = (NsdServiceInfo) deviceListAdapter.getItem(arg2);
                 handler.onReturnValue(item);
             }
         });
@@ -77,9 +79,9 @@ public class WifiListDialog extends DialogFragment {
 
         return myBuilder;
     }
-    
-    public void redraw(ArrayList<String> items) {
-        ArrayList<String> copy = new ArrayList<String>(items);
+
+    public void redraw(ArrayList<NsdServiceInfo> items) {
+        ArrayList<NsdServiceInfo> copy = new ArrayList<NsdServiceInfo>(items);
         deviceListAdapter.clear();
         deviceListAdapter.addAll(copy);
         deviceListAdapter.notifyDataSetChanged();

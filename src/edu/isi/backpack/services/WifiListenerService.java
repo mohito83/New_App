@@ -6,8 +6,12 @@ package edu.isi.backpack.services;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdManager.RegistrationListener;
 import android.net.nsd.NsdServiceInfo;
@@ -20,8 +24,22 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import edu.isi.backpack.R;
+import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
+import edu.isi.backpack.bluetooth.Connector;
+import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
+import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.constants.WifiConstants;
+import edu.isi.backpack.util.BackpackUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author jenniferchen The listener starts at boot time registers the device on
@@ -38,6 +56,12 @@ public class WifiListenerService extends Service {
     private String registeredName = null;
 
     private boolean registered = false;
+
+    private AtomicBoolean wifiOn = new AtomicBoolean(false);
+
+    private ServerSocket serverSocket = null;
+
+    private File path, metaFile, webMetaFile;
 
     /**
      * Handler of incoming messages from clients.
@@ -100,14 +124,145 @@ public class WifiListenerService extends Service {
 
     };
 
+    private final BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager conMan = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = conMan.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI)
+                synchronized (wifiOn) {
+                    Log.i(TAG, "Wifi turned on");
+                    wifiOn.set(true);
+                    wifiOn.notifyAll();
+                }
+            else {
+                synchronized (wifiOn) {
+                    Log.i(TAG, "Wifi turned off");
+                    wifiOn.set(false);
+                    wifiOn.notifyAll();
+                }
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         registered = false;
+
+        // register for wifi state listener
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+//        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+//        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+//        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        registerReceiver(wifiReceiver, intentFilter);
+
+        // register wifi
         registerService();
+
+        File appDir = getExternalFilesDir(null);
+        path = new File(appDir, Constants.contentDirName);
+        if (!path.exists()) {
+            path.mkdir();
+        }
+        metaFile = new File(path, Constants.videoMetaFileName);
+        webMetaFile = new File(path, Constants.webMetaFileName);
+        try {
+            if (!webMetaFile.exists()) {
+                webMetaFile.createNewFile();
+            }
+
+            if (!metaFile.exists()) {
+                metaFile.createNewFile();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.i(TAG, "Starting WifiListenerService");
+
+        // check wifi status
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (mWifi.isConnected()) {
+            wifiOn.set(true);
+        }
+
+        // start listening for incoming connections
+        Thread t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                while (true) {
+                    if (wifiOn.get()) {
+
+                        Log.i(TAG, "Wifi is on");
+
+                        // create server socket
+                        try {
+                            if (serverSocket == null)
+                                serverSocket = new ServerSocket(WifiConstants.SERVICE_PORT);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Unable to create server socket");
+                            continue;
+                        }
+
+                        Socket socket = null;
+                        if (serverSocket != null) {
+                            Log.i(TAG, "Wifi Server socket created");
+                            try {
+                                // blocks until successful connection or
+                                // exception
+                                socket = serverSocket.accept();
+                            } catch (IOException e) {
+                                socket = null;
+                                Log.e(TAG, "Error occured while waiting for wifi connection");
+                                continue;
+                            }
+                        }
+
+                        // if socket is null, accept was canceled because wifi
+                        // has been turned off
+                        if (socket != null) {
+                            Log.i(TAG, "Connection established");
+                            sendBroadcast(new Intent(WifiConstants.CONNECTION_ESTABLISHED_ACTION));
+
+                            Thread commThread = new Thread(new CommunicationSocket(socket));
+                            commThread.start();
+
+                            // wait for commThread to finish
+                            // we are keeping one connection at a time
+                            try {
+                                commThread.join();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            Log.i(TAG, "Sync complete");
+                        }
+                    } else { // wifi is off, wait until it's turned on
+                        synchronized (wifiOn) {
+                            try {
+                                wifiOn.wait();
+                            } catch (InterruptedException e) {
+                                Log.w(TAG, "Interrupted while waiting for wifi to turn On");
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+        });
+        t.start();
+
         return START_STICKY;
     }
 
@@ -157,6 +312,145 @@ public class WifiListenerService extends Service {
     public void unregisterService() {
         Log.i(TAG, "Unregistering Wifi service");
         mNsdManager.unregisterService(mRegistrationListener);
+    }
+
+    /**
+     * This class handles the communication on the child socket on a different
+     * thread
+     * 
+     * @author mohit aggarwl
+     */
+    private class CommunicationSocket implements Runnable {
+        private Socket commSock = null;
+
+        private InputStream mmInStream;
+
+        private OutputStream mmOutStream;
+
+        private Connector conn;
+
+        private MessageHandler mHanlder;
+
+        private int transcState;
+
+        /**
+         * Constructor for the class
+         * 
+         * @param socket
+         */
+        public CommunicationSocket(Socket socket) {
+            commSock = socket;
+            try {
+                mmInStream = socket.getInputStream();
+                mmOutStream = socket.getOutputStream();
+                conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
+                mHanlder = new MessageHandler(conn, WifiListenerService.this, metaFile, webMetaFile);
+                transcState = Constants.META_DATA_EXCHANGE;
+            } catch (IOException e) {
+                socket = null;
+                Log.e(TAG,
+                        "Trying to get socket IOStream while socket is not connected"
+                                + e.getMessage());
+                sendBroadcast(new Intent(WifiConstants.CONNECTION_CLOSED_ACTION));
+            }
+        }
+
+        @Override
+        public void run() {
+            if (commSock != null) {
+
+                boolean terminate = false;
+                boolean disconnected = false;
+
+                while (!terminate) {
+                    switch (transcState) {
+                        case Constants.META_DATA_EXCHANGE:
+                            try {
+                                Log.i(TAG, "Sending videos meta data");
+                                mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL, metaFile);
+                                Log.i(TAG, "Receiving videos meta data");
+                                mHanlder.receiveFullMetaData(path);
+
+                                Log.i(TAG, "Sending web meta data");
+                                mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL, webMetaFile);
+                                Log.i(TAG, "Receiving web meta data");
+                                mHanlder.receiveFullMetaData(path);
+
+                                transcState = Constants.FILE_DATA_EXCHANGE;
+                                break;
+                            } catch (BluetoothDisconnectedException e) {
+                                terminate = true;
+                                disconnected = true;
+                                break;
+                            }
+
+                        case Constants.FILE_DATA_EXCHANGE:
+                            try {
+                                File xferDir = new File(path, Constants.xferDirName + "/"
+                                        + commSock.getInetAddress().getHostAddress());
+                                xferDir.mkdirs();
+                                Log.i(TAG, "Start receiving web contents");
+                                mHanlder.receiveFiles(xferDir);
+                                Log.i(TAG, "Finished receiving web contents");
+
+                                Log.i(TAG, "Start sending web contents");
+                                mHanlder.sendWebContent(path);
+                                Log.i(TAG, "Finished sending web contents");
+
+                                Log.i(TAG, "Start receiving videos");
+                                mHanlder.receiveFiles(xferDir);
+                                Log.i(TAG, "Finished receiving videos");
+
+                                Log.i(TAG, "Start sending videos");
+                                mHanlder.sendVideos(path);
+                                Log.i(TAG, "Finished sending videos");
+
+                                transcState = Constants.SYNC_COMPLETE;
+                                terminate = true;
+                                break;
+                            } catch (BluetoothDisconnectedException e) {
+                                terminate = true;
+                                disconnected = true;
+                                break;
+                            }
+                    }
+                }
+
+                // close the socket
+                if (terminate) {
+                    String message;
+                    if (disconnected) // got disconnected in the middle of
+                                      // transfer
+                        message = getString(R.string.file_sync_incomplete);
+                    else
+                        message = getString(R.string.file_sync_successful);
+                    conn.cancelNotification();
+                    BackpackUtils.broadcastMessage(WifiListenerService.this, message);
+
+                    Log.i(TAG, "Close socket");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                    try {
+                        mmInStream.close();
+                        mmOutStream.close();
+                        commSock.close();
+
+                    } catch (IOException e) {
+                        Log.e(TAG,
+                                "Exception while closing child socket after file sync is completed",
+                                e);
+                    }
+
+                    Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);
+                    i.putExtra(ExtraConstants.STATUS, message);
+                    sendBroadcast(i);
+                }
+
+            }// end if(socket!=null)
+        }
     }
 
 }

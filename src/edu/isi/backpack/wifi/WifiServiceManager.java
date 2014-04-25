@@ -49,7 +49,7 @@ public class WifiServiceManager {
 
                 if (!serviceInfo.getServiceName().equals(wifiServiceName)) {
                     Intent i = new Intent(WifiConstants.WIFI_DEVICE_FOUND_ACTION);
-                    i.putExtra(ExtraConstants.DEVICE, serviceInfo.getServiceName());
+                    i.putExtra(ExtraConstants.DEVICE, serviceInfo);
                     context.sendBroadcast(i);
                 }
             }
@@ -89,7 +89,7 @@ public class WifiServiceManager {
 
                 if (!service.getServiceName().equals(wifiServiceName)) {
                     Intent i = new Intent(WifiConstants.WIFI_DEVICE_LOST_ACTION);
-                    i.putExtra(ExtraConstants.DEVICE, service.getServiceName());
+                    i.putExtra(ExtraConstants.DEVICE, service);
                     context.sendBroadcast(i);
                 }
             }
