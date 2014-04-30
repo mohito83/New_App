@@ -6,6 +6,7 @@ package edu.isi.backpack.services;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -62,6 +63,8 @@ public class WifiListenerService extends Service {
     private ServerSocket serverSocket = null;
 
     private File path, metaFile, webMetaFile;
+    
+    private String deviceName;
 
     /**
      * Handler of incoming messages from clients.
@@ -285,18 +288,16 @@ public class WifiListenerService extends Service {
     public void registerService() {
 
         if (registeredName == null) { // if haven't registered
-            WifiManager wifiMan = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            String macAddr = wifiMan.getConnectionInfo().getMacAddress();
-            if (macAddr == null) {
-                registered = true;
-                return;
-            }
+
+            // use bluetooth device name to register for wifi service name
+            deviceName = BluetoothAdapter.getDefaultAdapter().getName();
+            deviceName = deviceName.replaceAll(" ", "_");
 
             NsdServiceInfo serviceInfo = new NsdServiceInfo();
 
             // The name is subject to change based on conflicts
             // with other services advertised on the same network.
-            serviceInfo.setServiceName(Constants.WIFI_SERVICE_HEADER + macAddr);
+            serviceInfo.setServiceName(Constants.WIFI_SERVICE_HEADER + deviceName);
             serviceInfo.setServiceType(WifiConstants.SERVICE_TYPE);
             serviceInfo.setPort(WifiConstants.SERVICE_PORT);
 
