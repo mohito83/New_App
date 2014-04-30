@@ -2,7 +2,7 @@
  * 
  */
 
-package edu.isi.backpack.bluetooth;
+package edu.isi.backpack.sync;
 
 import java.io.File;
 import java.io.IOException;

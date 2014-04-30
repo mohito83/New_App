@@ -25,14 +25,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import edu.isi.backpack.R;
-import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
-import edu.isi.backpack.bluetooth.Connector;
-import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.constants.WifiConstants;
-import edu.isi.backpack.util.BackpackUtils;
+import edu.isi.backpack.sync.Connector;
+import edu.isi.backpack.sync.MessageHandler;
+import edu.isi.backpack.sync.SyncListenerTransactor;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,9 +155,9 @@ public class WifiListenerService extends Service {
         // register for wifi state listener
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-//        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-//        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-//        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        // intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        // intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        // intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         registerReceiver(wifiReceiver, intentFilter);
 
         // register wifi
@@ -330,9 +328,7 @@ public class WifiListenerService extends Service {
 
         private Connector conn;
 
-        private MessageHandler mHanlder;
-
-        private int transcState;
+        private MessageHandler mHandler;
 
         /**
          * Constructor for the class
@@ -345,8 +341,7 @@ public class WifiListenerService extends Service {
                 mmInStream = socket.getInputStream();
                 mmOutStream = socket.getOutputStream();
                 conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                mHanlder = new MessageHandler(conn, WifiListenerService.this, metaFile, webMetaFile);
-                transcState = Constants.META_DATA_EXCHANGE;
+                mHandler = new MessageHandler(conn, WifiListenerService.this, metaFile, webMetaFile);
             } catch (IOException e) {
                 socket = null;
                 Log.e(TAG,
@@ -360,95 +355,29 @@ public class WifiListenerService extends Service {
         public void run() {
             if (commSock != null) {
 
-                boolean terminate = false;
-                boolean disconnected = false;
+                // start transaction
+                SyncListenerTransactor trans = new SyncListenerTransactor(WifiListenerService.this, conn, mHandler, path, deviceName);
+                String result = trans.run();
 
-                while (!terminate) {
-                    switch (transcState) {
-                        case Constants.META_DATA_EXCHANGE:
-                            try {
-                                Log.i(TAG, "Sending videos meta data");
-                                mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL, metaFile);
-                                Log.i(TAG, "Receiving videos meta data");
-                                mHanlder.receiveFullMetaData(path);
+                Log.i(TAG, "Close socket");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                try {
+                    mmInStream.close();
+                    mmOutStream.close();
+                    commSock.close();
 
-                                Log.i(TAG, "Sending web meta data");
-                                mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL, webMetaFile);
-                                Log.i(TAG, "Receiving web meta data");
-                                mHanlder.receiveFullMetaData(path);
-
-                                transcState = Constants.FILE_DATA_EXCHANGE;
-                                break;
-                            } catch (BluetoothDisconnectedException e) {
-                                terminate = true;
-                                disconnected = true;
-                                break;
-                            }
-
-                        case Constants.FILE_DATA_EXCHANGE:
-                            try {
-                                File xferDir = new File(path, Constants.xferDirName + "/"
-                                        + commSock.getInetAddress().getHostAddress());
-                                xferDir.mkdirs();
-                                Log.i(TAG, "Start receiving web contents");
-                                mHanlder.receiveFiles(xferDir);
-                                Log.i(TAG, "Finished receiving web contents");
-
-                                Log.i(TAG, "Start sending web contents");
-                                mHanlder.sendWebContent(path);
-                                Log.i(TAG, "Finished sending web contents");
-
-                                Log.i(TAG, "Start receiving videos");
-                                mHanlder.receiveFiles(xferDir);
-                                Log.i(TAG, "Finished receiving videos");
-
-                                Log.i(TAG, "Start sending videos");
-                                mHanlder.sendVideos(path);
-                                Log.i(TAG, "Finished sending videos");
-
-                                transcState = Constants.SYNC_COMPLETE;
-                                terminate = true;
-                                break;
-                            } catch (BluetoothDisconnectedException e) {
-                                terminate = true;
-                                disconnected = true;
-                                break;
-                            }
-                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception while closing child socket after file sync is completed",
+                            e);
                 }
 
-                // close the socket
-                if (terminate) {
-                    String message;
-                    if (disconnected) // got disconnected in the middle of
-                                      // transfer
-                        message = getString(R.string.file_sync_incomplete);
-                    else
-                        message = getString(R.string.file_sync_successful);
-                    conn.cancelNotification();
-                    BackpackUtils.broadcastMessage(WifiListenerService.this, message);
-
-                    Log.i(TAG, "Close socket");
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                    try {
-                        mmInStream.close();
-                        mmOutStream.close();
-                        commSock.close();
-
-                    } catch (IOException e) {
-                        Log.e(TAG,
-                                "Exception while closing child socket after file sync is completed",
-                                e);
-                    }
-
-                    Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);
-                    i.putExtra(ExtraConstants.STATUS, message);
-                    sendBroadcast(i);
-                }
+                Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);
+                i.putExtra(ExtraConstants.STATUS, result);
+                sendBroadcast(i);
 
             }// end if(socket!=null)
         }

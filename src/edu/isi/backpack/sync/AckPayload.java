@@ -2,7 +2,7 @@
  * 
  */
 
-package edu.isi.backpack.bluetooth;
+package edu.isi.backpack.sync;
 
 /**
  * This class defines the ACK payload to be sent after each transaction

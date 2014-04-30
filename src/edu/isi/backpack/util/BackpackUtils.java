@@ -15,15 +15,15 @@ import java.util.Map;
 
 import android.content.ContextWrapper;
 import android.content.Intent;
-import edu.isi.backpack.bluetooth.AckPayload;
-import edu.isi.backpack.bluetooth.InfoMessage;
-import edu.isi.backpack.bluetooth.InfoPayload;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.metadata.ArticleProtos.Article;
 import edu.isi.backpack.metadata.ArticleProtos.Articles;
 import edu.isi.backpack.metadata.VideoProtos.Video;
 import edu.isi.backpack.metadata.VideoProtos.Videos;
+import edu.isi.backpack.sync.AckPayload;
+import edu.isi.backpack.sync.InfoMessage;
+import edu.isi.backpack.sync.InfoPayload;
 
 /**
  * This class defines the utility methods

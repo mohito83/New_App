@@ -10,13 +10,12 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.IBinder;
 import android.util.Log;
 
-import edu.isi.backpack.R;
-import edu.isi.backpack.bluetooth.BluetoothDisconnectedException;
-import edu.isi.backpack.bluetooth.Connector;
-import edu.isi.backpack.bluetooth.MessageHandler;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.constants.WifiConstants;
+import edu.isi.backpack.sync.Connector;
+import edu.isi.backpack.sync.MessageHandler;
+import edu.isi.backpack.sync.SyncConnectorTransactor;
 import edu.isi.backpack.util.BackpackUtils;
 
 import java.io.File;
@@ -40,9 +39,9 @@ public class WifiConnectionService extends Service {
 
     @Override
     public void onCreate() {
-        
+
         Log.i(TAG, "Starting wifi connection service");
-        
+
         File appDir = getExternalFilesDir(null);
         path = new File(appDir, Constants.contentDirName);
         if (!path.exists()) {
@@ -63,10 +62,10 @@ public class WifiConnectionService extends Service {
         }
 
     }
-    
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        
+
         final NsdServiceInfo device = (NsdServiceInfo) intent
                 .getParcelableExtra(ExtraConstants.DEVICE);
 
@@ -80,9 +79,7 @@ public class WifiConnectionService extends Service {
 
             private Connector conn;
 
-            private MessageHandler mHanlder;
-
-            private int transcState = Constants.META_DATA_EXCHANGE;
+            private MessageHandler mHandler;
 
             @Override
             public void run() {
@@ -113,7 +110,7 @@ public class WifiConnectionService extends Service {
                         mmInStream = mmSocket.getInputStream();
                         mmOutStream = mmSocket.getOutputStream();
                         conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                        mHanlder = new MessageHandler(conn, WifiConnectionService.this, metaFile,
+                        mHandler = new MessageHandler(conn, WifiConnectionService.this, metaFile,
                                 webMetaFile);
                     } catch (IOException e) {
                         Log.e(TAG, "unable to get in/out put streams", e);
@@ -123,99 +120,30 @@ public class WifiConnectionService extends Service {
                         return;
                     }
 
-                    // start transactions
-                    boolean terminate = false;
-                    boolean disconnected = false;
+                    // run transactions
+                    SyncConnectorTransactor sc = new SyncConnectorTransactor(WifiConnectionService.this, conn,
+                            mHandler, path, device.getServiceName());
+                    String result = sc.run();
 
-                    while (!terminate) {
-
-                        // try {
-                        switch (transcState) {
-                            case Constants.META_DATA_EXCHANGE:
-                                try {
-                                    Log.i(TAG, "Receiving videos meta data");
-                                    mHanlder.receiveFullMetaData(path);
-
-                                    Log.i(TAG, "Sending videos meta data");
-                                    mHanlder.sendFullMetaData(Constants.VIDEO_META_DATA_FULL,
-                                            metaFile);
-
-                                    Log.i(TAG, "Receiving web meta data");
-                                    mHanlder.receiveFullMetaData(path);
-
-                                    Log.i(TAG, "Sending web meta data");
-                                    mHanlder.sendFullMetaData(Constants.WEB_META_DATA_FULL,
-                                            webMetaFile);
-
-                                    transcState = Constants.FILE_DATA_EXCHANGE;
-                                    break;
-                                } catch (BluetoothDisconnectedException e) {
-                                    terminate = true;
-                                    disconnected = true;
-                                    break;
-                                }
-
-                            case Constants.FILE_DATA_EXCHANGE:
-                                try {
-                                    File xferDir = new File(path, Constants.xferDirName + "/"
-                                            + device.getServiceName());
-                                    xferDir.mkdirs();
-                                    Log.i(TAG, "Start sending web contents");
-                                    mHanlder.sendWebContent(path);
-                                    Log.i(TAG, "Finished sending web contents");
-
-                                    Log.i(TAG, "Start receiving web contents");
-                                    mHanlder.receiveFiles(xferDir);
-                                    Log.i(TAG, "Finished receiving web contents");
-
-                                    Log.i(TAG, "Start sending videos");
-                                    mHanlder.sendVideos(path);
-                                    Log.i(TAG, "Finished sending videos");
-
-                                    Log.i(TAG, "Start receiving videos");
-                                    mHanlder.receiveFiles(xferDir);
-                                    Log.i(TAG, "Finished receiving videos");
-
-                                    transcState = Constants.SYNC_COMPLETE;
-                                    terminate = true;
-                                    break;
-                                } catch (BluetoothDisconnectedException e) {
-                                    terminate = true;
-                                    disconnected = true;
-                                    break;
-                                }
-
-                        }
+                    // transaction ended
+                    // disconnect
+                    Log.i(TAG, "Close socket");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                    try {
+                        mmInStream.close();
+                        mmOutStream.close();
+                        mmSocket.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Unable to disconnect socket", e);
                     }
 
-                    if (terminate) {
-                        String message;
-                        if (disconnected) // got disconnected in the middle of
-                                          // transfer
-                            message = getString(R.string.file_sync_incomplete);
-                        else
-                            message = getString(R.string.file_sync_successful);
-                        conn.cancelNotification();
-                        BackpackUtils.broadcastMessage(WifiConnectionService.this, message);
-
-                        Log.i(TAG, "Close socket");
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                        try {
-                            mmInStream.close();
-                            mmOutStream.close();
-                            mmSocket.close();
-                        } catch (IOException e) {
-                            Log.e(TAG, "Unable to disconnect socket", e);
-                        }
-
-                        Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);
-                        i.putExtra(ExtraConstants.STATUS, message);
-                        sendBroadcast(i);
-                    }
+                    Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);
+                    i.putExtra(ExtraConstants.STATUS, result);
+                    sendBroadcast(i);
                 }
                 // To stop the service
                 stopSelf();

@@ -2,7 +2,7 @@
  * 
  */
 
-package edu.isi.backpack.bluetooth;
+package edu.isi.backpack.sync;
 
 /**
  * @author jenniferchen

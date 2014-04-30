@@ -2,7 +2,7 @@
  * 
  */
 
-package edu.isi.backpack.bluetooth;
+package edu.isi.backpack.sync;
 
 /**
  * This class defines information about the actual payload to be sent before
