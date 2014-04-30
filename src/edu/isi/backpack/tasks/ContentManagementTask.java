@@ -4,6 +4,29 @@
 
 package edu.isi.backpack.tasks;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.os.AsyncTask;
+import android.os.PowerManager;
+import android.widget.Toast;
+
+import edu.isi.backpack.R;
+import edu.isi.backpack.activities.ContentListActivity;
+import edu.isi.backpack.constants.Constants;
+import edu.isi.backpack.metadata.ArticleProtos.Article;
+import edu.isi.backpack.metadata.ArticleProtos.Articles;
+import edu.isi.backpack.metadata.VideoProtos.Video;
+import edu.isi.backpack.metadata.VideoProtos.Videos;
+import edu.isi.backpack.util.FileUtil;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -16,29 +39,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFileFilter;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.PowerManager;
-import android.widget.Toast;
-import edu.isi.backpack.R;
-import edu.isi.backpack.activities.ContentListActivity;
-import edu.isi.backpack.constants.Constants;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
-import edu.isi.backpack.util.FileUtil;
 
 /**
  * @author jenniferchen 1. Download or use a local copy of the content package
@@ -137,9 +137,7 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
         boolean deleteLocalFile = false;
         if (packageFile == null) {
             deleteLocalFile = true;
-            packageFile = new File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    "backpackPkgTmp.zip");
+            packageFile = new File(context.getExternalCacheDir(), "backpackPkgTmp.zip");
         }
 
         // if need to download package file
@@ -219,9 +217,7 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
 
         // extract file to a temporary folder
         publishProgress(PROGRESS_EXTRACT);
-        File tmpDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "backpackTmp");
+        File tmpDir = new File(context.getExternalCacheDir(), "backpackTmp");
         if (tmpDir.exists())
             try {
                 FileUtils.cleanDirectory(tmpDir);
