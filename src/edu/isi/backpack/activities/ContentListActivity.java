@@ -170,7 +170,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private boolean btDebugMsg = false;
 
-    private ArrayList<NsdServiceInfo> wifiListItems = new ArrayList<NsdServiceInfo>();
+    private HashMap<String, NsdServiceInfo> wifiListItems = new HashMap<String, NsdServiceInfo>();
 
     private WifiListDialog wifiListDialog;
 
@@ -236,15 +236,15 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     removeBookmark(id, true);
             } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_FOUND_ACTION)) {
                 NsdServiceInfo device = i.getParcelableExtra(ExtraConstants.DEVICE);
-                if (device != null && !wifiListItems.contains(device)) {
-                    wifiListItems.add(device);
-                    wifiListDialog.redraw(wifiListItems);
+                if (device != null && !wifiListItems.containsKey(device.getServiceName())) {
+                    wifiListItems.put(device.getServiceName(), device);
+                    wifiListDialog.redraw(wifiListItems.values());
                 }
             } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_LOST_ACTION)) {
                 NsdServiceInfo device = i.getParcelableExtra(ExtraConstants.DEVICE);
-                if (device != null && wifiListItems.contains(device)) {
-                    wifiListItems.remove(device);
-                    wifiListDialog.redraw(wifiListItems);
+                if (device != null && wifiListItems.containsKey(device.getServiceName())) {
+                    wifiListItems.remove(device.getServiceName());
+                    wifiListDialog.redraw(wifiListItems.values());
                 }
             }
 
@@ -636,7 +636,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         } else if (item.getItemId() == R.id.action_sync_wifi) {
 
             wifiListDialog = new WifiListDialog();
-            wifiListDialog.setList(wifiListItems);
+            wifiListDialog.setInitialList(wifiListItems.values());
             wifiListDialog.setServiceName(wifiServiceManager.getServiceName());
             wifiListDialog.setHandler(new WifiListDialog.IHandler() {
 
@@ -652,7 +652,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 public void onDismissed() {
                     wifiServiceManager.stopDiscovery();
                     wifiListItems.clear();
-                    wifiListDialog.redraw(wifiListItems);
+                    wifiListDialog.redraw(wifiListItems.values());
                 }
             });
             wifiListDialog.show(getFragmentManager(), "WifiListDialog");

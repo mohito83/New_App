@@ -20,6 +20,7 @@ import edu.isi.backpack.R;
 import edu.isi.backpack.adapters.WifiListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author jenniferchen
@@ -50,8 +51,12 @@ public class WifiListDialog extends DialogFragment {
         serviceName = name;
     }
 
-    public void setList(ArrayList<NsdServiceInfo> items) {
-        this.items = items;
+    /** only use this to initialize the list
+     * 
+     * @param items
+     */
+    public void setInitialList(Collection<NsdServiceInfo> items) {
+        this.items = new ArrayList<NsdServiceInfo>(items);
     }
 
     @Override
@@ -80,7 +85,11 @@ public class WifiListDialog extends DialogFragment {
         return myBuilder;
     }
 
-    public void redraw(ArrayList<NsdServiceInfo> items) {
+    /**
+     * use this method to update the list
+     * @param items
+     */
+    public void redraw(Collection<NsdServiceInfo> items) {
         ArrayList<NsdServiceInfo> copy = new ArrayList<NsdServiceInfo>(items);
         deviceListAdapter.clear();
         deviceListAdapter.addAll(copy);
