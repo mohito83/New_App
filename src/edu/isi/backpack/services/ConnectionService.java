@@ -49,8 +49,6 @@ public class ConnectionService extends Service {
 
     private File metaFile;
 
-    private File webMetaFile;
-
     private Intent mIntent;
 
     @Override
@@ -66,13 +64,8 @@ public class ConnectionService extends Service {
         if (!path.exists()) {
             path.mkdir();
         }
-        metaFile = new File(path, Constants.videoMetaFileName);
-        webMetaFile = new File(path, Constants.webMetaFileName);
+        metaFile = new File(path, Constants.metaFileName);
         try {
-            if (!webMetaFile.exists()) {
-                webMetaFile.createNewFile();
-            }
-
             if (!metaFile.exists()) {
                 metaFile.createNewFile();
             }
@@ -221,8 +214,7 @@ public class ConnectionService extends Service {
                         mmInStream = mmSocket.getInputStream();
                         mmOutStream = mmSocket.getOutputStream();
                         conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                        mHandler = new MessageHandler(conn, ConnectionService.this, metaFile,
-                                webMetaFile);
+                        mHandler = new MessageHandler(conn, ConnectionService.this, metaFile);
                     } catch (IOException e) {
                         Log.e(TAG, "unable to get in/out put streams", e);
                         sendBroadcast(new Intent(Constants.BT_DISCONNECTED_ACTION));
@@ -232,8 +224,8 @@ public class ConnectionService extends Service {
                     }
 
                     // run transactions
-                    SyncConnectorTransactor sc = new SyncConnectorTransactor(ConnectionService.this, conn, mHandler,
-                            path, device.getName());
+                    SyncConnectorTransactor sc = new SyncConnectorTransactor(
+                            ConnectionService.this, conn, mHandler, path, device.getName());
                     String result = sc.run();
 
                     // transaction ended

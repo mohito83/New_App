@@ -60,11 +60,7 @@ import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.constants.WifiConstants;
 import edu.isi.backpack.dialogs.BluetoothListDialog;
 import edu.isi.backpack.dialogs.WifiListDialog;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.CommentProtos.Comment;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
+import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.services.ConnectionService;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.services.ListenerService;
@@ -78,7 +74,6 @@ import edu.isi.backpack.wifi.WifiServiceManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -106,9 +101,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     /** drawer keywords **/
 
-    public static final String FILTER_ID_VIDEO = "Video";
+    // public static final String FILTER_ID_VIDEO = "Video";
 
-    public static final String FILTER_ID_WEB = "Web";
+    // public static final String FILTER_ID_WEB = "Web";
 
     public static final String FILTER_ID_ALL = "All";
 
@@ -124,7 +119,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
      * drawer keyword : lable label is different depending on phone's language
      * setting
      **/
-    private HashMap<String, String> drawerLabels = new HashMap<String, String>();
+    // private HashMap<String, String> drawerLabels = new HashMap<String,
+    // String>();
 
     private DrawerLayout drawerLayout;
 
@@ -140,11 +136,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private File metaFile;
 
-    private File webMetaFile;
-
-    private Videos metadata;
-
-    private Articles webMetadata;
+    private Media metadata;
 
     private ListView contentList;
 
@@ -152,7 +144,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private ArrayList<String> categories;
 
-    private ArrayList<Object> contentItems = new ArrayList<Object>();
+    private ArrayList<Media.Item> contentItems = new ArrayList<Media.Item>();
 
     private ContentListAdapter contentListAdapter;
 
@@ -162,7 +154,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private String selectedBookmark = FILTER_ID_ALL;
 
-    private Object currentContent = null;
+    private Media.Item currentContent = null;
 
     private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
 
@@ -184,10 +176,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             if (i.getAction().equals(Constants.NEW_COMMENT_ACTION)) { // adding
                                                                       // new
                                                                       // comment
-                String user = i.getStringExtra(ExtraConstants.USER);
-                String date = i.getStringExtra(ExtraConstants.DATE);
-                String comment = i.getStringExtra(ExtraConstants.USER_COMMENT);
-                addComment(user, date, comment);
+                                                                      // String
+                                                                      // user =
+                                                                      // i.getStringExtra(ExtraConstants.USER);
+                // String date = i.getStringExtra(ExtraConstants.DATE);
+                // String comment =
+                // i.getStringExtra(ExtraConstants.USER_COMMENT);
+                // addComment(user, date, comment);
             } else if (i.getAction().equals(Constants.META_UPDATED_ACTION)) { // meta
 
                 reload(false);
@@ -297,7 +292,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private Object rowActionMode = null;
 
-    private ArrayList<Object> selectedRowItems = new ArrayList<Object>();
+    private ArrayList<Media.Item> selectedRowItems = new ArrayList<Media.Item>();
 
     private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
 
@@ -337,9 +332,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     progress.setCancelable(false);
                     progress.show();
                     DeleteContentTask task = new DeleteContentTask(ContentListActivity.this,
-                            contentDirectory, progress, metadata, webMetadata, metaFile,
-                            webMetaFile);
-                    task.execute(selectedRowItems.toArray());
+                            contentDirectory, progress, metadata, metaFile);
+                    Media.Item[] items = new Media.Item[0];
+                    task.execute(selectedRowItems.toArray(items));
 
                     mode.finish();
                     return true;
@@ -431,26 +426,29 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         if (!contentDirectory.exists()) {
             contentDirectory.mkdir();
 
-//            // TODO this code will eventually go away
-//            // check if user has old content directory,
-//            // if so, move everything to new directory
-//            File sdDir = Environment.getExternalStorageDirectory();
-//            File oldContentDir = new File(sdDir, Constants.contentDirName);
-//            if (oldContentDir.exists()) {
-//                ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
-//                progress.setTitle(R.string.updating_title);
-//                progress.setMessage(getString(R.string.updating_msg));
-//                progress.setCancelable(false);
-//                progress.show();
-//                UpdateTask task = new UpdateTask(this, oldContentDir, contentDirectory, progress);
-//                task.execute();
-//            }
+            // // TODO this code will eventually go away
+            // // check if user has old content directory,
+            // // if so, move everything to new directory
+            // File sdDir = Environment.getExternalStorageDirectory();
+            // File oldContentDir = new File(sdDir, Constants.contentDirName);
+            // if (oldContentDir.exists()) {
+            // ProgressDialog progress = new
+            // ProgressDialog(ContentListActivity.this);
+            // progress.setTitle(R.string.updating_title);
+            // progress.setMessage(getString(R.string.updating_msg));
+            // progress.setCancelable(false);
+            // progress.show();
+            // UpdateTask task = new UpdateTask(this, oldContentDir,
+            // contentDirectory, progress);
+            // task.execute();
+            // }
         }
 
-        drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
-        drawerLabels.put(FILTER_ID_VIDEO, getString(R.string.drawer_video));
-        drawerLabels.put(FILTER_ID_WEB, getString(R.string.drawer_article));
-        drawerLabels.put(FILTER_ID_STARRED, getString(R.string.drawer_starred));
+        // drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
+        // drawerLabels.put(FILTER_ID_VIDEO, getString(R.string.drawer_video));
+        // drawerLabels.put(FILTER_ID_WEB, getString(R.string.drawer_article));
+        // drawerLabels.put(FILTER_ID_STARRED,
+        // getString(R.string.drawer_starred));
 
         // start file monitor service
         Intent intent = new Intent(this, FileMonitorService.class);
@@ -521,29 +519,17 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
                 // if not in editing mode, open the content
                 if (rowActionMode == null) {
-                    currentContent = contentListAdapter.getItem(pos);
+                    currentContent = (Media.Item) contentListAdapter.getItem(pos);
                     Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
 
                     // if selected a video
-                    if (currentContent instanceof Video) {
-                        intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_VIDEO);
-                        intent.putExtra(ExtraConstants.CONTENT,
-                                ((Video) currentContent).toByteArray());
-                        intent.putExtra(ExtraConstants.BOOKMARK,
-                                bookmarks.contains(((Video) currentContent).getFilepath()));
-                    } else if (currentContent instanceof Article) {
-                        intent.putExtra(ExtraConstants.TYPE, ExtraConstants.TYPE_ARTICLE);
-                        intent.putExtra(ExtraConstants.CONTENT,
-                                ((Article) currentContent).toByteArray());
-                        intent.putExtra(ExtraConstants.BOOKMARK,
-                                bookmarks.contains(((Article) currentContent).getFilename()));
-                    }
+                    intent.putExtra(ExtraConstants.CONTENT, currentContent.toByteArray());
+                    intent.putExtra(ExtraConstants.BOOKMARK,
+                            bookmarks.contains(currentContent.getFilename()));
 
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                }
-                // if in editing/deletion mode, add/remove selection
-                else {
+                } else { // if in editing/deletion mode, add/remove selection
                     boolean select = contentListAdapter.toggleSelection(pos);
                     if (select)
                         selectedRowItems.add(contentListAdapter.getItem(pos));
@@ -587,8 +573,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_CONNECTED_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_DISCONNECTED_ACTION));
-        registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.CONNECTION_ESTABLISHED_ACTION));
-        registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.CONNECTION_CLOSED_ACTION));
+        registerReceiver(broadcastReceiver, new IntentFilter(
+                WifiConstants.CONNECTION_ESTABLISHED_ACTION));
+        registerReceiver(broadcastReceiver,
+                new IntentFilter(WifiConstants.CONNECTION_CLOSED_ACTION));
         registerReceiver(broadcastReceiver,
                 new IntentFilter(WifiConstants.WIFI_DEVICE_FOUND_ACTION));
         registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.WIFI_DEVICE_LOST_ACTION));
@@ -726,7 +714,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                             progress.show();
                             DeleteAllContentTask task = new DeleteAllContentTask(
                                     ContentListActivity.this, contentDirectory, progress, metadata,
-                                    webMetadata, metaFile, webMetaFile);
+                                    metaFile);
                             task.execute();
 
                         }
@@ -833,59 +821,61 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     public void reload(boolean firsttime) {
 
         // read meatadata
-        metaFile = new File(contentDirectory, Constants.videoMetaFileName);
-        webMetaFile = new File(contentDirectory, Constants.webMetaFileName);
-        ArrayList<Article> articles = new ArrayList<Article>();
-        ArrayList<Video> videos = new ArrayList<Video>();
+        metaFile = new File(contentDirectory, Constants.metaFileName);
+        ArrayList<Media.Item> contents = new ArrayList<Media.Item>();
 
         // content objects from metadata
         try {
-            if (webMetaFile.exists())
-                webMetadata = Articles.parseFrom(new FileInputStream(webMetaFile));
-            else
-                webMetadata = Articles.newBuilder().build();
-            articles.addAll(webMetadata.getArticleList());
-
             if (metaFile.exists())
-                metadata = Videos.parseFrom(new FileInputStream(metaFile));
+                metadata = Media.parseFrom(new FileInputStream(metaFile));
             else
-                metadata = Videos.newBuilder().build();
+                metadata = Media.newBuilder().build();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        videos.addAll(metadata.getVideoList());
+        contents.addAll(metadata.getItemsList());
 
         contentItems.clear();
-        contentItems.addAll(videos);
-        contentItems.addAll(articles);
+        contentItems.addAll(contents);
 
         // get a list of categories
-        // TODO need a better way to get the list of categories
         categories = new ArrayList<String>();
-        for (Video video : videos) {
-            String id = video.getSnippet().getCategoryId();
-            if (!categories.contains(id))
-                categories.add(id);
+        for (Media.Item m : contentItems) {
+            for (String c : m.getCategoriesList()) {
+                if (!categories.contains(c))
+                    categories.add(c);
+            }
         }
         String[] cats = new String[categories.size()];
         cats = categories.toArray(cats);
 
         // setup menu drawer
         drawerItems.clear();
+
+        // bookmarks
         drawerItems.add(new DrawerItem(null, getString(R.string.drawer_bookmarks),
                 DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
                 DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_ALL)));
         drawerItems.add(new DrawerItem(FILTER_ID_STARRED, getString(R.string.drawer_starred),
                 DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_STARRED)));
+
+        // content type
         drawerItems.add(new DrawerItem(null, getString(R.string.drawer_content_type),
                 DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
                 DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_ALL)));
-        drawerItems.add(new DrawerItem(FILTER_ID_VIDEO, getString(R.string.drawer_video),
-                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_VIDEO)));
-        drawerItems.add(new DrawerItem(FILTER_ID_WEB, getString(R.string.drawer_article),
-                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_WEB)));
+        drawerItems.add(new DrawerItem(Media.Item.Type.VIDEO.toString(),
+                getString(R.string.drawer_video), DrawerItem.CONTENT_TYPE, selectedType
+                        .equals(Media.Item.Type.VIDEO.toString())));
+        drawerItems.add(new DrawerItem(Media.Item.Type.HTML.toString(),
+                getString(R.string.drawer_article), DrawerItem.CONTENT_TYPE, selectedType
+                        .equals(Media.Item.Type.HTML.toString())));
+        drawerItems.add(new DrawerItem(Media.Item.Type.AUDIO.toString(),
+                getString(R.string.drawer_audio), DrawerItem.CONTENT_TYPE, selectedType
+                        .equals(Media.Item.Type.AUDIO.toString())));
+
+        // categories
         drawerItems.add(new DrawerItem(null, getString(R.string.drawer_categories),
                 DrawerItem.HEADER, false));
         drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
@@ -977,44 +967,26 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         contentListAdapter.clear();
 
-        // TODO nothing being taken care of for web category
-        ArrayList<Object> list = new ArrayList<Object>();
-        if (selectedType.equals(FILTER_ID_ALL)) {
-            if (selectedCat.equals(FILTER_ID_ALL)) {
-                list.addAll(metadata.getVideoList());
-                list.addAll(webMetadata.getArticleList());
-            } else {
-                for (Video v : metadata.getVideoList()) {
-                    if (v.getSnippet().getCategoryId().equals(selectedCat))
-                        list.add(v);
+        // Apply filters
+        contentListAdapter.addAll(metadata.getItemsList());
+        if (!selectedType.equals(FILTER_ID_ALL) || !selectedCat.equals(FILTER_ID_ALL)
+                || !selectedBookmark.equals(FILTER_ID_ALL)) {
+            for (Media.Item m : metadata.getItemsList()) {
+                // type filter
+                if (!selectedType.equals(FILTER_ID_ALL)) {
+                    if (m.getType() != Media.Item.Type.valueOf(selectedType))
+                        contentListAdapter.remove(m); 
                 }
-            }
-        } else if (selectedType.equals(FILTER_ID_VIDEO)) {
-            if (selectedCat.equals(FILTER_ID_ALL))
-                list.addAll(metadata.getVideoList());
-            else {
-                for (Video v : metadata.getVideoList()) {
-                    if (v.getSnippet().getCategoryId().equals(selectedCat))
-                        list.add(v);
+                // category filter
+                if (!selectedCat.equals(FILTER_ID_ALL)) {
+                    if (!m.getCategoriesList().contains(selectedCat))
+                        contentListAdapter.remove(m);
                 }
-            }
-        } else if (selectedType.equals(FILTER_ID_WEB)) {
-            if (selectedCat.equals(FILTER_ID_ALL))
-                list.addAll(webMetadata.getArticleList());
-        }
-
-        // if selected starred
-        if (selectedBookmark.equals(FILTER_ID_ALL))
-            contentListAdapter.addAll(list);
-        else {
-            for (Object o : list) {
-                String filename = null;
-                if (o instanceof Video)
-                    filename = ((Video) o).getFilepath();
-                else
-                    filename = ((Article) o).getFilename();
-                if (bookmarks.contains(filename))
-                    contentListAdapter.add(o);
+                // bookmark filter
+                if (!selectedBookmark.equals(FILTER_ID_ALL)) {
+                    if (!bookmarks.contains(m.getFilename()))
+                        contentListAdapter.remove(m);
+                }
             }
         }
 
@@ -1074,98 +1046,99 @@ public class ContentListActivity extends Activity implements BookmarkManager {
      * 
      * @param comment
      */
-    private void addComment(final String user, final String date, final String comment) {
-        if (currentContent == null || comment == null || comment.isEmpty())
-            return;
-
-        Thread t = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                // Add comments to metadata
-
-                if (currentContent instanceof Video) {
-                    Videos.Builder newVideos = Videos.newBuilder();
-                    for (Video video : metadata.getVideoList()) {
-
-                        // copy from original
-                        Video.Builder videoBuilder = Video.newBuilder();
-                        videoBuilder.mergeFrom(video);
-
-                        // found the video to add comment
-                        if (video.getId().equals(((Video) currentContent).getId())) {
-
-                            // create new comment
-                            Comment.Builder commentBuilder = Comment.newBuilder();
-                            commentBuilder.setUser(user);
-                            commentBuilder.setDate(date);
-                            commentBuilder.setText(comment);
-
-                            // modify the video snippet by adding comment
-                            videoBuilder.addComments(commentBuilder);
-                        }
-
-                        newVideos.addVideo(videoBuilder);
-                    }
-
-                    // write new meta out and update metadata in memory
-                    try {
-                        FileOutputStream out = new FileOutputStream(metaFile);
-                        newVideos.build().writeTo(out); // write out to file
-                        out.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                } else if (currentContent instanceof Article) {
-                    Articles.Builder newArticles = Articles.newBuilder();
-                    for (Article article : webMetadata.getArticleList()) {
-
-                        // copy data from original
-                        Article.Builder articleBuilder = Article.newBuilder();
-                        articleBuilder.mergeFrom(article);
-
-                        // found the article to add comment
-                        if (article.getUrl().equals(((Article) currentContent).getUrl())) {
-
-                            // create new comment
-                            Comment.Builder commentBuilder = Comment.newBuilder();
-                            commentBuilder.setUser(user);
-                            commentBuilder.setDate(date);
-                            commentBuilder.setText(comment);
-
-                            articleBuilder.addComments(commentBuilder);
-                            // modify the article by adding comment
-                        }
-
-                        newArticles.addArticle(articleBuilder);
-                    }
-
-                    // write new meta out and update metadata in memory
-                    try {
-                        FileOutputStream out = new FileOutputStream(webMetaFile);
-                        newArticles.build().writeTo(out); // write out to file
-                        out.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // broadcast metadata updated
-                Intent i = new Intent();
-                i.setAction(Constants.META_UPDATED_ACTION);
-                LocalBroadcastManager.getInstance(ContentListActivity.this).sendBroadcast(i);
-            }
-
-        });
-
-        t.start();
-    }
+    // private void addComment(final String user, final String date, final
+    // String comment) {
+    // if (currentContent == null || comment == null || comment.isEmpty())
+    // return;
+    //
+    // Thread t = new Thread(new Runnable() {
+    //
+    // @Override
+    // public void run() {
+    //
+    // // Add comments to metadata
+    //
+    // if (currentContent instanceof Video) {
+    // Videos.Builder newVideos = Videos.newBuilder();
+    // for (Video video : metadata.getVideoList()) {
+    //
+    // // copy from original
+    // Video.Builder videoBuilder = Video.newBuilder();
+    // videoBuilder.mergeFrom(video);
+    //
+    // // found the video to add comment
+    // if (video.getId().equals(((Video) currentContent).getId())) {
+    //
+    // // create new comment
+    // Comment.Builder commentBuilder = Comment.newBuilder();
+    // commentBuilder.setUser(user);
+    // commentBuilder.setDate(date);
+    // commentBuilder.setText(comment);
+    //
+    // // modify the video snippet by adding comment
+    // videoBuilder.addComments(commentBuilder);
+    // }
+    //
+    // newVideos.addVideo(videoBuilder);
+    // }
+    //
+    // // write new meta out and update metadata in memory
+    // try {
+    // FileOutputStream out = new FileOutputStream(metaFile);
+    // newVideos.build().writeTo(out); // write out to file
+    // out.close();
+    // } catch (FileNotFoundException e) {
+    // e.printStackTrace();
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    //
+    // } else if (currentContent instanceof Article) {
+    // Articles.Builder newArticles = Articles.newBuilder();
+    // for (Article article : webMetadata.getArticleList()) {
+    //
+    // // copy data from original
+    // Article.Builder articleBuilder = Article.newBuilder();
+    // articleBuilder.mergeFrom(article);
+    //
+    // // found the article to add comment
+    // if (article.getUrl().equals(((Article) currentContent).getUrl())) {
+    //
+    // // create new comment
+    // Comment.Builder commentBuilder = Comment.newBuilder();
+    // commentBuilder.setUser(user);
+    // commentBuilder.setDate(date);
+    // commentBuilder.setText(comment);
+    //
+    // articleBuilder.addComments(commentBuilder);
+    // // modify the article by adding comment
+    // }
+    //
+    // newArticles.addArticle(articleBuilder);
+    // }
+    //
+    // // write new meta out and update metadata in memory
+    // try {
+    // FileOutputStream out = new FileOutputStream(webMetaFile);
+    // newArticles.build().writeTo(out); // write out to file
+    // out.close();
+    // } catch (FileNotFoundException e) {
+    // e.printStackTrace();
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    // }
+    //
+    // // broadcast metadata updated
+    // Intent i = new Intent();
+    // i.setAction(Constants.META_UPDATED_ACTION);
+    // LocalBroadcastManager.getInstance(ContentListActivity.this).sendBroadcast(i);
+    // }
+    //
+    // });
+    //
+    // t.start();
+    // }
 
     private void sync() {
 

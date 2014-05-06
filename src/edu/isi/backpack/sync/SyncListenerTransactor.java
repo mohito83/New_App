@@ -46,8 +46,7 @@ public class SyncListenerTransactor {
 
     public String run() {
 
-        File metaFile = new File(contentDir, Constants.videoMetaFileName);
-        File webMetaFile = new File(contentDir, Constants.webMetaFileName);
+        File metaFile = new File(contentDir, Constants.metaFileName);
 
         boolean terminate = false;
         boolean disconnected = false;
@@ -57,14 +56,10 @@ public class SyncListenerTransactor {
             switch (transcState) {
                 case Constants.META_DATA_EXCHANGE:
                     try {
-                        Log.i(TAG, "Sending videos meta data");
-                        mHandler.sendFullMetaData(Constants.VIDEO_META_DATA_FULL, metaFile);
-                        Log.i(TAG, "Receiving videos meta data");
-                        mHandler.receiveFullMetaData(contentDir);
+                        Log.i(TAG, "Sending meta data");
+                        mHandler.sendFullMetaData(Constants.META_DATA_FULL, metaFile);
 
-                        Log.i(TAG, "Sending web meta data");
-                        mHandler.sendFullMetaData(Constants.WEB_META_DATA_FULL, webMetaFile);
-                        Log.i(TAG, "Receiving web meta data");
+                        Log.i(TAG, "Receiving meta data");
                         mHandler.receiveFullMetaData(contentDir);
 
                         transcState = Constants.FILE_DATA_EXCHANGE;
@@ -80,21 +75,13 @@ public class SyncListenerTransactor {
                         File xferDir = new File(contentDir, Constants.xferDirName + "/"
                                 + remoteDevice);
                         xferDir.mkdirs();
-                        Log.i(TAG, "Start receiving web contents");
+                        Log.i(TAG, "Start receiving contents");
                         mHandler.receiveFiles(xferDir);
-                        Log.i(TAG, "Finished receiving web contents");
+                        Log.i(TAG, "Finished receiving contents");
 
-                        Log.i(TAG, "Start sending web contents");
-                        mHandler.sendWebContent(contentDir);
-                        Log.i(TAG, "Finished sending web contents");
-
-                        Log.i(TAG, "Start receiving videos");
-                        mHandler.receiveFiles(xferDir);
-                        Log.i(TAG, "Finished receiving videos");
-
-                        Log.i(TAG, "Start sending videos");
-                        mHandler.sendVideos(contentDir);
-                        Log.i(TAG, "Finished sending videos");
+                        Log.i(TAG, "Start sending contents");
+                        mHandler.sendContents(contentDir);
+                        Log.i(TAG, "Finished sending contents");
 
                         transcState = Constants.SYNC_COMPLETE;
                         terminate = true;

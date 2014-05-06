@@ -13,10 +13,7 @@ import android.widget.RemoteViews;
 import com.google.protobuf.GeneratedMessage;
 
 import edu.isi.backpack.R;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
+import edu.isi.backpack.metadata.MediaProtos.Media;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -319,66 +316,34 @@ public class Connector {
         FileOutputStream fos;
         String fName = payload.getFileName();
         boolean isSuccess;
-        if (isVideo) {
-            try {
-                Videos videos = Videos.parseDelimitedFrom(mmInputStream);
-                Video v = videos.getVideo(0);
-                if (v != null) {
-                    String metaTempFile = fName + ".dat.tmp";
-                    String metafile = fName + ".dat";
-                    File metaTemp = new File(sdir, metaTempFile);
-                    metaTemp.createNewFile();
-                    fos = new FileOutputStream(metaTemp);
-                    Videos.Builder builder = Videos.newBuilder(videos);
-                    builder.build().writeTo(fos);
+        try {
+            Media media = Media.parseDelimitedFrom(mmInputStream);
+            Media.Item v = media.getItems(0);
+            if (v != null) {
+                String metaTempFile = fName + ".dat.tmp";
+                String metafile = fName + ".dat";
+                File metaTemp = new File(sdir, metaTempFile);
+                metaTemp.createNewFile();
+                fos = new FileOutputStream(metaTemp);
+                Media.Builder builder = Media.newBuilder(media);
+                builder.build().writeTo(fos);
 
-                    File finalMetaFile = new File(sdir, metafile);
-                    isSuccess = metaTemp.renameTo(finalMetaFile);
-                    Log.i(TAG, "MetadataFile tranfer:" + isSuccess);
-                    Log.i(TAG, "Video Meta data file (" + fName + ") transfer is successfull");
-                } else {
-                    Log.w(TAG, "Video Meta data file (" + fName + ") transfer fails");
-                }
-                result = 1;
-            } catch (FileNotFoundException e) {
-                Log.e(TAG,
-                        "Error while writing to temp meta data ile file (" + fName + "):"
-                                + e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG,
-                        "Error while reading or writing file (" + fName + ") contents:"
-                                + e.getMessage());
+                File finalMetaFile = new File(sdir, metafile);
+                isSuccess = metaTemp.renameTo(finalMetaFile);
+                Log.i(TAG, "MetadataFile tranfer:" + isSuccess);
+                Log.i(TAG, "Video Meta data file (" + fName + ") transfer is successfull");
+            } else {
+                Log.w(TAG, "Video Meta data file (" + fName + ") transfer fails");
             }
-        } else {
-            try {
-                Articles articles = Articles.parseDelimitedFrom(mmInputStream);
-                Article v = articles.getArticle(0);
-                if (v != null) {
-                    String metaTempFile = fName + ".dat.tmp";
-                    String metafile = fName + ".dat";
-                    File metaTemp = new File(sdir, metaTempFile);
-                    metaTemp.createNewFile();
-                    fos = new FileOutputStream(metaTemp);
-                    Articles.Builder builder = Articles.newBuilder(articles);
-                    builder.build().writeTo(fos);
-
-                    File finalMetaFile = new File(sdir, metafile);
-                    isSuccess = metaTemp.renameTo(finalMetaFile);
-                    Log.i(TAG, "MetadataFile tranfer:" + isSuccess);
-                    Log.i(TAG, "Article Meta data file transfer is successfull");
-                } else {
-                    Log.w(TAG, "Article Meta data file transfer fails");
-                }
-                result = 1;
-            } catch (FileNotFoundException e) {
-                Log.e(TAG,
-                        "Error while writing to temp meta data ile file (" + fName + "):"
-                                + e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG,
-                        "Error while reading or writing file (" + fName + ") contents:"
-                                + e.getMessage());
-            }
+            result = 1;
+        } catch (FileNotFoundException e) {
+            Log.e(TAG,
+                    "Error while writing to temp meta data ile file (" + fName + "):"
+                            + e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG,
+                    "Error while reading or writing file (" + fName + ") contents:"
+                            + e.getMessage());
         }
 
         return result;
@@ -394,28 +359,13 @@ public class Connector {
      */
     public int sendTmpMetaData(GeneratedMessage v) {
         int result = -1;
-        if (v instanceof Video) {
-            Videos.Builder videos = Videos.newBuilder();
-            videos.addVideo((Video) v);
-            try {
-                /* videos.build().writeTo(oStream); */
-                videos.build().writeDelimitedTo(mmOutputSteam);
-                result = 1;
-            } catch (IOException e) {
-                Log.e(TAG, "Exception while sending videos protobuf file", e);
-            }
-        }
-
-        if (v instanceof Article) {
-            Articles.Builder articles = Articles.newBuilder();
-            articles.addArticle((Article) v);
-            try {
-                /* videos.build().writeTo(oStream); */
-                articles.build().writeDelimitedTo(mmOutputSteam);
-                result = 1;
-            } catch (IOException e) {
-                Log.e(TAG, "Exception while sending article protobuf file", e);
-            }
+        Media.Builder mediaBuilder = Media.newBuilder();
+        mediaBuilder.addItems((Media.Item) v);
+        try {
+            mediaBuilder.build().writeDelimitedTo(mmOutputSteam);
+            result = 1;
+        } catch (IOException e) {
+            Log.e(TAG, "Exception while sending protobuf file", e);
         }
 
         return result;

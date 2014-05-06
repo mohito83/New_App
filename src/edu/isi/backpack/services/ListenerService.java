@@ -55,7 +55,7 @@ public class ListenerService extends Service {
 
     private BluetoothServerSocket mmServerSocket;
 
-    private File path, metaFile, webMetaFile;
+    private File path, metaFile;
 
     private SyncBoolean btOn = new SyncBoolean(false);
 
@@ -119,13 +119,8 @@ public class ListenerService extends Service {
         if (!path.exists()) {
             path.mkdir();
         }
-        metaFile = new File(path, Constants.videoMetaFileName);
-        webMetaFile = new File(path, Constants.webMetaFileName);
+        metaFile = new File(path, Constants.metaFileName);
         try {
-            if (!webMetaFile.exists()) {
-                webMetaFile.createNewFile();
-            }
-
             if (!metaFile.exists()) {
                 metaFile.createNewFile();
             }
@@ -266,7 +261,7 @@ public class ListenerService extends Service {
                 mmInStream = socket.getInputStream();
                 mmOutStream = socket.getOutputStream();
                 conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                mHandler = new MessageHandler(conn, ListenerService.this, metaFile, webMetaFile);
+                mHandler = new MessageHandler(conn, ListenerService.this, metaFile);
             } catch (IOException e) {
                 socket = null;
                 Log.e(TAG,

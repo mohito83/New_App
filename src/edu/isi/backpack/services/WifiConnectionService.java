@@ -35,8 +35,6 @@ public class WifiConnectionService extends Service {
 
     private File metaFile;
 
-    private File webMetaFile;
-
     @Override
     public void onCreate() {
 
@@ -47,13 +45,8 @@ public class WifiConnectionService extends Service {
         if (!path.exists()) {
             path.mkdir();
         }
-        metaFile = new File(path, Constants.videoMetaFileName);
-        webMetaFile = new File(path, Constants.webMetaFileName);
+        metaFile = new File(path, Constants.metaFileName);
         try {
-            if (!webMetaFile.exists()) {
-                webMetaFile.createNewFile();
-            }
-
             if (!metaFile.exists()) {
                 metaFile.createNewFile();
             }
@@ -110,8 +103,7 @@ public class WifiConnectionService extends Service {
                         mmInStream = mmSocket.getInputStream();
                         mmOutStream = mmSocket.getOutputStream();
                         conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                        mHandler = new MessageHandler(conn, WifiConnectionService.this, metaFile,
-                                webMetaFile);
+                        mHandler = new MessageHandler(conn, WifiConnectionService.this, metaFile);
                     } catch (IOException e) {
                         Log.e(TAG, "unable to get in/out put streams", e);
                         sendBroadcast(new Intent(WifiConstants.CONNECTION_CLOSED_ACTION));
@@ -121,8 +113,9 @@ public class WifiConnectionService extends Service {
                     }
 
                     // run transactions
-                    SyncConnectorTransactor sc = new SyncConnectorTransactor(WifiConnectionService.this, conn,
-                            mHandler, path, device.getServiceName());
+                    SyncConnectorTransactor sc = new SyncConnectorTransactor(
+                            WifiConnectionService.this, conn, mHandler, path,
+                            device.getServiceName());
                     String result = sc.run();
 
                     // transaction ended

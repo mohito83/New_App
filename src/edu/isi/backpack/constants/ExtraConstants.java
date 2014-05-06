@@ -24,10 +24,6 @@ public class ExtraConstants {
 
     public static final String RESUME = "resume";
 
-    public static final String TYPE_VIDEO = "video";
-
-    public static final String TYPE_ARTICLE = "article";
-
     public static final String USER = "user";
 
     public static final String USER_COMMENT = "user_comment";
@@ -43,7 +39,7 @@ public class ExtraConstants {
     public static final String ON = "on";
 
     public static final String DEVICE = "device";
-    
+
     public static final String SERVICE_NAME = "service_name";
 
 }

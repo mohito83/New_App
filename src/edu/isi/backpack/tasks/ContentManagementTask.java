@@ -15,10 +15,7 @@ import android.widget.Toast;
 import edu.isi.backpack.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.constants.Constants;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
+import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.util.FileUtil;
 
 import org.apache.commons.io.FileUtils;
@@ -263,7 +260,7 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
         ArrayList<File> contentDirs = findContentDirectories(tmpDir);
         for (File dir : contentDirs) {
             // merge new dir to content dir
-            mergeContent(dir, contentDir, false);
+            mergeContent(new File(dir, Constants.metaFileName), new File(contentDir, Constants.metaFileName), false);
         }
 
         // delete temp directory
@@ -321,153 +318,59 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
     /**
      * Merge two content packages
      * 
-     * @param sourceDir - directory of new content
-     * @param contentDir - newDir will merge to content of this directory TODO
-     *            be careful of other concurrent content modifications or
-     *            reading while modifying content
+     * @param srcFile - source metadata
+     * @param dstFile - destination metadata TODO be
+     *            careful of other concurrent content modifications or reading
+     *            while modifying content
      */
-    public static void mergeContent(File sourceDir, File contentDir, boolean deleteSource) {
-
-        // find metadata files
-        File srcVideoFile = new File(sourceDir, Constants.videoMetaFileName);
-        File dstVideoFile = new File(contentDir, Constants.videoMetaFileName);
-        mergeVideos(srcVideoFile, dstVideoFile, deleteSource);
-
-        File srcArticleFile = new File(sourceDir, Constants.webMetaFileName);
-        File dstArticleFile = new File(contentDir, Constants.webMetaFileName);
-        mergeArticles(srcArticleFile, dstArticleFile, deleteSource);
-    }
-
-    /**
-     * merge one video metadata with another and copy any files to destination
-     * folder
-     * 
-     * @param sourceVideoMeta
-     * @param destVideoMeta
-     */
-    public static void mergeVideos(File srcVideoMeta, File dstVideoMeta, boolean deleteSource) {
+    public static void mergeContent(File srcFile, File dstFile, boolean deleteSource) {
 
         try {
+            
+            File srcDir = srcFile.getParentFile();
+            File dstDir = dstFile.getParentFile();
 
-            File sourceDir = srcVideoMeta.getParentFile();
-            File dstDir = dstVideoMeta.getParentFile();
-
-            // create a new video meta
-            Videos.Builder videos = Videos.newBuilder();
-
-            // merge if both meta exist
-            Videos srcVideoDat;
-            Videos dstVideoDat = null;
-            ArrayList<String> oldVideoNames = new ArrayList<String>();
-            if (srcVideoMeta.exists() && dstVideoMeta.exists()) {
-                FileInputStream is = new FileInputStream(dstVideoMeta);
-                dstVideoDat = Videos.parseFrom(is);
-                srcVideoDat = Videos.parseFrom(new FileInputStream(srcVideoMeta));
-                is.close();
-
-                // get a list of old video file names
-                for (Video oldVideo : dstVideoDat.getVideoList())
-                    oldVideoNames.add(oldVideo.getFilename()); // assume unique
-                                                               // filename, add
-                                                               // new only, no
-                                                               // update
-
-                // // create new metadata from the old one
-                // videos.mergeFrom(dstVideoDat);
-            } else if (srcVideoMeta.exists()) {
-                srcVideoDat = Videos.parseFrom(new FileInputStream(srcVideoMeta));
-            } else
-                return;
-
-            // look for new videos to add
-            for (Video newVideo : srcVideoDat.getVideoList()) {
-
-                File videoFile = new File(sourceDir, newVideo.getFilepath());
-                File thumbFile = new File(videoFile.getParent(), newVideo.getId() + "_default.jpg");
-
-                if (!oldVideoNames.contains(newVideo.getFilename())) {
-                    // add metadata entry
-                    videos.addVideo(newVideo);
-                    // copy video and thumbnail file, keeping relative path
-                    File destVideoFile = new File(dstDir, newVideo.getFilepath());
-                    File destThumbFile = new File(destVideoFile.getParent(), newVideo.getId()
-                            + "_default.jpg");
-                    FileUtils.copyFile(videoFile, destVideoFile);
-                    FileUtils.copyFile(thumbFile, destThumbFile);
-                }
-
-                if (deleteSource) {
-                    videoFile.delete();
-                    thumbFile.delete();
-                }
-            }
-
-            // merge with old one (so new entries are first)
-            if (dstVideoDat != null)
-                videos.mergeFrom(dstVideoDat);
-
-            // write out merged metadata
-            FileOutputStream out = new FileOutputStream(dstVideoMeta);
-            videos.build().writeTo(out);
-            out.close();
-
-            if (deleteSource)
-                srcVideoMeta.delete();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void mergeArticles(File srcArticleMeta, File dstArticleMeta, boolean deleteSource) {
-
-        try {
-
-            File sourceDir = srcArticleMeta.getParentFile();
-            File dstDir = dstArticleMeta.getParentFile();
-
-            // create a new Article meta
-            Articles.Builder articles = Articles.newBuilder();
+            // create a new meta
+            Media.Builder mediaBuilder = Media.newBuilder();
 
             // merge if both meta exist
-            Articles srcArticleDat;
-            Articles dstArticleDat = null;
-            ArrayList<String> oldArticleNames = new ArrayList<String>();
-            if (srcArticleMeta.exists() && dstArticleMeta.exists()) {
-                FileInputStream is = new FileInputStream(dstArticleMeta);
-                dstArticleDat = Articles.parseFrom(is);
+            Media srcDat;
+            Media dstDat = null;
+            ArrayList<String> oldItemNames = new ArrayList<String>();
+            if (srcFile.exists() && dstFile.exists()) {
+                FileInputStream is = new FileInputStream(dstFile);
+                dstDat = Media.parseFrom(is);
                 is.close();
-                srcArticleDat = Articles.parseFrom(new FileInputStream(srcArticleMeta));
+                srcDat = Media.parseFrom(new FileInputStream(srcFile));
 
                 // get a list of old article file names
-                for (Article oldArticle : dstArticleDat.getArticleList())
-                    oldArticleNames.add(oldArticle.getFilename()); // assume
-                                                                   // unique
-                                                                   // filename,
-                                                                   // add new
-                                                                   // only, no
-                                                                   // update
+                for (Media.Item oldItem : dstDat.getItemsList())
+                    oldItemNames.add(oldItem.getFilename()); // assume
+                                                             // unique
+                                                             // filename,
+                                                             // add new
+                                                             // only, no
+                                                             // update
 
-            } else if (srcArticleMeta.exists()) {
-                srcArticleDat = Articles.parseFrom(new FileInputStream(srcArticleMeta));
+            } else if (srcFile.exists()) {
+                srcDat = Media.parseFrom(new FileInputStream(srcFile));
             } else
                 return;
 
-            // look for new articles to add
-            for (Article newArticle : srcArticleDat.getArticleList()) {
+            // look for new items to add
+            for (Media.Item newItem : srcDat.getItemsList()) {
 
-                File articleFile = new File(sourceDir, newArticle.getFilename());
-                String imageDirName = FilenameUtils.getBaseName(newArticle.getFilename());
-                File imageDir = new File(articleFile.getParent(), imageDirName);
+                File contentFile = new File(srcDir, newItem.getFilename());
+                String imageDirName = FilenameUtils.getBaseName(newItem.getFilename());
+                File imageDir = new File(contentFile.getParent(), imageDirName);
+                File srcThumbFile = new File(srcDir, newItem.getThumbnail());
 
-                if (!oldArticleNames.contains(newArticle.getFilename())) {
+                if (!oldItemNames.contains(newItem.getFilename())) {
                     // add metadata entry
-                    articles.addArticle(newArticle);
-                    // copy article and image files, keeping relative path
-                    File destArticleFile = new File(dstDir, newArticle.getFilename());
-                    FileUtils.copyFile(articleFile, destArticleFile);
+                    mediaBuilder.addItems(newItem);
+                    // copy assets, keeping relative path
+                    File destContentFile = new File(dstDir, newItem.getFilename());
+                    FileUtils.copyFile(contentFile, destContentFile);
                     // image files
                     if (imageDir.exists()) {
                         for (File image : imageDir.listFiles()) {
@@ -478,25 +381,31 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
                         if (deleteSource)
                             FileUtils.deleteDirectory(imageDir);
                     }
+                    // thumbnail
+                    File dstThumbFile = new File(dstDir, newItem.getThumbnail());
+                    if (!dstThumbFile.exists()) {
+                        FileUtils.copyFile(srcThumbFile, dstThumbFile);
+                    }
                 }
 
                 if (deleteSource) {
-                    articleFile.delete();
+                    contentFile.delete();
                     if (imageDir.exists())
                         FileUtils.deleteDirectory(imageDir);
+                    srcThumbFile.delete();
                 }
             }
 
             // merge with old entries (so new entries on top)
-            articles.mergeFrom(dstArticleDat);
+            mediaBuilder.mergeFrom(dstDat);
 
             // write out merged metadata
-            FileOutputStream out = new FileOutputStream(dstArticleMeta);
-            articles.build().writeTo(out);
+            FileOutputStream out = new FileOutputStream(dstFile);
+            mediaBuilder.build().writeTo(out);
             out.close();
 
             if (deleteSource)
-                srcArticleMeta.delete();
+                srcFile.delete();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

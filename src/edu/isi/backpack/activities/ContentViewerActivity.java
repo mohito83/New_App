@@ -27,8 +27,8 @@ import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.fragments.HtmlFragment;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.VideoProtos.Video;
+import edu.isi.backpack.metadata.MediaProtos.Media;
+import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,9 +45,7 @@ public class ContentViewerActivity extends FragmentActivity {
 
     private File contentDirectory;
 
-    private Video video = null;
-
-    private Article article = null;
+    private Media.Item content = null;
 
     private boolean bookmark = false;
 
@@ -136,7 +134,7 @@ public class ContentViewerActivity extends FragmentActivity {
         else
             menu.findItem(R.id.action_star).setIcon(R.drawable.ic_fav_unselected);
 
-        if (video != null)
+        if (content.getType() == Type.VIDEO)
             menu.findItem(R.id.action_web).setVisible(false);
         else
             menu.findItem(R.id.action_web).setVisible(true);
@@ -157,8 +155,8 @@ public class ContentViewerActivity extends FragmentActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             // go to website
-                            if (article != null) {
-                                String url = article.getUrl();
+                            if (content.getType() == Type.HTML) {
+                                String url = content.getUrl();
                                 Intent i = new Intent(Intent.ACTION_VIEW);
                                 i.setData(Uri.parse(url));
                                 startActivity(i);
@@ -181,10 +179,7 @@ public class ContentViewerActivity extends FragmentActivity {
             // broadcast
             Intent i = new Intent();
             i.setAction(Constants.BOOKMARK_ACTION);
-            if (video != null)
-                i.putExtra(ExtraConstants.ID, video.getFilepath());
-            else
-                i.putExtra(ExtraConstants.ID, article.getFilename());
+            i.putExtra(ExtraConstants.ID, content.getFilename());
             i.putExtra(ExtraConstants.ON, bookmark);
             LocalBroadcastManager.getInstance(this).sendBroadcast(i);
 
@@ -204,30 +199,20 @@ public class ContentViewerActivity extends FragmentActivity {
     private List<Fragment> getFragments() {
 
         List<Fragment> f = new ArrayList<Fragment>();
-        String type = getIntent().getStringExtra(ExtraConstants.TYPE);
 
         try {
 
-            if (type.equals(ExtraConstants.TYPE_VIDEO)) {
-
-                video = Video.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
-                f.add(VideoPlayerFragment.newInstance(contentDirectory + "/" + video.getFilepath(),
-                        video.getSnippet().getTitle()));
-                // f.add(DescriptionFragment.newInstance(video.getSnippet().getPublishedAt(),
-                // video.getSnippet().getDescription()));
-                // f.add(CommentsFragment.newInstance(video.getCommentsList()));
-                titleTextView.setText(video.getSnippet().getTitle());
-            } else if (type.equals(ExtraConstants.TYPE_ARTICLE)) {
-
-                article = Article.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
-                File htmlFile = new File(contentDirectory + "/" + article.getFilename());
+            content = Media.Item.parseFrom(getIntent().getByteArrayExtra(ExtraConstants.CONTENT));
+            if (content.getType() == Type.VIDEO)
+                f.add(VideoPlayerFragment.newInstance(
+                        contentDirectory + "/" + content.getFilename(), content.getTitle()));
+            else if (content.getType() == Type.HTML) {
+                File htmlFile = new File(contentDirectory + "/" + content.getFilename());
                 Uri uri = Uri.fromFile(htmlFile);
-                f.add(HtmlFragment.newInstance(uri.toString(), article.getTitle()));
-                // f.add(DescriptionFragment.newInstance(article.getDatePublished(),
-                // "")); // TODO description for article
-                // f.add(CommentsFragment.newInstance(article.getCommentsList()));
-                titleTextView.setText(article.getTitle());
+                f.add(HtmlFragment.newInstance(uri.toString(), content.getTitle()));
             }
+
+            titleTextView.setText(content.getTitle());
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();

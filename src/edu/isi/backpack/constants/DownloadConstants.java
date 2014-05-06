@@ -9,7 +9,7 @@ package edu.isi.backpack.constants;
  */
 public class DownloadConstants {
 
-    public static final String dailyPackageURLPrefix = "http://107.20.184.189/daily/";
+    public static final String dailyPackageURLPrefix = "https://s3-us-west-2.amazonaws.com/backpack-iran/v1/";
 
     public static final String test1PackageURL = "http://107.20.184.189/testcontent/TestContent1.zip";
 

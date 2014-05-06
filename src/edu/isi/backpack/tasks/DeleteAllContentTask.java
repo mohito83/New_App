@@ -4,18 +4,16 @@
 
 package edu.isi.backpack.tasks;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+
+import edu.isi.backpack.activities.ContentListActivity;
+import edu.isi.backpack.metadata.MediaProtos.Media;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import edu.isi.backpack.activities.ContentListActivity;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.ArticleProtos.Articles;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.metadata.VideoProtos.Videos;
 
 /**
  * @author jenniferchen
@@ -28,23 +26,19 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void> {
 
     private ProgressDialog dialog;
 
-    private Videos vMeta;
+    private Media metadata;
 
-    private Articles aMeta;
-
-    private File vFile, aFile;
+    private File metaFile;
 
     public DeleteAllContentTask(ContentListActivity parent, File contentDir, ProgressDialog dialog,
-            Videos vMeta, Articles aMeta, File vFile, File aFile) {
+            Media metadata, File metaFile) {
         this.parent = parent;
         contentDirectory = contentDir;
         this.dialog = dialog;
-        this.vMeta = vMeta;
-        this.aMeta = aMeta;
-        this.vFile = vFile;
-        this.aFile = aFile;
+        this.metadata = metadata;
+        this.metaFile = metaFile;
 
-        int total = vMeta.getVideoCount() + aMeta.getArticleCount();
+        int total = metadata.getItemsCount();
         dialog.setMax(total);
         publishProgress(0);
     }
@@ -54,42 +48,21 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void> {
 
         int count = 0;
 
-        // for each video
-        for (Video video : vMeta.getVideoList()) {
+        for (Media.Item item : metadata.getItemsList()) {
 
             count++;
             publishProgress(count);
 
             // delete file
-            File file = new File(contentDirectory, video.getFilepath());
-            file.delete();
+            File file = new File(contentDirectory, item.getFilename());
 
             // delete thumbnail
-            File thumb = new File(contentDirectory, video.getId() + "_default.jpg");
+            File thumb = new File(contentDirectory, item.getThumbnail());
             thumb.delete();
-
-            // delete from bookmark
-            if (parent.isBookmarked(video.getFilepath()))
-                parent.removeBookmark(video.getFilepath(), false);
-        }
-
-        // for each article
-        for (Article article : aMeta.getArticleList()) {
-
-            count++;
-            publishProgress(count);
-
-            // delete file
-            String path = article.getFilename();
-            File file = new File(contentDirectory, path);
-            String name = file.getName();
-
-            // TODO delete thumbnail when we have it
-
+            
             // delete assets
-            // TODO update this code when meta description completed with asset
-            // list
-            String dirName = name.substring(0, name.indexOf(".htm"));
+            String filename = file.getName();
+            String dirName = filename.substring(0, filename.indexOf(".htm"));
             File assetDir = new File(file.getParent(), dirName);
             if (assetDir.exists()) {
                 for (File f : assetDir.listFiles()) {
@@ -101,18 +74,18 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void> {
             assetDir.delete();
 
             // delete from bookmark
-            if (parent.isBookmarked(path))
-                parent.removeBookmark(path, false);
+            if (parent.isBookmarked(item.getFilename()))
+                parent.removeBookmark(item.getFilename(), false);
         }
 
+
+
+
         // build new empty metadata
-        Videos.Builder newVideos = Videos.newBuilder();
-        Articles.Builder newArticles = Articles.newBuilder();
+        Media.Builder newMedia = Media.newBuilder();
         try {
-            FileOutputStream out = new FileOutputStream(vFile);
-            newVideos.build().writeTo(out); // write out to file
-            out = new FileOutputStream(aFile);
-            newArticles.build().writeTo(out); // write out to file
+            FileOutputStream out = new FileOutputStream(metaFile);
+            newMedia.build().writeTo(out); // write out to file
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

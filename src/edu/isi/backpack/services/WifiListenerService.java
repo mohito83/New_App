@@ -60,8 +60,8 @@ public class WifiListenerService extends Service {
 
     private ServerSocket serverSocket = null;
 
-    private File path, metaFile, webMetaFile;
-    
+    private File path, metaFile;
+
     private String deviceName;
 
     /**
@@ -168,13 +168,8 @@ public class WifiListenerService extends Service {
         if (!path.exists()) {
             path.mkdir();
         }
-        metaFile = new File(path, Constants.videoMetaFileName);
-        webMetaFile = new File(path, Constants.webMetaFileName);
+        metaFile = new File(path, Constants.metaFileName);
         try {
-            if (!webMetaFile.exists()) {
-                webMetaFile.createNewFile();
-            }
-
             if (!metaFile.exists()) {
                 metaFile.createNewFile();
             }
@@ -341,7 +336,7 @@ public class WifiListenerService extends Service {
                 mmInStream = socket.getInputStream();
                 mmOutStream = socket.getOutputStream();
                 conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
-                mHandler = new MessageHandler(conn, WifiListenerService.this, metaFile, webMetaFile);
+                mHandler = new MessageHandler(conn, WifiListenerService.this, metaFile);
             } catch (IOException e) {
                 socket = null;
                 Log.e(TAG,
@@ -356,7 +351,8 @@ public class WifiListenerService extends Service {
             if (commSock != null) {
 
                 // start transaction
-                SyncListenerTransactor trans = new SyncListenerTransactor(WifiListenerService.this, conn, mHandler, path, deviceName);
+                SyncListenerTransactor trans = new SyncListenerTransactor(WifiListenerService.this,
+                        conn, mHandler, path, deviceName);
                 String result = trans.run();
 
                 Log.i(TAG, "Close socket");

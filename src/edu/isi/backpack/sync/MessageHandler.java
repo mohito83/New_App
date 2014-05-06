@@ -4,17 +4,18 @@
 
 package edu.isi.backpack.sync;
 
+import android.content.ContextWrapper;
+import android.util.Log;
+
+import edu.isi.backpack.R;
+import edu.isi.backpack.constants.Constants;
+import edu.isi.backpack.metadata.MediaProtos.Media;
+import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
+import edu.isi.backpack.util.BackpackUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import android.content.ContextWrapper;
-import android.util.Log;
-import edu.isi.backpack.R;
-import edu.isi.backpack.constants.Constants;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.VideoProtos.Video;
-import edu.isi.backpack.util.BackpackUtils;
 
 /**
  * This class defines methods for handling the messages and data between two
@@ -31,23 +32,18 @@ public class MessageHandler {
 
     private static final String TAG = "BackPackMessageHandler";
 
-    private List<Video> videoList;
+    private List<Media.Item> contentList;
 
-    private List<Article> webList;
-
-    private File videoMetaFile;
-
-    private File webMetaFile;
+    private File metaFile;
 
     /**
      * @param webMetaFile
      * @param metaFile
      */
-    public MessageHandler(Connector conn, ContextWrapper wrapper, File metaFile, File webMetaFile) {
+    public MessageHandler(Connector conn, ContextWrapper wrapper, File metaFile) {
         this.conn = conn;
         this.wrapper = wrapper;
-        this.videoMetaFile = metaFile;
-        this.webMetaFile = webMetaFile;
+        this.metaFile = metaFile;
     }
 
     /**
@@ -122,14 +118,10 @@ public class MessageHandler {
             Log.i(TAG, "Calculating the Delta for this file");
 
             try {
-                if (info.getType() == Constants.VIDEO_META_DATA_FULL) {
-                    File newVideoMetaFile = new File(sdir, tempMetaFName);
-                    videoList = BackpackUtils.getVideoDeltaList(videoMetaFile, newVideoMetaFile);
-                    newVideoMetaFile.delete();
-                } else {
-                    File newWebMetaFile = new File(sdir, tempMetaFName);
-                    webList = BackpackUtils.getWebDeltaList(webMetaFile, newWebMetaFile);
-                    newWebMetaFile.delete();
+                if (info.getType() == Constants.META_DATA_FULL) {
+                    File newMetaFile = new File(sdir, tempMetaFName);
+                    contentList = BackpackUtils.getDeltaList(metaFile, newMetaFile);
+                    newMetaFile.delete();
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Error while caculating delta for meta data file: " + e.getMessage());
@@ -153,7 +145,7 @@ public class MessageHandler {
      * @param sdir
      * @throws BluetoothDisconnectedException
      */
-    public void sendVideos(File sdir) throws BluetoothDisconnectedException {
+    public void sendContents(File sdir) throws BluetoothDisconnectedException {
         boolean start = false;
         // send an info message informing start of bulk transfer operation
         InfoMessage bulkMsg = BackpackUtils.createInfoMessage(Constants.START_BULK_TX, null);
@@ -169,68 +161,153 @@ public class MessageHandler {
         }
 
         if (start) {
-            for (Video v : videoList) {
-                // 1. Send video file
-                // 1.1. send Info message
-                File f = new File(sdir, v.getFilepath());
-                InfoMessage info = BackpackUtils.createInfoMessage(Constants.VIDEO_FILE_DATA, f);
-                conn.sendInfoMessage(info);
+            for (Media.Item v : contentList) {
 
-                // 1.2. send video contents
-                conn.sendFileData(f, info);
+                if (v.getType() == Type.VIDEO) {
+                    // 1. Send video file
+                    // 1.1. send Info message
+                    File f = new File(sdir, v.getFilename());
+                    InfoMessage info = BackpackUtils
+                            .createInfoMessage(Constants.VIDEO_FILE_DATA, f);
+                    conn.sendInfoMessage(info);
 
-                // 1.3. receive ACK from the receiver
-                InfoMessage ackMsg = conn.receiveInfoMessage();
-                if (ackMsg.getType() == Constants.ACK_DATA) {
-                    AckPayload payload = (AckPayload) ackMsg.getPayload();
-                    if (payload.getAck() == Constants.OK_RESPONSE) {
-                        Log.i(TAG, "Successfully sent file: " + f.getName());
-                    } else {
-                        Log.i(TAG, "Failed to sent file: " + f.getName());
-                        continue;
+                    // 1.2. send video contents
+                    conn.sendFileData(f, info);
+
+                    // 1.3. receive ACK from the receiver
+                    InfoMessage ackMsg = conn.receiveInfoMessage();
+                    if (ackMsg.getType() == Constants.ACK_DATA) {
+                        AckPayload payload = (AckPayload) ackMsg.getPayload();
+                        if (payload.getAck() == Constants.OK_RESPONSE) {
+                            Log.i(TAG, "Successfully sent file: " + f.getName());
+                        } else {
+                            Log.i(TAG, "Failed to sent file: " + f.getName());
+                            continue;
+                        }
                     }
-                }
 
-                // 2. Send bitmap image of video
-                // 2.1 send Info message first
-                String thumbnail = v.getId() + Constants.VIDEO_THUMBNAIL_ID;
-                File thumbNailFile = new File(sdir, thumbnail);
-                info = BackpackUtils.createInfoMessage(Constants.VIDEO_IMAGE_DATA, thumbNailFile);
-                conn.sendInfoMessage(info);
+                    // 2. Send bitmap image of video
+                    // 2.1 send Info message first
+                    String thumbnail = v.getThumbnail();
+                    File thumbNailFile = new File(sdir, thumbnail);
+                    info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA, thumbNailFile);
+                    conn.sendInfoMessage(info);
 
-                // 2.2 send bitmap content
-                conn.sendFileData(thumbNailFile, info);
+                    // 2.2 send bitmap content
+                    conn.sendFileData(thumbNailFile, info);
 
-                // 2.3 receive an ACK
-                ackMsg = conn.receiveInfoMessage();
-                if (ackMsg.getType() == Constants.ACK_DATA) {
-                    AckPayload payload = (AckPayload) ackMsg.getPayload();
-                    if (payload.getAck() == Constants.OK_RESPONSE) {
-                        Log.i(TAG, "Successfully sent bitmap image: " + f.getName());
-                    } else {
-                        Log.i(TAG, "Failed to sent bitmap image: " + f.getName());
+                    // 2.3 receive an ACK
+                    ackMsg = conn.receiveInfoMessage();
+                    if (ackMsg.getType() == Constants.ACK_DATA) {
+                        AckPayload payload = (AckPayload) ackMsg.getPayload();
+                        if (payload.getAck() == Constants.OK_RESPONSE) {
+                            Log.i(TAG, "Successfully sent bitmap image: " + f.getName());
+                        } else {
+                            Log.i(TAG, "Failed to sent bitmap image: " + f.getName());
+                        }
                     }
-                }
 
-                // 3. Send temp meta data for video
-                // 3.1 send info message
-                info = BackpackUtils.createInfoMessage(Constants.VIDEO_META_DATA_TMP, f);
-                conn.sendInfoMessage(info);
+                    // 3. Send temp meta data for video
+                    // 3.1 send info message
+                    info = BackpackUtils.createInfoMessage(Constants.META_DATA_TMP, f);
+                    conn.sendInfoMessage(info);
 
-                // 3.2 send temp meta data content
-                conn.sendTmpMetaData(v);
+                    // 3.2 send temp meta data content
+                    conn.sendTmpMetaData(v);
 
-                // 3.3 receive ACK for temp meta data
-                ackMsg = conn.receiveInfoMessage();
-                if (ackMsg.getType() == Constants.ACK_DATA) {
-                    AckPayload payload = (AckPayload) ackMsg.getPayload();
-                    if (payload.getAck() == Constants.OK_RESPONSE) {
-                        Log.i(TAG, "Successfully sent tmp meta data");
-                        BackpackUtils.broadcastMessage(wrapper,
-                                "Sent video file: " + v.getFilename());
-                    } else {
-                        Log.i(TAG, "Failed to sent meta data");
-                        continue;
+                    // 3.3 receive ACK for temp meta data
+                    ackMsg = conn.receiveInfoMessage();
+                    if (ackMsg.getType() == Constants.ACK_DATA) {
+                        AckPayload payload = (AckPayload) ackMsg.getPayload();
+                        if (payload.getAck() == Constants.OK_RESPONSE) {
+                            Log.i(TAG, "Successfully sent tmp meta data");
+                            BackpackUtils.broadcastMessage(wrapper,
+                                    "Sent video file: " + v.getFilename());
+                        } else {
+                            Log.i(TAG, "Failed to sent meta data");
+                            continue;
+                        }
+                    }
+                } else if (v.getType() == Type.HTML) {
+                    // compute the number of images before proceeding further
+                    List<File> webImgList = BackpackUtils.getWebArticleImages(sdir, v);
+
+                    // 1. Send web content (.html) file
+                    // 1.1 send info message first
+                    File f = new File(sdir, v.getFilename());
+                    InfoMessage info = BackpackUtils.createInfoMessage(Constants.WEB_FILE_DATA, f);
+                    InfoPayload infoPayload = (InfoPayload) info.getPayload();
+                    infoPayload.setNoOfImg(webImgList.size());
+                    infoPayload.setFileName(v.getFilename());
+                    conn.sendInfoMessage(info);
+
+                    // 1.2 send the actual web content file
+                    conn.sendFileData(f, info);
+
+                    // 1.3. receive ACK from the receiver
+                    InfoMessage ackMsg = conn.receiveInfoMessage();
+                    if (ackMsg.getType() == Constants.ACK_DATA) {
+                        AckPayload payload = (AckPayload) ackMsg.getPayload();
+                        if (payload.getAck() == Constants.OK_RESPONSE) {
+                            Log.i(TAG, "Successfully sent file: " + f.getName());
+                        } else {
+                            Log.i(TAG, "Failed to sent file: " + f.getName());
+                            continue;
+                        }
+                    }
+
+                    // 2 Send images associated with the web content
+                    for (File img : webImgList) {
+                        // 2.1 send info message
+                        info = BackpackUtils.createInfoMessage(Constants.IMAGE_DATA, img);
+                        // modify the web images path.
+                        // TODO remove this when embedded images in HTML
+                        // functionality is incorporated
+                        InfoPayload p = (InfoPayload) info.getPayload();
+                        String newImgFileName = v.getFilename().substring(0,
+                                v.getFilename().indexOf(".html"))
+                                + "/" + img.getName();
+                        p.setFileName(newImgFileName);
+                        conn.sendInfoMessage(info);
+
+                        // 2.2 Send actual image data
+                        conn.sendFileData(img, info);
+
+                        // 2.3 receive ack from the receiver
+                        ackMsg = conn.receiveInfoMessage();
+                        if (ackMsg.getType() == Constants.ACK_DATA) {
+                            AckPayload payload = (AckPayload) ackMsg.getPayload();
+                            if (payload.getAck() == Constants.OK_RESPONSE) {
+                                Log.i(TAG, "Successfully sent bitmap image: " + img.getName());
+                            } else {
+                                Log.i(TAG, "Failed to sent bitmap image: " + img.getName());
+                            }
+                        }
+
+                    }
+
+                    // 3 Send tmp web meta data
+                    // 3.1 send info message
+                    info = BackpackUtils.createInfoMessage(Constants.META_DATA_TMP, f);
+                    infoPayload = (InfoPayload) info.getPayload();
+                    infoPayload.setFileName(v.getFilename());
+                    conn.sendInfoMessage(info);
+
+                    // 3.2 send temp meta data content
+                    conn.sendTmpMetaData(v);
+
+                    // 3.3 receive ACK for temp meta data
+                    ackMsg = conn.receiveInfoMessage();
+                    if (ackMsg.getType() == Constants.ACK_DATA) {
+                        AckPayload payload = (AckPayload) ackMsg.getPayload();
+                        if (payload.getAck() == Constants.OK_RESPONSE) {
+                            Log.i(TAG, "Successfully sent tmp meta data");
+                            BackpackUtils.broadcastMessage(wrapper,
+                                    "Sent web content: " + v.getFilename());
+                        } else {
+                            Log.i(TAG, "Failed to sent meta data");
+                            continue;
+                        }
                     }
                 }
             }
@@ -292,7 +369,7 @@ public class MessageHandler {
                     conn.sendInfoMessage(ackMsg);
                     break;
 
-                case Constants.VIDEO_IMAGE_DATA:
+                case Constants.IMAGE_DATA:
                     result = conn.readFileData(info, sdir);
                     ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA, type,
                             result > 0 ? Constants.OK_RESPONSE : Constants.FAIL_RESPONSE);
@@ -319,15 +396,7 @@ public class MessageHandler {
                     conn.sendInfoMessage(ackMsg);
                     break;
 
-                case Constants.WEB_IMAGE_DATA:
-
-                    result = conn.readFileData(info, sdir);
-                    ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA, type,
-                            result > 0 ? Constants.OK_RESPONSE : Constants.FAIL_RESPONSE);
-                    conn.sendInfoMessage(ackMsg);
-                    break;
-
-                case Constants.VIDEO_META_DATA_TMP:
+                case Constants.META_DATA_TMP:
                     result = conn.readTmpMetaData(info, sdir, true);
                     ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA, type,
                             result > 0 ? Constants.OK_RESPONSE : Constants.FAIL_RESPONSE);
@@ -338,139 +407,8 @@ public class MessageHandler {
                     }
                     conn.sendInfoMessage(ackMsg);
                     break;
-
-                case Constants.WEB_META_DATA_TMP:
-                    result = conn.readTmpMetaData(info, sdir, false);
-                    ackMsg = BackpackUtils.createInfoMessage(Constants.ACK_DATA, type,
-                            result > 0 ? Constants.OK_RESPONSE : Constants.FAIL_RESPONSE);
-                    if (result > 0) {
-                        BackpackUtils.broadcastMessage(wrapper,
-                                wrapper.getString(R.string.received_file) + ": "
-                                        + ((InfoPayload) info.getPayload()).getFileName());
-                    }
-                    conn.sendInfoMessage(ackMsg);
-                    break;
             }
 
-        }
-    }
-
-    /**
-     * This method sends web content to the receiver
-     * 
-     * @param sdir
-     * @throws BluetoothDisconnectedException
-     */
-    public void sendWebContent(File sdir) throws BluetoothDisconnectedException {
-        boolean start = false;
-        // send an info message informing start of bulk transfer operation
-        InfoMessage bulkMsg = BackpackUtils.createInfoMessage(Constants.START_BULK_TX, null);
-        conn.sendInfoMessage(bulkMsg);
-
-        // receive reply from the receiver
-        InfoMessage bulkAckMsg = conn.receiveInfoMessage();
-        if (bulkAckMsg.getType() == Constants.ACK_DATA) {
-            AckPayload payload = (AckPayload) bulkAckMsg.getPayload();
-            if (payload.getAck() == Constants.OK_RESPONSE) {
-                start = true;
-            }
-        }
-
-        if (start) {
-            for (Article a : webList) {
-                // compute the number of images before proceeding further
-                List<File> webImgList = BackpackUtils.getWebArticleImages(sdir, a);
-
-                // 1. Send web content (.html) file
-                // 1.1 send info message first
-                File f = new File(sdir, a.getFilename());
-                InfoMessage info = BackpackUtils.createInfoMessage(Constants.WEB_FILE_DATA, f);
-                InfoPayload infoPayload = (InfoPayload) info.getPayload();
-                infoPayload.setNoOfImg(webImgList.size());
-                infoPayload.setFileName(a.getFilename());
-                conn.sendInfoMessage(info);
-
-                // 1.2 send the actual web content file
-                conn.sendFileData(f, info);
-
-                // 1.3. receive ACK from the receiver
-                InfoMessage ackMsg = conn.receiveInfoMessage();
-                if (ackMsg.getType() == Constants.ACK_DATA) {
-                    AckPayload payload = (AckPayload) ackMsg.getPayload();
-                    if (payload.getAck() == Constants.OK_RESPONSE) {
-                        Log.i(TAG, "Successfully sent file: " + f.getName());
-                    } else {
-                        Log.i(TAG, "Failed to sent file: " + f.getName());
-                        continue;
-                    }
-                }
-
-                // 2 Send images associated with the web content
-                for (File img : webImgList) {
-                    // 2.1 send info message
-                    info = BackpackUtils.createInfoMessage(Constants.WEB_IMAGE_DATA, img);
-                    // modify the web images path.
-                    // TODO remove this when embedded images in HTML
-                    // functionality is incorporated
-                    InfoPayload p = (InfoPayload) info.getPayload();
-                    String newImgFileName = a.getFilename().substring(0,
-                            a.getFilename().indexOf(".html"))
-                            + "/" + img.getName();
-                    p.setFileName(newImgFileName);
-                    conn.sendInfoMessage(info);
-
-                    // 2.2 Send actual image data
-                    conn.sendFileData(img, info);
-
-                    // 2.3 receive ack from the receiver
-                    ackMsg = conn.receiveInfoMessage();
-                    if (ackMsg.getType() == Constants.ACK_DATA) {
-                        AckPayload payload = (AckPayload) ackMsg.getPayload();
-                        if (payload.getAck() == Constants.OK_RESPONSE) {
-                            Log.i(TAG, "Successfully sent bitmap image: " + img.getName());
-                        } else {
-                            Log.i(TAG, "Failed to sent bitmap image: " + img.getName());
-                        }
-                    }
-
-                }
-
-                // 3 Send tmp web meta data
-                // 3.1 send info message
-                info = BackpackUtils.createInfoMessage(Constants.WEB_META_DATA_TMP, f);
-                infoPayload = (InfoPayload) info.getPayload();
-                infoPayload.setFileName(a.getFilename());
-                conn.sendInfoMessage(info);
-
-                // 3.2 send temp meta data content
-                conn.sendTmpMetaData(a);
-
-                // 3.3 receive ACK for temp meta data
-                ackMsg = conn.receiveInfoMessage();
-                if (ackMsg.getType() == Constants.ACK_DATA) {
-                    AckPayload payload = (AckPayload) ackMsg.getPayload();
-                    if (payload.getAck() == Constants.OK_RESPONSE) {
-                        Log.i(TAG, "Successfully sent tmp meta data");
-                        BackpackUtils.broadcastMessage(wrapper,
-                                "Sent web content: " + a.getFilename());
-                    } else {
-                        Log.i(TAG, "Failed to sent meta data");
-                        continue;
-                    }
-                }
-            }
-        }
-
-        // signal stopping of bulk transfer action
-        bulkMsg = BackpackUtils.createInfoMessage(Constants.STOP_BULK_TX, null);
-        conn.sendInfoMessage(bulkMsg);
-
-        bulkAckMsg = conn.receiveInfoMessage();
-        if (bulkMsg.getType() == Constants.ACK_DATA) {
-            AckPayload payload = (AckPayload) bulkAckMsg.getPayload();
-            if (payload.getAck() == Constants.OK_RESPONSE) {
-                Log.i(TAG, "Bulk transfer of web content files finishes");
-            }
         }
     }
 

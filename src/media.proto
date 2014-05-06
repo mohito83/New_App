@@ -1,0 +1,28 @@
+package metadata;
+
+option java_package = "edu.isi.backpack.metadata";
+option java_outer_classname = "MediaProtos";
+
+message Media {
+  message Item {
+    optional string url = 1;
+    optional string title = 2;
+    optional string filename = 3;
+    optional string pub_date = 4;
+    repeated string categories = 5;
+    optional string source = 6;
+    enum Type {
+      UNKNOWN = 0;
+      HTML = 1;
+      VIDEO = 2;
+      AUDIO = 3;
+    }
+    optional Type type = 7;
+    optional string thumbnail = 8;
+    optional string description = 9;
+    optional string language = 10;
+
+  }
+
+  repeated Item items = 1;
+}

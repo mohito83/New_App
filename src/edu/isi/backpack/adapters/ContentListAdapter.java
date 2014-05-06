@@ -17,18 +17,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.isi.backpack.R;
 import edu.isi.backpack.activities.ContentListActivity;
-import edu.isi.backpack.metadata.ArticleProtos.Article;
-import edu.isi.backpack.metadata.VideoProtos.Video;
+import edu.isi.backpack.metadata.MediaProtos.Media;
+import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * @author jenniferchen Handles the content list
  */
-public class ContentListAdapter extends ArrayAdapter<Object> {
+public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
     private ContentListActivity context;
 
@@ -36,17 +34,14 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
 
     private SparseBooleanArray selected = new SparseBooleanArray();
 
-    // TODO this map is never cleared except clear() is called
-    // Need to manage this list to better manager memory
-    private HashMap<String, String> thumbs = new HashMap<String, String>();
-
     private DisplayImageOptions imageOptions;
 
     private ImageLoader imageLoader = ImageLoader.getInstance();
 
     private String defaultNewsThumb;
 
-    public ContentListAdapter(ContentListActivity context, List<Object> objects, String directory) {
+    public ContentListAdapter(ContentListActivity context, List<Media.Item> objects,
+            String directory) {
         super(context, R.layout.content_list_item, objects);
 
         this.context = context;
@@ -82,128 +77,53 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Object content = getItem(pos);
-        if (content instanceof Video) {
-            final Video video = (Video) content;
-            String title = video.getSnippet().getTitle();
-            String id = video.getId();
-            String cat = video.getSnippet().getCategoryId();
-            String uri = thumbs.get(id);
-            if (uri == null) {
-                String thumb = id + "_default.jpg";
-                uri = Uri.fromFile(new File(contentDirectory, thumb)).toString();
-                thumbs.put(id, uri);
-            }
+        final Media.Item content = getItem(pos);
+        Type type = content.getType();
+        String thumb = content.getThumbnail();
 
-            String desc = video.getSnippet().getDescription();
-
-            holder.titleView.setText(title);
-            holder.catView.setText(cat);
-            holder.descView.setText(check_for_www(desc));
-            holder.playButtonView.setVisibility(View.VISIBLE);
-            String date="";
-            if(video.getSnippet() != null)
-            	if(video.getSnippet().getPublishedAt() != null){
-            		try {
-            			date = video.getSnippet().getPublishedAt().substring(0, 10);
-            		} catch (IndexOutOfBoundsException e) {
-            		}
-            	}
-            holder.publishedDate.setText(date);
-            
-            imageLoader.displayImage(uri, holder.imageView, imageOptions);
-
-            // bookmark
-            if (context.isBookmarked(video.getFilepath()))
-                holder.starView.setImageResource(R.drawable.ic_fav_selected);
-            else
-                holder.starView.setImageResource(R.drawable.ic_fav_unselected);
-
-            holder.starView.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    if (context.isBookmarked(video.getFilepath())) {
-                        context.removeBookmark(video.getFilepath(), true);
-                        holder.starView.setImageResource(R.drawable.ic_fav_unselected);
-                    } else {
-                        context.addBookmark(video.getFilepath(), true);
-                        holder.starView.setImageResource(R.drawable.ic_fav_selected);
-                    }
-                }
-
-            });
-
-        } else if (content instanceof Article) {
-            final Article article = (Article) content;
-            holder.titleView.setText(article.getTitle());
-            holder.catView.setText(R.string.news); // TODO need category for
-                                                   // articles
-            holder.descView.setText(check_for_www(article.getDomain()));
-            holder.playButtonView.setVisibility(View.GONE);
-            String date="";
-            if(article.getDatePublished() != null){
-            	try {
-                	date = article.getDatePublished().toString().substring(0, 4)
-                			+"-"+article.getDatePublished().toString().substring(4, 6)
-                			+"-"+article.getDatePublished().toString().substring(6, 8);
-				} catch (IndexOutOfBoundsException e) {
-				}
-            }
-            holder.publishedDate.setText(date);
-            // TODO need thumbnail for articles
-            // right now randomly pick one from image folder
-            // try to find the image from cache first
-            // Bitmap bitmap = null;
-            final String name = article.getFilename();
-            String uri = thumbs.get(name);
-            if (uri == null) {
-                String assetsPath = name.substring(0, name.indexOf(".htm"));
-                File assetDir = new File(contentDirectory, assetsPath);
-                if (assetDir.exists()) {
-                    File[] files = assetDir.listFiles();
-                    Arrays.sort(files);
-                    for (File f : assetDir.listFiles()) {
-                        String fileName = f.getName();
-                        if (fileName.endsWith(".jpg") || fileName.endsWith(".JPG")
-                                || fileName.endsWith(".png") || fileName.endsWith(".PNG")) {
-                            uri = Uri.fromFile(f).toString();
-                            break;
-                        }
-                    }
-                }
-
-                if (uri == null || uri.contains("%2")) // TODO bug in content
-                                                       // package, bad image
-                                                       // name
-                    uri = defaultNewsThumb;
-
-                thumbs.put(name, uri);
-
-            }
-            imageLoader.displayImage(uri, holder.imageView, imageOptions);
-
-            // bookmark
-            if (context.isBookmarked(article.getFilename()))
-                holder.starView.setImageResource(R.drawable.ic_fav_selected);
-            else
-                holder.starView.setImageResource(R.drawable.ic_fav_unselected);
-
-            holder.starView.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    if (context.isBookmarked(article.getFilename())) {
-                        context.removeBookmark(article.getFilename(), true);
-                        holder.starView.setImageResource(R.drawable.ic_fav_unselected);
-                    } else {
-                        context.addBookmark(article.getFilename(), true);
-                        holder.starView.setImageResource(R.drawable.ic_fav_selected);
-                    }
-                }
-
-            });
+        holder.titleView.setText(content.getTitle());
+        String cat = "";
+        for (String c : content.getCategoriesList()) {
+            cat = cat + c + " ";
         }
+        holder.catView.setText(cat);
+        if (type == Type.VIDEO)
+            holder.descView.setText(content.getDescription());
+        else
+            holder.descView.setText(content.getSource());
+        holder.publishedDate.setText(content.getPubDate());
+
+        String uri;
+        if (thumb == null || thumb.isEmpty())
+            uri = defaultNewsThumb;
+        else
+            uri = Uri.fromFile(new File(contentDirectory, thumb)).toString();
+        imageLoader.displayImage(uri, holder.imageView, imageOptions);
+        if (type == Type.VIDEO)
+            holder.playButtonView.setVisibility(View.VISIBLE);
+        else
+            holder.playButtonView.setVisibility(View.GONE);
+
+        // bookmark
+        if (context.isBookmarked(content.getFilename()))
+            holder.starView.setImageResource(R.drawable.ic_fav_selected);
+        else
+            holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+
+        holder.starView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if (context.isBookmarked(content.getFilename())) {
+                    context.removeBookmark(content.getFilename(), true);
+                    holder.starView.setImageResource(R.drawable.ic_fav_unselected);
+                } else {
+                    context.addBookmark(content.getFilename(), true);
+                    holder.starView.setImageResource(R.drawable.ic_fav_selected);
+                }
+            }
+
+        });
 
         // this will cause the selected item to be highlighted
         if (selected.get(pos))
@@ -212,14 +132,6 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
             convertView.setActivated(false);
 
         return convertView;
-    }
-    
-    private String check_for_www(String desc){
-    	if(desc.startsWith("www."))
-    		desc = desc.replace("www.", "");
-    	else if(desc.startsWith("WWW."))
-    		desc = desc.replace("WWW.", "");
-		return desc;
     }
 
     private static class ViewHolder {
@@ -234,7 +146,7 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
         public TextView descView;
 
         public ImageView starView;
-        
+
         public TextView publishedDate;
     }
 
@@ -256,9 +168,4 @@ public class ContentListAdapter extends ArrayAdapter<Object> {
         notifyDataSetChanged();
     }
 
-    @Override
-    public void clear() {
-        super.clear();
-        thumbs.clear();
-    }
 }

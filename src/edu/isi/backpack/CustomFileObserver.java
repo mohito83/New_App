@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class CustomFileObserver extends FileObserver {
-    public static final String ARTICLE_META_FILE_LOCATION = Constants.webMetaFileName;
-
-    public static final String VIDEO_META_FILE_LOCATION = Constants.videoMetaFileName;
+    public static final String META_FILE_LOCATION = Constants.metaFileName;
 
     private static String TAG = "CustomFileObserver";
 
@@ -101,17 +99,10 @@ public class CustomFileObserver extends FileObserver {
         } else { // not a directory
 
             // if it's a metadata file
-            if (fullPath.endsWith(".dat") || fullPath.endsWith(".meta")
-                    || fullPath.endsWith(".dat_rx")) {
-                if (fullPath.contains(".html")) {
-                    File srcMeta = new File(fullPath);
-                    File dstMeta = new File(contentDirPath + "/" + Constants.webMetaFileName);
-                    ContentManagementTask.mergeArticles(srcMeta, dstMeta, true);
-                } else {
-                    File srcMeta = new File(fullPath);
-                    File dstMeta = new File(contentDirPath + "/" + Constants.videoMetaFileName);
-                    ContentManagementTask.mergeVideos(srcMeta, dstMeta, true);
-                }
+            if (fullPath.endsWith(".dat") || fullPath.endsWith(".meta") || fullPath.endsWith(".db")) {
+                File srcMeta = new File(fullPath);
+                File dstMeta = new File(contentDirPath, Constants.metaFileName);
+                ContentManagementTask.mergeContent(srcMeta, dstMeta, true);
                 // broadcast metadata updated
                 propogateUpdatedMessage(fullPath);
             }
