@@ -195,11 +195,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 }
             } else if (i.getAction().equals(Constants.BT_CONNECTED_ACTION)) {
                 MenuItem item = optionMenu.findItem(R.id.action_sync);
-                item.setIcon(R.drawable.ic_action_sync_active);
+                item.setIcon(R.drawable.ic_action_share_active);
                 item.setEnabled(false);
             } else if (i.getAction().equals(Constants.BT_DISCONNECTED_ACTION)) {
                 MenuItem item = optionMenu.findItem(R.id.action_sync);
-                item.setIcon(R.drawable.ic_action_sync);
+                item.setIcon(R.drawable.ic_action_share);
                 item.setEnabled(true);
 
                 String msg = i.getStringExtra(ExtraConstants.STATUS);
@@ -208,20 +208,20 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                             .setTitle(R.string.sync_report).setMessage(msg)
                             .setNeutralButton(R.string.button_ok, null).show();
 
-            } else if (i.getAction().equals(WifiConstants.CONNECTION_ESTABLISHED_ACTION)) {
-                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
-                item.setIcon(R.drawable.ic_action_sync_wifi_active);
-                item.setEnabled(false);
-            } else if (i.getAction().equals(WifiConstants.CONNECTION_CLOSED_ACTION)) {
-                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
-                item.setIcon(R.drawable.ic_action_sync_wifi);
-                item.setEnabled(true);
-
-                String msg = i.getStringExtra(ExtraConstants.STATUS);
-                if (msg != null)
-                    new AlertDialog.Builder(ContentListActivity.this)
-                            .setTitle(R.string.sync_report).setMessage(msg)
-                            .setNeutralButton(R.string.button_ok, null).show();
+//            } else if (i.getAction().equals(WifiConstants.CONNECTION_ESTABLISHED_ACTION)) {
+//                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+//                item.setIcon(R.drawable.ic_action_sync_wifi_active);
+//                item.setEnabled(false);
+//            } else if (i.getAction().equals(WifiConstants.CONNECTION_CLOSED_ACTION)) {
+//                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+//                item.setIcon(R.drawable.ic_action_sync_wifi);
+//                item.setEnabled(true);
+//
+//                String msg = i.getStringExtra(ExtraConstants.STATUS);
+//                if (msg != null)
+//                    new AlertDialog.Builder(ContentListActivity.this)
+//                            .setTitle(R.string.sync_report).setMessage(msg)
+//                            .setNeutralButton(R.string.button_ok, null).show();
             } else if (i.getAction().equals(Constants.BOOKMARK_ACTION)) {
                 String id = i.getStringExtra(ExtraConstants.ID);
                 boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
@@ -621,34 +621,34 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         if (item.getItemId() == R.id.action_sync) {
             sync();
             return true;
-        } else if (item.getItemId() == R.id.action_sync_wifi) {
-
-            wifiListDialog = new WifiListDialog();
-            wifiListDialog.setInitialList(wifiListItems.values());
-            wifiListDialog.setServiceName(wifiServiceManager.getServiceName());
-            wifiListDialog.setHandler(new WifiListDialog.IHandler() {
-
-                @Override
-                public void onReturnValue(NsdServiceInfo device) {
-                    wifiListDialog.dismiss(); // dismiss dialog will also stops
-                    Intent i = new Intent(getBaseContext(), WifiConnectionService.class);
-                    i.putExtra(ExtraConstants.DEVICE, device);
-                    startService(i);
-                }
-
-                @Override
-                public void onDismissed() {
-                    wifiServiceManager.stopDiscovery();
-                    wifiListItems.clear();
-                    wifiListDialog.redraw(wifiListItems.values());
-                }
-            });
-            wifiListDialog.show(getFragmentManager(), "WifiListDialog");
-
-            // start discovering devices
-            wifiServiceManager.startDiscovery();
-
-            return true;
+//        } else if (item.getItemId() == R.id.action_sync_wifi) {
+//
+//            wifiListDialog = new WifiListDialog();
+//            wifiListDialog.setInitialList(wifiListItems.values());
+//            wifiListDialog.setServiceName(wifiServiceManager.getServiceName());
+//            wifiListDialog.setHandler(new WifiListDialog.IHandler() {
+//
+//                @Override
+//                public void onReturnValue(NsdServiceInfo device) {
+//                    wifiListDialog.dismiss(); // dismiss dialog will also stops
+//                    Intent i = new Intent(getBaseContext(), WifiConnectionService.class);
+//                    i.putExtra(ExtraConstants.DEVICE, device);
+//                    startService(i);
+//                }
+//
+//                @Override
+//                public void onDismissed() {
+//                    wifiServiceManager.stopDiscovery();
+//                    wifiListItems.clear();
+//                    wifiListDialog.redraw(wifiListItems.values());
+//                }
+//            });
+//            wifiListDialog.show(getFragmentManager(), "WifiListDialog");
+//
+//            // start discovering devices
+//            wifiServiceManager.startDiscovery();
+//
+//            return true;
         } else if (item.getItemId() == R.id.action_share_app) {
 
             // find the apk

@@ -98,9 +98,9 @@ public class SyncListenerTransactor {
         String message;
         if (disconnected) // got disconnected in the middle of
                           // transfer
-            message = context.getString(R.string.file_sync_incomplete);
+            message = context.getString(R.string.file_sync_incomplete) + ": " + remoteDevice;
         else
-            message = context.getString(R.string.file_sync_successful);
+            message = context.getString(R.string.file_sync_successful) + ": " + remoteDevice;
         conn.cancelNotification();
         BackpackUtils.broadcastMessage(context, message);
 
