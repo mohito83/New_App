@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
+import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,31 +56,31 @@ public class DeleteAllContentTask extends AsyncTask<Void, Integer, Void> {
 
             // delete file
             File file = new File(contentDirectory, item.getFilename());
+            String filename = file.getName();
 
             // delete thumbnail
             File thumb = new File(contentDirectory, item.getThumbnail());
             thumb.delete();
-            
-            // delete assets
-            String filename = file.getName();
-            String dirName = filename.substring(0, filename.indexOf(".htm"));
-            File assetDir = new File(file.getParent(), dirName);
-            if (assetDir.exists()) {
-                for (File f : assetDir.listFiles()) {
-                    f.delete();
-                }
-            }
-
-            file.delete();
-            assetDir.delete();
 
             // delete from bookmark
             if (parent.isBookmarked(item.getFilename()))
                 parent.removeBookmark(item.getFilename(), false);
+
+            // delete assets
+            if (item.getType() == Type.HTML) {
+                String dirName = filename.substring(0, filename.indexOf(".htm"));
+                File assetDir = new File(file.getParent(), dirName);
+                if (assetDir.exists()) {
+                    for (File f : assetDir.listFiles()) {
+                        f.delete();
+                    }
+                    assetDir.delete();
+                }
+            }
+
+            file.delete();
+
         }
-
-
-
 
         // build new empty metadata
         Media.Builder newMedia = Media.newBuilder();
