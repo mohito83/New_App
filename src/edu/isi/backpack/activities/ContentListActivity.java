@@ -399,7 +399,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // start WifiListenerService using startService so that it will keep
         // running even after unbiding
-        startService(new Intent(this, WifiListenerService.class));
+//        startService(new Intent(this, WifiListenerService.class));
 
         // check release/debug mode
         try {
@@ -590,9 +590,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // bind to wifiListenerService
         // this will start the service if not already running
-        Log.i(TAG, "bind to service");
-        bindService(new Intent(this, WifiListenerService.class), wifiListenerServiceConn,
-                Context.BIND_AUTO_CREATE);
+//        Log.i(TAG, "bind to service");
+//        bindService(new Intent(this, WifiListenerService.class), wifiListenerServiceConn,
+//                Context.BIND_AUTO_CREATE);
 
     }
 
@@ -786,10 +786,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     protected void onStop() {
         super.onStop();
         // Unbind from the service
-        if (boundWifiListener) {
-            unbindService(wifiListenerServiceConn);
-            boundWifiListener = false;
-        }
+//        if (boundWifiListener) {
+//            unbindService(wifiListenerServiceConn);
+//            boundWifiListener = false;
+//        }
     }
 
     @Override
