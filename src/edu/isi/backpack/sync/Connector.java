@@ -320,8 +320,8 @@ public class Connector {
             Media media = Media.parseDelimitedFrom(mmInputStream);
             Media.Item v = media.getItems(0);
             if (v != null) {
-                String metaTempFile = fName + ".dat.tmp";
-                String metafile = fName + ".dat";
+                String metaTempFile = fName + ".db.tmp";
+                String metafile = fName + ".db";
                 File metaTemp = new File(sdir, metaTempFile);
                 metaTemp.createNewFile();
                 fos = new FileOutputStream(metaTemp);

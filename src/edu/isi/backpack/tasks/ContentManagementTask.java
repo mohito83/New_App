@@ -298,7 +298,7 @@ public class ContentManagementTask extends AsyncTask<Void, Integer, String> {
 
         // if contains any .dat file, start merging
         // if not, traverse until .dat file is found
-        IOFileFilter datFilter = FileFilterUtils.suffixFileFilter(".dat");
+        IOFileFilter datFilter = FileFilterUtils.suffixFileFilter(".db");
         IOFileFilter datFileFilter = FileFilterUtils.and(FileFileFilter.FILE, datFilter);
         IOFileFilter dirFilter = FileFilterUtils.directoryFileFilter();
         Collection<File> dats = FileUtils.listFiles(directory, datFileFilter, null);
