@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.adapters.WifiListAdapter;
 
 import java.util.ArrayList;

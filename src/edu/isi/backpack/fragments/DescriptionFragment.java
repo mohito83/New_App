@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.constants.ExtraConstants;
 
 /**

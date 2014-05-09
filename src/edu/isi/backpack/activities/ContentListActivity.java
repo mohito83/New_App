@@ -50,7 +50,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.isi.backpack.BookmarkManager;
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.adapters.ContentListAdapter;
 import edu.isi.backpack.adapters.DrawerItem;
 import edu.isi.backpack.adapters.DrawerListAdapter;
@@ -741,8 +741,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             new AlertDialog.Builder(this)
                     .setTitle(getString(R.string.about) + " " + appName)
                     .setMessage(
-                            appName + " v." + version + "\n" + getLocalBluetoothName() + "\n\n"
-                                    + getString(R.string.license))
+                            appName + " v." + version + "\n" + getLocalBluetoothName())
                     .setNeutralButton(R.string.button_close, null).show();
             return true;
         } else

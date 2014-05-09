@@ -12,7 +12,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.widget.Toast;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.metadata.MediaProtos.Media;

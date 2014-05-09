@@ -7,7 +7,7 @@ package edu.isi.backpack.tasks;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;

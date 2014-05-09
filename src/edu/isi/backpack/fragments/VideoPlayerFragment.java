@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.VideoControllerView;
 import edu.isi.backpack.activities.FullscreenVideoActivity;
 import edu.isi.backpack.constants.ExtraConstants;

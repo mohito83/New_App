@@ -9,7 +9,7 @@ package edu.isi.backpack.constants;
  */
 public class Constants {
 
-    public static final String WIFI_SERVICE_HEADER = "Backpack_";
+    public static final String WIFI_SERVICE_HEADER = "Toosheh_";
 
     public static final int CONTENT_VIEWER_ACTIVITY = 1022;
 
@@ -25,7 +25,7 @@ public class Constants {
 
     public static final String BOOKMARK_ACTION = "edu.isi.backpack.BookmarkAction";
 
-    public static final String contentDirName = "BackpackContent";
+    public static final String contentDirName = "Content";
 
     public static final String xferDirName = "xfer";
 

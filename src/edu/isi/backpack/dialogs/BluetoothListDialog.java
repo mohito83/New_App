@@ -24,7 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.adapters.BluetoothListAdapter;
 
 /**

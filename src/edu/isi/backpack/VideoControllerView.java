@@ -38,6 +38,7 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
+import org.toosheh.android.R;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the buttons

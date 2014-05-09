@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;

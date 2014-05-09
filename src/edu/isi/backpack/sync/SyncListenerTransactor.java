@@ -7,7 +7,7 @@ package edu.isi.backpack.sync;
 import android.content.ContextWrapper;
 import android.util.Log;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.util.BackpackUtils;
 

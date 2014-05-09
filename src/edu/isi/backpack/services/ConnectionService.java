@@ -13,7 +13,7 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.sync.Connector;

@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.fragments.HtmlFragment;

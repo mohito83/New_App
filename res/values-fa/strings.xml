@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Backpack</string>
+    <string name="app_name">توشه</string>
     <string name="app_version">ناشناخته</string>
     <string name="title_activity_fullscreen_video">نمایش تمام صفحه</string>
     <string name="title_activity_content_viewer">نمایش محتوا</string>

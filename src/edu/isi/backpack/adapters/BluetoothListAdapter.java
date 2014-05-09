@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import edu.isi.backpack.R;
+import org.toosheh.android.R;
 
 /**
  * @author jenniferchen

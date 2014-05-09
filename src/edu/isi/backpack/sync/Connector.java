@@ -12,8 +12,9 @@ import android.widget.RemoteViews;
 
 import com.google.protobuf.GeneratedMessage;
 
-import edu.isi.backpack.R;
 import edu.isi.backpack.metadata.MediaProtos.Media;
+
+import org.toosheh.android.R;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -63,14 +64,14 @@ public class Connector {
         mmInputStream = in;
         mmOutputSteam = out;
         notification = new Notification();
-        notification.icon = edu.isi.backpack.R.drawable.ic_launcher;
+        notification.icon = R.drawable.ic_launcher;
         notification.tickerText = "BackPack";
         notification.when = System.currentTimeMillis();
         notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
         notification.contentView = new RemoteViews(c.getPackageName(), R.layout.download_progress);
         // notification.contentIntent = pendingIntent;
-        notification.contentView.setImageViewResource(edu.isi.backpack.R.drawable.ic_launcher,
-                edu.isi.backpack.R.drawable.ic_action_share);
+        notification.contentView.setImageViewResource(R.drawable.ic_launcher,
+                R.drawable.ic_action_share);
         notification.contentView.setTextViewText(R.id.status_text,
                 c.getString(R.string.sync_in_progress));
         notification.contentView.setProgressBar(R.id.status_progress, 100, 2, false);
