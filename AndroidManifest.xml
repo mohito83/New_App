@@ -44,6 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+      		android:name="edu.isi.backpack.activities.HelpActivity" >
+    	</activity>
                 <activity
             android:name="edu.isi.backpack.activities.ContentViewerActivity"
             android:label="@string/title_activity_content_viewer"

@@ -36,6 +36,7 @@
 	<string name="action_download">Download</string>
 	<string name="action_share">Share</string>
 	<string name="action_shareapp">Share App</string>
+	<string name="action_tourapp">Tour</string>
 	<string name="action_dltoday">Today\'s Content</string>
 	<string name="action_dl1day">1 Day Ago</string>
 	<string name="action_dl2day">2 Days Ago</string>

@@ -56,5 +56,10 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_shareapp"/>
+    <item
+        android:id="@+id/action_tour_app"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_tourapp"/>
 
 </menu>

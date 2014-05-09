@@ -417,6 +417,12 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         // restore user preferences
         settings = getPreferences(MODE_PRIVATE);
         bookmarks = settings.getStringSet(SETTING_BOOKMARKS, new HashSet<String>());
+        if(settings.getBoolean("first", true)){
+        	SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean("first", false);
+            editor.apply();
+        	startActivity(new Intent(getBaseContext(), HelpActivity.class));
+        }
 
         bts = new ArrayList<BluetoothDevice>();
 
@@ -685,6 +691,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         } else if (item.getItemId() == R.id.action_download_today) {
             String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
+            return true;
+        } else if (item.getItemId() == R.id.action_tour_app) {
+        	startActivity(new Intent(getBaseContext(), HelpActivity.class));
             return true;
         } else if (item.getItemId() == R.id.action_download_yesterday) {
             Calendar yesterday = Calendar.getInstance();
