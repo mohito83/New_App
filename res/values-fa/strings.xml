@@ -33,9 +33,10 @@
     <!-- ACTION BAR ITEMS -->
     <string name="action_refresh">بروزرسانی صفحه</string>
     <string name="action_sync"> تبادل توشه</string>
-    <string name="action_download">Download</string>
-    <string name="action_share">Share</string>
+    <string name="action_download"> دریافت توشه</string>
+    <string name="action_share"> اشتراک‌گذاری فایلها</string>
     <string name="action_shareapp">اشتراک‌گذاری برنامه</string>
+    <string name="action_tourapp">Tour</string>
     <string name="action_dltoday">امروز چی توشه؟</string>
     <string name="action_dl1day">توشه دیروز</string>
     <string name="action_dl2day"> توشه پریروز</string>
@@ -55,9 +56,9 @@
     <string name="drawer_content_type">انواع محتوا</string>
     <string name="drawer_categories">دسته بندی ها</string>
     <string name="drawer_all">همه محتویات</string>
-    <string name="drawer_video">ديدنى</string>
-    <string name="drawer_article">خواندنى</string>
-    <string name="drawer_audio">شنیداری</string>
+    <string name="drawer_video">ديدنى‌ها</string>
+    <string name="drawer_article">خواندنى‌ها</string>
+    <string name="drawer_audio">شنیدنی‌ها</string>
     <string name="drawer_starred">​‌ستاره‌دار</string>
 
     <!-- INFO -->
@@ -73,7 +74,7 @@
     <string name="confirm_delete_all">همه فایلها حذف خواهند شد٬ تایید می‌کنید؟</string>
     <string name="download_content">فایلها را دریافت کن</string>
     <string name="confirm_download"> فایلهای جدید دریافت و ادغام خواهند شد٬تایید می‌کنید؟</string>
-    <string name="download_content_package"> توشه امروز را دریافت کن</string>
+    <string name="download_content_package">دریافت توشه امروز</string>
     <string name="downloading">در حال دریافت</string>
     <string name="download_cancel">دريافت فايلها لغو شد</string>
     <string name="default_device_title">دستگاه اسم ندارد</string>
@@ -85,8 +86,8 @@
     <string name="sync_in_progress">در حال تبادل</string>
     <string name="sending_file">در حال فرستادن فایل</string>
     <string name="receiving_file">در حال دریافت فایل</string>
-    <string name="confirm_open_web_title">View Original Article</string>
-    <string name="confirm_open_web">This will open the original article on the internet. Are you sure?</string>
+    <string name="confirm_open_web_title">لینک مستقیم</string>
+    <string name="confirm_open_web">دسترسی به لینک مستقیم از طریق  اینترنت خواهد بود. تایید می‌کنید؟</string>
 
     <!-- SYNC PROGGRESS -->
     <string name="connection_failed"> وصل نشد</string>
@@ -106,7 +107,7 @@
 
     <!-- PROGRESS BAR -->
     <string name="progress_unknown_size">در حال دریافت فایلها(حجم فایلها مشخص نیست)ه</string>
-    <string name="progress_extracting">در حال خواندن بسته</string>
+    <string name="progress_extracting">در حال خواندن توشه‌ی دریافتی</string>
     <string name="progress_merging">در حال ادغام فایلها</string>
     <string name="progress_cleanup">در حال پاک‌کردن فایلهای غیرقابل‌استفاده</string>
     <string name="progress_downloading">درحال دریافت فایلها</string>
