@@ -4,9 +4,9 @@
 
 package edu.isi.backpack.sync;
 
-import java.io.Serializable;
-
 import edu.isi.backpack.constants.Constants;
+
+import java.io.Serializable;
 
 /**
  * This class defines the Info message packet which is sent before starting the

@@ -15,13 +15,14 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.Looper;
 
-import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.sync.Connector;
 import edu.isi.backpack.sync.MessageHandler;
 import edu.isi.backpack.sync.SyncListenerTransactor;
 import edu.isi.backpack.util.BackpackUtils;
+
+import org.toosheh.android.R;
 
 import java.io.File;
 import java.io.IOException;

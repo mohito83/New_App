@@ -13,10 +13,12 @@ import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
-import org.toosheh.android.R;
+
 import edu.isi.backpack.VideoControllerView;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
+
+import org.toosheh.android.R;
 
 /**
  * @author jenniferchen This activity is a fullscreen video view

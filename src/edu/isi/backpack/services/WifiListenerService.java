@@ -23,7 +23,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
 
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
@@ -73,11 +72,9 @@ public class WifiListenerService extends Service {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_REQUEST_SERVICE_NAME:
-                    Log.i(TAG, "service name request received");
                     while (!registered) {
                     } // wait until registration is complete (either suceeded or
                       // failed)
-                    Log.i(TAG, "sending back service name: " + registeredName);
                     Message m = Message.obtain(null, WifiListenerService.MSG_REQUEST_SERVICE_NAME);
                     Bundle b = new Bundle();
                     b.putString("service", registeredName);
@@ -100,27 +97,22 @@ public class WifiListenerService extends Service {
 
         @Override
         public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-            Log.i(TAG, "Wifi registration failed");
             registered = true;
         }
 
         @Override
         public void onServiceRegistered(NsdServiceInfo serviceInfo) {
-            Log.i(TAG, "Wifi registered: " + serviceInfo.getServiceName());
             registeredName = serviceInfo.getServiceName();
             registered = true;
-            Log.i(TAG, "Wifi registered");
         }
 
         @Override
         public void onServiceUnregistered(NsdServiceInfo serviceInfo) {
-            Log.i(TAG, "Wifi service unregistered: " + serviceInfo.getServiceName());
             registeredName = null;
         }
 
         @Override
         public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-            Log.i(TAG, "Wifi unregistration failed");
         }
 
     };
@@ -134,13 +126,11 @@ public class WifiListenerService extends Service {
             NetworkInfo netInfo = conMan.getActiveNetworkInfo();
             if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI)
                 synchronized (wifiOn) {
-                    Log.i(TAG, "Wifi turned on");
                     wifiOn.set(true);
                     wifiOn.notifyAll();
                 }
             else {
                 synchronized (wifiOn) {
-                    Log.i(TAG, "Wifi turned off");
                     wifiOn.set(false);
                     wifiOn.notifyAll();
                 }
@@ -174,14 +164,12 @@ public class WifiListenerService extends Service {
                 metaFile.createNewFile();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i(TAG, "Starting WifiListenerService");
 
         // check wifi status
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -200,27 +188,23 @@ public class WifiListenerService extends Service {
                 while (true) {
                     if (wifiOn.get()) {
 
-                        Log.i(TAG, "Wifi is on");
 
                         // create server socket
                         try {
                             if (serverSocket == null)
                                 serverSocket = new ServerSocket(WifiConstants.SERVICE_PORT);
                         } catch (IOException e) {
-                            Log.e(TAG, "Unable to create server socket");
                             continue;
                         }
 
                         Socket socket = null;
                         if (serverSocket != null) {
-                            Log.i(TAG, "Wifi Server socket created");
                             try {
                                 // blocks until successful connection or
                                 // exception
                                 socket = serverSocket.accept();
                             } catch (IOException e) {
                                 socket = null;
-                                Log.e(TAG, "Error occured while waiting for wifi connection");
                                 continue;
                             }
                         }
@@ -228,7 +212,6 @@ public class WifiListenerService extends Service {
                         // if socket is null, accept was canceled because wifi
                         // has been turned off
                         if (socket != null) {
-                            Log.i(TAG, "Connection established");
                             sendBroadcast(new Intent(WifiConstants.CONNECTION_ESTABLISHED_ACTION));
 
                             Thread commThread = new Thread(new CommunicationSocket(socket));
@@ -241,14 +224,12 @@ public class WifiListenerService extends Service {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            Log.i(TAG, "Sync complete");
                         }
                     } else { // wifi is off, wait until it's turned on
                         synchronized (wifiOn) {
                             try {
                                 wifiOn.wait();
                             } catch (InterruptedException e) {
-                                Log.w(TAG, "Interrupted while waiting for wifi to turn On");
                                 e.printStackTrace();
                             }
                         }
@@ -299,12 +280,10 @@ public class WifiListenerService extends Service {
                     mRegistrationListener);
 
         } else {
-            Log.i(TAG, "Wifi already registered");
         }
     }
 
     public void unregisterService() {
-        Log.i(TAG, "Unregistering Wifi service");
         mNsdManager.unregisterService(mRegistrationListener);
     }
 
@@ -339,9 +318,6 @@ public class WifiListenerService extends Service {
                 mHandler = new MessageHandler(conn, WifiListenerService.this, metaFile);
             } catch (IOException e) {
                 socket = null;
-                Log.e(TAG,
-                        "Trying to get socket IOStream while socket is not connected"
-                                + e.getMessage());
                 sendBroadcast(new Intent(WifiConstants.CONNECTION_CLOSED_ACTION));
             }
         }
@@ -355,7 +331,6 @@ public class WifiListenerService extends Service {
                         conn, mHandler, path, deviceName);
                 String result = trans.run();
 
-                Log.i(TAG, "Close socket");
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e1) {
@@ -367,8 +342,6 @@ public class WifiListenerService extends Service {
                     commSock.close();
 
                 } catch (IOException e) {
-                    Log.e(TAG, "Exception while closing child socket after file sync is completed",
-                            e);
                 }
 
                 Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);

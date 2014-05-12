@@ -4,6 +4,7 @@ package edu.isi.backpack;
 import android.content.Intent;
 import android.os.FileObserver;
 import android.support.v4.content.LocalBroadcastManager;
+
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.tasks.ContentManagementTask;

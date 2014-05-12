@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.widget.Toast;
 
-import org.toosheh.android.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.metadata.MediaProtos.Media;
@@ -23,6 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.toosheh.android.R;
 
 import java.io.File;
 import java.io.FileFilter;

@@ -8,7 +8,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.nsd.NsdServiceInfo;
 import android.os.IBinder;
-import android.util.Log;
 
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.ExtraConstants;
@@ -29,16 +28,12 @@ import java.net.Socket;
  */
 public class WifiConnectionService extends Service {
 
-    public static final String TAG = "WifiConnectionService";
-
     private File path;
 
     private File metaFile;
 
     @Override
     public void onCreate() {
-
-        Log.i(TAG, "Starting wifi connection service");
 
         File appDir = getExternalFilesDir(null);
         path = new File(appDir, Constants.contentDirName);
@@ -51,7 +46,6 @@ public class WifiConnectionService extends Service {
                 metaFile.createNewFile();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Unable to create a empty meta data file" + e.getMessage());
         }
 
     }
@@ -76,23 +70,18 @@ public class WifiConnectionService extends Service {
 
             @Override
             public void run() {
-                Log.i(TAG, "connecting");
                 try {
                     mmSocket = new Socket(device.getHost(), device.getPort());
                 } catch (IOException e) {
-                    Log.e(TAG, "Connection failed to " + device);
-                    Log.e(TAG, "Closing socket");
                     try {
                         mmSocket.close();
                     } catch (IOException e1) {
-                        Log.e(TAG, "Closing socket failed");
                         e1.printStackTrace();
                     }
                     e.printStackTrace();
                 }
 
                 // connection established
-                Log.i(TAG, "Connection established");
                 sendBroadcast(new Intent(WifiConstants.CONNECTION_ESTABLISHED_ACTION));
                 BackpackUtils.broadcastMessage(WifiConnectionService.this,
                         "Successfully connected to " + device.getServiceName());
@@ -105,7 +94,6 @@ public class WifiConnectionService extends Service {
                         conn = new Connector(mmInStream, mmOutStream, getApplicationContext());
                         mHandler = new MessageHandler(conn, WifiConnectionService.this, metaFile);
                     } catch (IOException e) {
-                        Log.e(TAG, "unable to get in/out put streams", e);
                         sendBroadcast(new Intent(WifiConstants.CONNECTION_CLOSED_ACTION));
                         BackpackUtils.broadcastMessage(WifiConnectionService.this,
                                 "Error in initiating connection");
@@ -120,7 +108,6 @@ public class WifiConnectionService extends Service {
 
                     // transaction ended
                     // disconnect
-                    Log.i(TAG, "Close socket");
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e1) {
@@ -131,7 +118,6 @@ public class WifiConnectionService extends Service {
                         mmOutStream.close();
                         mmSocket.close();
                     } catch (IOException e) {
-                        Log.e(TAG, "Unable to disconnect socket", e);
                     }
 
                     Intent i = new Intent(WifiConstants.CONNECTION_CLOSED_ACTION);

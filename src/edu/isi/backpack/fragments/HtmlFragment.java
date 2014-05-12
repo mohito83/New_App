@@ -11,8 +11,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import org.toosheh.android.R;
 import edu.isi.backpack.constants.ExtraConstants;
+
+import org.toosheh.android.R;
 
 /**
  * @author jenniferchen html viewer

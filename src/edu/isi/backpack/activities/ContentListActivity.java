@@ -49,7 +49,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.isi.backpack.BookmarkManager;
-import org.toosheh.android.R;
 import edu.isi.backpack.adapters.ContentListAdapter;
 import edu.isi.backpack.adapters.DrawerItem;
 import edu.isi.backpack.adapters.DrawerListAdapter;
@@ -69,6 +68,8 @@ import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
 import edu.isi.backpack.tasks.DeleteContentTask;
 import edu.isi.backpack.wifi.WifiServiceManager;
+
+import org.toosheh.android.R;
 
 import java.io.File;
 import java.io.FileInputStream;

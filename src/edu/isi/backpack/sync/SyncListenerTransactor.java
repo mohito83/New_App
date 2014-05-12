@@ -5,11 +5,11 @@
 package edu.isi.backpack.sync;
 
 import android.content.ContextWrapper;
-import android.util.Log;
 
-import org.toosheh.android.R;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.util.BackpackUtils;
+
+import org.toosheh.android.R;
 
 import java.io.File;
 
@@ -56,10 +56,8 @@ public class SyncListenerTransactor {
             switch (transcState) {
                 case Constants.META_DATA_EXCHANGE:
                     try {
-                        Log.i(TAG, "Sending meta data");
                         mHandler.sendFullMetaData(Constants.META_DATA_FULL, metaFile);
 
-                        Log.i(TAG, "Receiving meta data");
                         mHandler.receiveFullMetaData(contentDir);
 
                         transcState = Constants.FILE_DATA_EXCHANGE;
@@ -75,13 +73,9 @@ public class SyncListenerTransactor {
                         File xferDir = new File(contentDir, Constants.xferDirName + "/"
                                 + remoteDevice);
                         xferDir.mkdirs();
-                        Log.i(TAG, "Start receiving contents");
                         mHandler.receiveFiles(xferDir);
-                        Log.i(TAG, "Finished receiving contents");
 
-                        Log.i(TAG, "Start sending contents");
                         mHandler.sendContents(contentDir);
-                        Log.i(TAG, "Finished sending contents");
 
                         transcState = Constants.SYNC_COMPLETE;
                         terminate = true;

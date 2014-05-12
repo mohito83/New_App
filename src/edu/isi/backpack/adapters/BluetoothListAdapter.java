@@ -4,8 +4,6 @@
 
 package edu.isi.backpack.adapters;
 
-import java.util.List;
-
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.text.Html;
@@ -14,7 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import org.toosheh.android.R;
+
+import java.util.List;
 
 /**
  * @author jenniferchen

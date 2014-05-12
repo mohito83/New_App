@@ -4,8 +4,6 @@
 
 package edu.isi.backpack.dialogs;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -24,8 +22,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import org.toosheh.android.R;
+
 import edu.isi.backpack.adapters.BluetoothListAdapter;
+
+import org.toosheh.android.R;
+
+import java.util.ArrayList;
 
 /**
  * @author jenniferchen

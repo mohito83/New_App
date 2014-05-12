@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import org.toosheh.android.R;
+
 import edu.isi.backpack.constants.ExtraConstants;
+
+import org.toosheh.android.R;
 
 /**
  * @author jenniferchen A page that shows the description of individual content
