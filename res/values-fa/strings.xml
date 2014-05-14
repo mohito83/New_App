@@ -74,7 +74,7 @@
     <string name="confirm_delete_all">همه فایلها حذف خواهند شد٬ تایید می‌کنید؟</string>
     <string name="download_content">فایلها را دریافت کن</string>
     <string name="confirm_download"> فایلهای جدید دریافت و ادغام خواهند شد٬تایید می‌کنید؟</string>
-    <string name="download_content_package">دریافت توشه امروز</string>
+    <string name="download_content_package">دریافت فايلها</string>
     <string name="downloading">در حال دریافت</string>
     <string name="download_cancel">دريافت فايلها لغو شد</string>
     <string name="default_device_title">دستگاه اسم ندارد</string>

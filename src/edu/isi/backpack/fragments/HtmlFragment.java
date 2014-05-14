@@ -49,7 +49,7 @@ public class HtmlFragment extends Fragment {
         // settings
         webview = (WebView) rootView.findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
-        settings.setTextZoom(200);
+        settings.setTextZoom(250);
         settings.setJavaScriptEnabled(false);
         settings.setBuiltInZoomControls(true);
         settings.setLoadWithOverviewMode(true);

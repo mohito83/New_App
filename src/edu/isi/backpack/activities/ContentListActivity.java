@@ -119,8 +119,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
      * drawer keyword : lable label is different depending on phone's language
      * setting
      **/
-    // private HashMap<String, String> drawerLabels = new HashMap<String,
-    // String>();
+    private HashMap<String, String> drawerLabels = new HashMap<String, String>();
 
     private DrawerLayout drawerLayout;
 
@@ -417,11 +416,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         // restore user preferences
         settings = getPreferences(MODE_PRIVATE);
         bookmarks = settings.getStringSet(SETTING_BOOKMARKS, new HashSet<String>());
-        if(settings.getBoolean("first", true)){
-        	SharedPreferences.Editor editor = settings.edit();
+        if (settings.getBoolean("first", true)) {
+            SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("first", false);
             editor.apply();
-        	startActivity(new Intent(getBaseContext(), HelpActivity.class));
+            startActivity(new Intent(getBaseContext(), HelpActivity.class));
         }
 
         bts = new ArrayList<BluetoothDevice>();
@@ -450,11 +449,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             // }
         }
 
-        // drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
-        // drawerLabels.put(FILTER_ID_VIDEO, getString(R.string.drawer_video));
-        // drawerLabels.put(FILTER_ID_WEB, getString(R.string.drawer_article));
-        // drawerLabels.put(FILTER_ID_STARRED,
-        // getString(R.string.drawer_starred));
+        drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
+        drawerLabels.put(Media.Item.Type.VIDEO.toString(), getString(R.string.drawer_video));
+        drawerLabels.put(Media.Item.Type.HTML.toString(), getString(R.string.drawer_article));
+        drawerLabels.put(Media.Item.Type.AUDIO.toString(), getString(R.string.drawer_audio));
+        drawerLabels.put(FILTER_ID_STARRED, getString(R.string.drawer_starred));
 
         // start file monitor service
         Intent intent = new Intent(this, FileMonitorService.class);
@@ -465,7 +464,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -563,8 +561,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         });
 
         // Start bluetooth listener service
-        if (!isBtListenerServiceRunning())
-            startService(new Intent(this, ListenerService.class));
+        startService(new Intent(this, ListenerService.class));
 
         // register broadcast receiver
         // local messages
@@ -693,7 +690,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_tour_app) {
-        	startActivity(new Intent(getBaseContext(), HelpActivity.class));
+            startActivity(new Intent(getBaseContext(), HelpActivity.class));
             return true;
         } else if (item.getItemId() == R.id.action_download_yesterday) {
             Calendar yesterday = Calendar.getInstance();
@@ -747,10 +744,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 e.printStackTrace();
             }
 
-            new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.about) + " " + appName)
-                    .setMessage(
-                            appName + " v." + version + "\n" + getLocalBluetoothName())
+            new AlertDialog.Builder(this).setTitle(getString(R.string.about) + " " + appName)
+                    .setMessage(appName + " v." + version + "\n" + getLocalBluetoothName())
                     .setNeutralButton(R.string.button_close, null).show();
             return true;
         } else
@@ -879,18 +874,22 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         drawerItems.add(new DrawerItem(Media.Item.Type.HTML.toString(),
                 getString(R.string.drawer_article), DrawerItem.CONTENT_TYPE, selectedType
                         .equals(Media.Item.Type.HTML.toString())));
-        drawerItems.add(new DrawerItem(Media.Item.Type.AUDIO.toString(),
-                getString(R.string.drawer_audio), DrawerItem.CONTENT_TYPE, selectedType
-                        .equals(Media.Item.Type.AUDIO.toString())));
+        // drawerItems.add(new DrawerItem(Media.Item.Type.AUDIO.toString(),
+        // getString(R.string.drawer_audio), DrawerItem.CONTENT_TYPE,
+        // selectedType
+        // .equals(Media.Item.Type.AUDIO.toString())));
 
         // categories
-        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_categories),
-                DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
-                DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
-        for (String cat : cats) {
-            drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY, selectedCat.equals(cat)));
-        }
+        // drawerItems.add(new DrawerItem(null,
+        // getString(R.string.drawer_categories),
+        // DrawerItem.HEADER, false));
+        // drawerItems.add(new DrawerItem(FILTER_ID_ALL,
+        // getString(R.string.drawer_all),
+        // DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
+        // for (String cat : cats) {
+        // drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY,
+        // selectedCat.equals(cat)));
+        // }
         if (!firsttime)
             applyListFilter();
 
@@ -921,15 +920,11 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     }
 
     private void updateFilter() {
-        if (contentListAdapter.isEmpty()) {
-            categoryFilter.setVisibility(View.GONE);
-            return;
-        } else
-            categoryFilter.setVisibility(View.VISIBLE);
+        categoryFilter.setVisibility(View.VISIBLE);
         String filter = "";
-        filter = setFilter(filter, selectedBookmark);
-        filter = setFilter(filter, selectedType);
-        filter = setFilter(filter, selectedCat);
+        filter = setFilter(filter, drawerLabels.get(selectedBookmark));
+        filter = setFilter(filter, drawerLabels.get(selectedType));
+        filter = setFilter(filter, drawerLabels.get(selectedCat));
         if (filter.length() != 0)
             categoryFilter.setText(getString(R.string.filters) + filter);
         else
@@ -983,7 +978,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 // type filter
                 if (!selectedType.equals(FILTER_ID_ALL)) {
                     if (m.getType() != Media.Item.Type.valueOf(selectedType))
-                        contentListAdapter.remove(m); 
+                        contentListAdapter.remove(m);
                 }
                 // category filter
                 if (!selectedCat.equals(FILTER_ID_ALL)) {

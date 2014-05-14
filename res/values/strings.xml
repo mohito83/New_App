@@ -57,7 +57,7 @@
 	<string name="drawer_categories">Categories</string>
 	<string name="drawer_all">All</string>
 	<string name="drawer_video">Video</string>
-	<string name="drawer_article">HTML</string>
+	<string name="drawer_article">Text</string>
 	<string name="drawer_audio">Audio</string>
 	<string name="drawer_starred">Starred</string>
 	

@@ -67,7 +67,7 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.imageView = (ImageView) convertView.findViewById(R.id.contentThumb);
             holder.playButtonView = (ImageView) convertView.findViewById(R.id.playButton);
             holder.titleView = (TextView) convertView.findViewById(R.id.contentTitle);
-            holder.catView = (TextView) convertView.findViewById(R.id.contentCatagory);
+//            holder.catView = (TextView) convertView.findViewById(R.id.contentCatagory);
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
             holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
@@ -86,7 +86,7 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
         for (String c : content.getCategoriesList()) {
             cat = cat + c + " ";
         }
-        holder.catView.setText(cat);
+//        holder.catView.setText(cat);
         if (type == Type.VIDEO)
             holder.descView.setText(content.getDescription());
         else
