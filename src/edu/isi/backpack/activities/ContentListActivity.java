@@ -420,7 +420,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("first", false);
             editor.apply();
-            startActivity(new Intent(getBaseContext(), HelpActivity.class));
+            Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+        	helpIntent.putExtra("type","splash");
+        	startActivity(helpIntent);
         }
 
         bts = new ArrayList<BluetoothDevice>();
@@ -690,7 +692,9 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_tour_app) {
-            startActivity(new Intent(getBaseContext(), HelpActivity.class));
+        	Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+        	helpIntent.putExtra("type","tour");
+        	startActivity(helpIntent);
             return true;
         } else if (item.getItemId() == R.id.action_download_yesterday) {
             Calendar yesterday = Calendar.getInstance();
