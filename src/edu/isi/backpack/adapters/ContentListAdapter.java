@@ -15,12 +15,16 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.toosheh.android.R;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
+import org.toosheh.android.R;
+
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,7 +95,22 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.descView.setText(content.getDescription());
         else
             holder.descView.setText(content.getSource());
-        holder.publishedDate.setText(content.getPubDate());
+        
+        SimpleDateFormat f1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+        SimpleDateFormat f2 = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat f3 = new SimpleDateFormat("yyyy-MM-dd");
+        String date = content.getPubDate();
+        try {
+            Date d = f1.parse(date);
+            date = f3.format(d);
+        } catch (ParseException e) {
+            try {
+                Date d = f2.parse(date);
+                date = f3.format(d);
+            } catch (ParseException e1) {
+            }
+        }
+        holder.publishedDate.setText(date);
 
         String uri;
         if (thumb == null || thumb.isEmpty())
