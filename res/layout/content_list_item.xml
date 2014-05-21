@@ -99,7 +99,8 @@
 		                android:layout_marginLeft="8dip"
 		                android:fontFamily="sans-serif"
 		                android:maxLines="3"
-		                android:textColor="@color/black"
+		                android:textColor="@color/balatarin_text_title"
+		                android:textStyle="bold"
 		                android:textSize="15sp" />
 		
 		             <TextView

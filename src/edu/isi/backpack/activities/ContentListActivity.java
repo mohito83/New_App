@@ -683,7 +683,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     .setMessage(R.string.cant_share_app).setNeutralButton(R.string.button_ok, null)
                     .show();
             return true;
-        } else if (item.getItemId() == R.id.action_download_today) {
+        } else if (item.getItemId() == R.id.action_refresh){/*R.id.action_download_today) {*/
             String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
@@ -692,7 +692,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         	helpIntent.putExtra("type","tour");
         	startActivity(helpIntent);
             return true;
-        } else if (item.getItemId() == R.id.action_download_yesterday) {
+        } /*else if (item.getItemId() == R.id.action_download_yesterday) {
             Calendar yesterday = Calendar.getInstance();
             yesterday.add(Calendar.DATE, -1);
             String packageName = packageDateFormat.format(yesterday.getTime());
@@ -704,7 +704,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             String packageName = packageDateFormat.format(twoDaysAgo.getTime());
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
-        } else if (item.getItemId() == R.id.action_delete_all) {
+        }*/ else if (item.getItemId() == R.id.action_delete_all) {
             // confirm deletion
             new AlertDialog.Builder(this).setTitle(R.string.delete_all_contents)
                     .setMessage(R.string.confirm_delete_all)
