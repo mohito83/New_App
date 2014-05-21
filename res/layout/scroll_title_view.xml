@@ -16,7 +16,7 @@
 	    android:scrollHorizontally="true" 
 	    android:focusable="true" 
 	    android:focusableInTouchMode="true"
-	    android:textColor="@color/black">
+	    android:textColor="@color/white">
 	    <requestFocus
 	        android:duplicateParentState="true"
 	        android:focusable="true"

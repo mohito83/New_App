@@ -2,15 +2,21 @@
 
     <item
         android:id="@+id/action_star"
+        android:icon="@drawable/ic_fav_unselected"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:title="@string/action_bookmark"
-        android:icon="@drawable/ic_fav_unselected"/>
-
+        android:title="@string/action_bookmark"/>
     <item
-        android:id="@+id/action_web"
+        android:id="@+id/action_menu_overflow"
+        android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
         android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_web"/>
+        android:showAsAction="always"
+        android:title="@string/action_download">
+        <menu>
+            <item
+                android:id="@+id/action_web"
+                android:title="@string/action_web"/>
+        </menu>
+    </item>
 
 </menu>
