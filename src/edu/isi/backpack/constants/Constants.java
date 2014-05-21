@@ -9,7 +9,7 @@ package edu.isi.backpack.constants;
  */
 public class Constants {
 
-    public static final String WIFI_SERVICE_HEADER = "Toosheh_";
+    public static final String WIFI_SERVICE_HEADER = "Balatarin_";
 
     public static final int CONTENT_VIEWER_ACTIVITY = 1022;
 

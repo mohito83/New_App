@@ -170,4 +170,6 @@
  <color name="listEndColor">@color/pressed_pifistyle</color>
  <color name="accent">@color/pressed_pifistyle</color>
  <color name="background">#336699</color>
+ <color name="balatarin_main">#015E8E</color>
+ <color name="balatarin_sub">#B1CAE4</color>
 </resources>

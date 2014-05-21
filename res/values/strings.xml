@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Toosheh</string>
+    <string name="app_name">Balatarin</string>
     <string name="app_version">Unknown</string>
     <string name="title_activity_fullscreen_video">Fullscreen Video Activity</string>
     <string name="title_activity_content_viewer">Content Viewer Activity</string>
