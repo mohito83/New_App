@@ -71,13 +71,17 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.imageView = (ImageView) convertView.findViewById(R.id.contentThumb);
             holder.playButtonView = (ImageView) convertView.findViewById(R.id.playButton);
             holder.titleView = (TextView) convertView.findViewById(R.id.contentTitle);
-//            holder.catView = (TextView) convertView.findViewById(R.id.contentCatagory);
+            // holder.catView = (TextView)
+            // convertView.findViewById(R.id.contentCatagory);
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
             holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
-            //TODO populate actual vote count based on meta data info
+            holder.thumbsUp = (ImageView) convertView.findViewById(R.id.rate_up);
+            holder.thumbsDown = (ImageView) convertView.findViewById(R.id.rate_down);
+
+            // TODO populate actual vote count based on meta data info
             holder.votes = (TextView) convertView.findViewById(R.id.vote_count);
-            holder.votes.setText("245");
+            holder.votes.setText("0");
 
             convertView.setTag(holder);
         } else {
@@ -93,12 +97,12 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
         for (String c : content.getCategoriesList()) {
             cat = cat + c + " ";
         }
-//        holder.catView.setText(cat);
+        // holder.catView.setText(cat);
         if (type == Type.VIDEO)
             holder.descView.setText(content.getDescription());
         else
             holder.descView.setText(content.getSource());
-        
+
         SimpleDateFormat f1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
         SimpleDateFormat f2 = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat f3 = new SimpleDateFormat("yyyy-MM-dd");
@@ -147,6 +151,31 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
         });
 
+        // adding on click listener to the vote count
+        holder.thumbsUp.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String text = holder.votes.getText().toString();
+                int i = 0;
+                i = Integer.parseInt(text);
+                i++;
+                holder.votes.setText(Integer.toString(i));
+            }
+        });
+
+        holder.thumbsDown.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String text = holder.votes.getText().toString();
+                int i = 0;
+                i = Integer.parseInt(text);
+                i--;
+                holder.votes.setText(Integer.toString(i));
+            }
+        });
+
         // this will cause the selected item to be highlighted
         if (selected.get(pos))
             convertView.setActivated(true);
@@ -170,7 +199,11 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
         public ImageView starView;
 
         public TextView publishedDate;
-        
+
+        public ImageView thumbsUp;
+
+        public ImageView thumbsDown;
+
         public TextView votes;
     }
 
