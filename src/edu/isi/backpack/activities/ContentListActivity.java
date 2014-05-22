@@ -205,20 +205,24 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                             .setTitle(R.string.sync_report).setMessage(msg)
                             .setNeutralButton(R.string.button_ok, null).show();
 
-//            } else if (i.getAction().equals(WifiConstants.CONNECTION_ESTABLISHED_ACTION)) {
-//                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
-//                item.setIcon(R.drawable.ic_action_sync_wifi_active);
-//                item.setEnabled(false);
-//            } else if (i.getAction().equals(WifiConstants.CONNECTION_CLOSED_ACTION)) {
-//                MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
-//                item.setIcon(R.drawable.ic_action_sync_wifi);
-//                item.setEnabled(true);
-//
-//                String msg = i.getStringExtra(ExtraConstants.STATUS);
-//                if (msg != null)
-//                    new AlertDialog.Builder(ContentListActivity.this)
-//                            .setTitle(R.string.sync_report).setMessage(msg)
-//                            .setNeutralButton(R.string.button_ok, null).show();
+                // } else if
+                // (i.getAction().equals(WifiConstants.CONNECTION_ESTABLISHED_ACTION))
+                // {
+                // MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+                // item.setIcon(R.drawable.ic_action_sync_wifi_active);
+                // item.setEnabled(false);
+                // } else if
+                // (i.getAction().equals(WifiConstants.CONNECTION_CLOSED_ACTION))
+                // {
+                // MenuItem item = optionMenu.findItem(R.id.action_sync_wifi);
+                // item.setIcon(R.drawable.ic_action_sync_wifi);
+                // item.setEnabled(true);
+                //
+                // String msg = i.getStringExtra(ExtraConstants.STATUS);
+                // if (msg != null)
+                // new AlertDialog.Builder(ContentListActivity.this)
+                // .setTitle(R.string.sync_report).setMessage(msg)
+                // .setNeutralButton(R.string.button_ok, null).show();
             } else if (i.getAction().equals(Constants.BOOKMARK_ACTION)) {
                 String id = i.getStringExtra(ExtraConstants.ID);
                 boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
@@ -395,7 +399,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // start WifiListenerService using startService so that it will keep
         // running even after unbiding
-//        startService(new Intent(this, WifiListenerService.class));
+        // startService(new Intent(this, WifiListenerService.class));
 
         // check release/debug mode
         try {
@@ -418,8 +422,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             editor.putBoolean("first", false);
             editor.apply();
             Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
-        	helpIntent.putExtra("type","splash");
-        	startActivity(helpIntent);
+            helpIntent.putExtra("type", "splash");
+            startActivity(helpIntent);
         }
 
         bts = new ArrayList<BluetoothDevice>();
@@ -592,9 +596,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
         // bind to wifiListenerService
         // this will start the service if not already running
-//        Log.i(TAG, "bind to service");
-//        bindService(new Intent(this, WifiListenerService.class), wifiListenerServiceConn,
-//                Context.BIND_AUTO_CREATE);
+        // Log.i(TAG, "bind to service");
+        // bindService(new Intent(this, WifiListenerService.class),
+        // wifiListenerServiceConn,
+        // Context.BIND_AUTO_CREATE);
 
     }
 
@@ -623,34 +628,35 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         if (item.getItemId() == R.id.action_sync) {
             sync();
             return true;
-//        } else if (item.getItemId() == R.id.action_sync_wifi) {
-//
-//            wifiListDialog = new WifiListDialog();
-//            wifiListDialog.setInitialList(wifiListItems.values());
-//            wifiListDialog.setServiceName(wifiServiceManager.getServiceName());
-//            wifiListDialog.setHandler(new WifiListDialog.IHandler() {
-//
-//                @Override
-//                public void onReturnValue(NsdServiceInfo device) {
-//                    wifiListDialog.dismiss(); // dismiss dialog will also stops
-//                    Intent i = new Intent(getBaseContext(), WifiConnectionService.class);
-//                    i.putExtra(ExtraConstants.DEVICE, device);
-//                    startService(i);
-//                }
-//
-//                @Override
-//                public void onDismissed() {
-//                    wifiServiceManager.stopDiscovery();
-//                    wifiListItems.clear();
-//                    wifiListDialog.redraw(wifiListItems.values());
-//                }
-//            });
-//            wifiListDialog.show(getFragmentManager(), "WifiListDialog");
-//
-//            // start discovering devices
-//            wifiServiceManager.startDiscovery();
-//
-//            return true;
+            // } else if (item.getItemId() == R.id.action_sync_wifi) {
+            //
+            // wifiListDialog = new WifiListDialog();
+            // wifiListDialog.setInitialList(wifiListItems.values());
+            // wifiListDialog.setServiceName(wifiServiceManager.getServiceName());
+            // wifiListDialog.setHandler(new WifiListDialog.IHandler() {
+            //
+            // @Override
+            // public void onReturnValue(NsdServiceInfo device) {
+            // wifiListDialog.dismiss(); // dismiss dialog will also stops
+            // Intent i = new Intent(getBaseContext(),
+            // WifiConnectionService.class);
+            // i.putExtra(ExtraConstants.DEVICE, device);
+            // startService(i);
+            // }
+            //
+            // @Override
+            // public void onDismissed() {
+            // wifiServiceManager.stopDiscovery();
+            // wifiListItems.clear();
+            // wifiListDialog.redraw(wifiListItems.values());
+            // }
+            // });
+            // wifiListDialog.show(getFragmentManager(), "WifiListDialog");
+            //
+            // // start discovering devices
+            // wifiServiceManager.startDiscovery();
+            //
+            // return true;
         } else if (item.getItemId() == R.id.action_share_app) {
 
             // find the apk
@@ -683,28 +689,33 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                     .setMessage(R.string.cant_share_app).setNeutralButton(R.string.button_ok, null)
                     .show();
             return true;
-        } else if (item.getItemId() == R.id.action_refresh){/*R.id.action_download_today) {*/
+        } else if (item.getItemId() == R.id.action_refresh) {/*
+                                                              * R.id.
+                                                              * action_download_today
+                                                              * ) {
+                                                              */
             String packageName = packageDateFormat.format(Calendar.getInstance().getTime());
             downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
             return true;
         } else if (item.getItemId() == R.id.action_tour_app) {
-        	Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
-        	helpIntent.putExtra("type","tour");
-        	startActivity(helpIntent);
+            Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
+            helpIntent.putExtra("type", "tour");
+            startActivity(helpIntent);
             return true;
-        } /*else if (item.getItemId() == R.id.action_download_yesterday) {
-            Calendar yesterday = Calendar.getInstance();
-            yesterday.add(Calendar.DATE, -1);
-            String packageName = packageDateFormat.format(yesterday.getTime());
-            downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
-            return true;
-        } else if (item.getItemId() == R.id.action_download_2days) {
-            Calendar twoDaysAgo = Calendar.getInstance();
-            twoDaysAgo.add(Calendar.DATE, -2);
-            String packageName = packageDateFormat.format(twoDaysAgo.getTime());
-            downloadContent(DownloadConstants.dailyPackageURLPrefix + packageName + ".zip", null);
-            return true;
-        }*/ else if (item.getItemId() == R.id.action_delete_all) {
+        } /*
+           * else if (item.getItemId() == R.id.action_download_yesterday) {
+           * Calendar yesterday = Calendar.getInstance();
+           * yesterday.add(Calendar.DATE, -1); String packageName =
+           * packageDateFormat.format(yesterday.getTime());
+           * downloadContent(DownloadConstants.dailyPackageURLPrefix +
+           * packageName + ".zip", null); return true; } else if
+           * (item.getItemId() == R.id.action_download_2days) { Calendar
+           * twoDaysAgo = Calendar.getInstance(); twoDaysAgo.add(Calendar.DATE,
+           * -2); String packageName =
+           * packageDateFormat.format(twoDaysAgo.getTime());
+           * downloadContent(DownloadConstants.dailyPackageURLPrefix +
+           * packageName + ".zip", null); return true; }
+           */else if (item.getItemId() == R.id.action_delete_all) {
             // confirm deletion
             new AlertDialog.Builder(this).setTitle(R.string.delete_all_contents)
                     .setMessage(R.string.confirm_delete_all)
@@ -789,10 +800,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     protected void onStop() {
         super.onStop();
         // Unbind from the service
-//        if (boundWifiListener) {
-//            unbindService(wifiListenerServiceConn);
-//            boundWifiListener = false;
-//        }
+        // if (boundWifiListener) {
+        // unbindService(wifiListenerServiceConn);
+        // boundWifiListener = false;
+        // }
     }
 
     @Override
@@ -880,16 +891,16 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         // .equals(Media.Item.Type.AUDIO.toString())));
 
         // categories
-        // drawerItems.add(new DrawerItem(null,
-        // getString(R.string.drawer_categories),
-        // DrawerItem.HEADER, false));
-        // drawerItems.add(new DrawerItem(FILTER_ID_ALL,
-        // getString(R.string.drawer_all),
-        // DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
-        // for (String cat : cats) {
-        // drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY,
-        // selectedCat.equals(cat)));
-        // }
+        drawerItems.add(new DrawerItem(null,
+                getString(R.string.drawer_categories),
+                DrawerItem.HEADER, false));
+        drawerItems.add(new DrawerItem(FILTER_ID_ALL,
+                getString(R.string.drawer_all),
+                DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
+        for (String cat : cats) {
+            drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY,
+                    selectedCat.equals(cat)));
+        }
         if (!firsttime)
             applyListFilter();
 
@@ -924,7 +935,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         String filter = "";
         filter = setFilter(filter, drawerLabels.get(selectedBookmark));
         filter = setFilter(filter, drawerLabels.get(selectedType));
-        filter = setFilter(filter, drawerLabels.get(selectedCat));
+        // filter = setFilter(filter, drawerLabels.get(selectedCat));
+        if (selectedCat != null && selectedCat.length() > 0) {
+            filter = filter + "," + selectedCat;
+        }
         if (filter.length() != 0)
             categoryFilter.setText(getString(R.string.filters) + filter);
         else
