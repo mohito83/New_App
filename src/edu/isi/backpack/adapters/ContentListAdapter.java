@@ -75,6 +75,9 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
             holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
+            //TODO populate actual vote count based on meta data info
+            holder.votes = (TextView) convertView.findViewById(R.id.vote_count);
+            holder.votes.setText("245");
 
             convertView.setTag(holder);
         } else {
@@ -167,6 +170,8 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
         public ImageView starView;
 
         public TextView publishedDate;
+        
+        public TextView votes;
     }
 
     public boolean toggleSelection(int pos) {

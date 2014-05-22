@@ -146,7 +146,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dip"
                 android:layout_weight="20"
-                android:orientation="horizontal" >
+                android:orientation="vertical" >
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -165,14 +165,15 @@
 
                     <TextView
                         android:id="@+id/vote_count"
-                         android:layout_width="27dip"
-                        android:layout_height="27dip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_below="@+id/rate_up"
+                        android:layout_alignParentRight="true"
                         android:ellipsize="end"
                         android:fontFamily="sans-serif"
                         android:maxLines="1"
                         android:textColor="@color/black"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/rate_down"
