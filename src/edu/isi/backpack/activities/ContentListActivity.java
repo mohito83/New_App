@@ -1,12 +1,26 @@
 
 package edu.isi.backpack.activities;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+import org.toosheh.android.R;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,7 +31,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -31,34 +44,20 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
 import android.util.SparseBooleanArray;
-import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import edu.isi.backpack.BookmarkManager;
-import edu.isi.backpack.adapters.ContentListAdapter;
-import edu.isi.backpack.adapters.DrawerItem;
-import edu.isi.backpack.adapters.DrawerListAdapter;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.constants.DownloadConstants;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.constants.WifiConstants;
 import edu.isi.backpack.dialogs.BluetoothListDialog;
 import edu.isi.backpack.dialogs.WifiListDialog;
-import edu.isi.backpack.metadata.MediaProtos.Media;
+import edu.isi.backpack.fragments.MainContentFragment;
 import edu.isi.backpack.services.ConnectionService;
 import edu.isi.backpack.services.FileMonitorService;
 import edu.isi.backpack.services.ListenerService;
@@ -66,24 +65,7 @@ import edu.isi.backpack.services.WifiConnectionService;
 import edu.isi.backpack.services.WifiListenerService;
 import edu.isi.backpack.tasks.ContentManagementTask;
 import edu.isi.backpack.tasks.DeleteAllContentTask;
-import edu.isi.backpack.tasks.DeleteContentTask;
 import edu.isi.backpack.wifi.WifiServiceManager;
-
-import org.toosheh.android.R;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * @author jenniferchen This is the main activity of the app. It shows a list of
@@ -93,7 +75,7 @@ import java.util.Set;
  *         categories for web articles
  */
 @SuppressLint("NewApi")
-public class ContentListActivity extends Activity implements BookmarkManager {
+public class ContentListActivity extends FragmentActivity {
 
     public static final String STATE_SELECTED_DRAWER_ITEMS = "selected_drawer_items";
 
@@ -103,12 +85,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     // public static final String FILTER_ID_WEB = "Web";
 
-    public static final String FILTER_ID_ALL = "All";
-
-    public static final String FILTER_ID_STARRED = "Starred";
-
-    private static final String SETTING_BOOKMARKS = "bookmarks";
-
     private String debugBuildId = "dev";
 
     private boolean releaseMode = true;
@@ -117,41 +93,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
      * drawer keyword : lable label is different depending on phone's language
      * setting
      **/
-    private HashMap<String, String> drawerLabels = new HashMap<String, String>();
-
-    private DrawerLayout drawerLayout;
-
-    private ListView drawerList;
-
-    private ActionBarDrawerToggle drawerToggle;
-
-    private ArrayList<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
-
-    private DrawerListAdapter drawerListAdapter;
-
-    private File contentDirectory;
-
-    private File metaFile;
-
-    private Media metadata;
-
-    private ListView contentList;
-
-    private TextView categoryFilter;
-
-    private ArrayList<String> categories;
-
-    private ArrayList<Media.Item> contentItems = new ArrayList<Media.Item>();
-
-    private ContentListAdapter contentListAdapter;
-
-    private String selectedCat = FILTER_ID_ALL;
-
-    private String selectedType = FILTER_ID_ALL;
-
-    private String selectedBookmark = FILTER_ID_ALL;
-
-    private Media.Item currentContent = null;
 
     private SimpleDateFormat packageDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
 
@@ -164,6 +105,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     private WifiListDialog wifiListDialog;
 
     private WifiServiceManager wifiServiceManager;
+    
+    private MainContentFragment currentSelectedFragment;
 
     // register to receive message when a new comment is added
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -223,13 +166,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 // new AlertDialog.Builder(ContentListActivity.this)
                 // .setTitle(R.string.sync_report).setMessage(msg)
                 // .setNeutralButton(R.string.button_ok, null).show();
-            } else if (i.getAction().equals(Constants.BOOKMARK_ACTION)) {
-                String id = i.getStringExtra(ExtraConstants.ID);
-                boolean on = i.getBooleanExtra(ExtraConstants.ON, false);
-                if (on)
-                    addBookmark(id, true);
-                else
-                    removeBookmark(id, true);
             } else if (i.getAction().equals(WifiConstants.WIFI_DEVICE_FOUND_ACTION)) {
                 NsdServiceInfo device = i.getParcelableExtra(ExtraConstants.DEVICE);
                 if (device != null && !wifiListItems.containsKey(device.getServiceName())) {
@@ -287,64 +223,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     private BluetoothListDialog dialog;
 
-    private SharedPreferences settings;
-
-    private Set<String> bookmarks;
-
-    private Object rowActionMode = null;
-
-    private ArrayList<Media.Item> selectedRowItems = new ArrayList<Media.Item>();
-
-    private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            rowActionMode = null;
-            selectedRowItems.clear();
-            contentListAdapter.removeSelections();
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inf = mode.getMenuInflater();
-            inf.inflate(R.menu.row_selection, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-
-            /*
-             * delete content 1. video/article file 2. thumbnail 3. bookmark 4.
-             * metadata entry
-             */
-                case R.id.action_row_delete:
-                    // TODO need to make sure not doing sync at the same time
-
-                    final ProgressDialog progress = new ProgressDialog(ContentListActivity.this);
-                    progress.setTitle(getString(R.string.deletion_in_progress));
-                    progress.setMessage(getString(R.string.deleting));
-                    progress.setCancelable(false);
-                    progress.show();
-                    DeleteContentTask task = new DeleteContentTask(ContentListActivity.this,
-                            contentDirectory, progress, metadata, metaFile);
-                    Media.Item[] items = new Media.Item[0];
-                    task.execute(selectedRowItems.toArray(items));
-
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    };
-
     private Messenger wifiListenerMessenger;
 
     private boolean boundWifiListener = false;
@@ -377,6 +255,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     };
 
     final Messenger incomingMessenger = new Messenger(new IncomingHandler());
+
+    private File contentDirectory;
 
     @SuppressLint("HandlerLeak")
     class IncomingHandler extends Handler {
@@ -415,8 +295,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         debugBuildId = "dev_" + sdf.format(new Date());
 
         // restore user preferences
-        settings = getPreferences(MODE_PRIVATE);
-        bookmarks = settings.getStringSet(SETTING_BOOKMARKS, new HashSet<String>());
+        /*settings = getPreferences(MODE_PRIVATE);
+        //bookmarks = settings.getStringSet(SETTING_BOOKMARKS, new HashSet<String>());
         if (settings.getBoolean("first", true)) {
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("first", false);
@@ -424,7 +304,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             Intent helpIntent = new Intent(getBaseContext(), HelpActivity.class);
             helpIntent.putExtra("type", "splash");
             startActivity(helpIntent);
-        }
+        }*/
 
         bts = new ArrayList<BluetoothDevice>();
 
@@ -452,116 +332,30 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             // }
         }
 
-        drawerLabels.put(FILTER_ID_ALL, getString(R.string.drawer_all));
-        drawerLabels.put(Media.Item.Type.VIDEO.toString(), getString(R.string.drawer_video));
-        drawerLabels.put(Media.Item.Type.HTML.toString(), getString(R.string.drawer_article));
-        drawerLabels.put(Media.Item.Type.AUDIO.toString(), getString(R.string.drawer_audio));
-        drawerLabels.put(FILTER_ID_STARRED, getString(R.string.drawer_starred));
-
         // start file monitor service
         Intent intent = new Intent(this, FileMonitorService.class);
         startService(intent);
-        setContentView(R.layout.activity_content);
+        setContentView(R.layout.activity_content_viewer);
+        
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        Tab tab = actionBar.newTab()
+                           .setText(R.string.tab_hot)
+                           .setTabListener(new TabListener(
+                                   this, "Hot", MainContentFragment.class));
+        actionBar.addTab(tab);
+
+        tab = actionBar.newTab()
+                       .setText(R.string.tab_recent)
+                       .setTabListener(new TabListener(
+                               this, "Recent", MainContentFragment.class));
+        actionBar.addTab(tab);
 
         // Set up the action bar to show a dropdown list for categories
-        final ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList = (ListView) findViewById(R.id.left_drawer);
-        contentList = (ListView) findViewById(R.id.listing);
-        categoryFilter = (TextView) findViewById(R.id.category);
-        categoryFilter.setVisibility(View.GONE);
-
-        // reload content
-        reload(true);
-
-        // setup menu drawer
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer,
-                R.string.drawer_open, R.string.drawer_close) {
-            public void onDrawerClosed(View view) {
-                invalidateOptionsMenu(); // creates call to
-                                         // onPrepareOptionsMenu()
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                invalidateOptionsMenu(); // creates call to
-                                         // onPrepareOptionsMenu()
-            }
-
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-
-        // menu drawer listener
-        drawerList.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                drawerList.setItemChecked(pos, true);
-                DrawerItem selItem = drawerItems.get(pos);
-                int type = selItem.getType();
-                for (DrawerItem item : drawerItems) {
-                    if (item != selItem && item.getType() == type) { // clear
-                                                                     // other
-                                                                     // checks
-                                                                     // of
-                                                                     // same
-                                                                     // type
-                        item.setChecked(false);
-                    }
-                }
-                selItem.setChecked(true);
-                applyListFilter(selItem);
-                drawerLayout.closeDrawer(drawerList);
-            }
-
-        });
-
-        // content list listener
-        contentList.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-                // if not in editing mode, open the content
-                if (rowActionMode == null) {
-                    currentContent = (Media.Item) contentListAdapter.getItem(pos);
-                    Intent intent = new Intent(getApplicationContext(), ContentViewerActivity.class);
-
-                    // if selected a video
-                    intent.putExtra(ExtraConstants.CONTENT, currentContent.toByteArray());
-                    intent.putExtra(ExtraConstants.BOOKMARK,
-                            bookmarks.contains(currentContent.getFilename()));
-
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                } else { // if in editing/deletion mode, add/remove selection
-                    boolean select = contentListAdapter.toggleSelection(pos);
-                    if (select)
-                        selectedRowItems.add(contentListAdapter.getItem(pos));
-                    else
-                        selectedRowItems.remove(contentListAdapter.getItem(pos));
-                }
-            }
-
-        });
-
-        // long click on list item
-        contentList.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
-                if (rowActionMode != null)
-                    return false;
-
-                selectedRowItems.add(contentListAdapter.getItem(pos));
-                contentListAdapter.toggleSelection(pos);
-                rowActionMode = startActionMode(rowActionCallback);
-                return true;
-            }
-
-        });
 
         // Start bluetooth listener service
         startService(new Intent(this, ListenerService.class));
@@ -572,8 +366,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                 new IntentFilter(Constants.NEW_COMMENT_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(Constants.META_UPDATED_ACTION));
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Constants.BOOKMARK_ACTION));
 
         // global messages (from other processes)
         registerReceiver(broadcastReceiver, new IntentFilter(Constants.BT_STATUS_ACTION));
@@ -588,6 +380,10 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         registerReceiver(broadcastReceiver, new IntentFilter(WifiConstants.WIFI_DEVICE_LOST_ACTION));
 
         wifiServiceManager = new WifiServiceManager(this);
+    }
+
+    public  void reload(boolean b) {
+        //TODO call the reload on the appropriate Tab Fragment
     }
 
     @Override
@@ -614,13 +410,13 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
+        currentSelectedFragment.getDrawerToggle().syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+        currentSelectedFragment.getDrawerToggle().onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -730,8 +526,8 @@ public class ContentListActivity extends Activity implements BookmarkManager {
                             progress.setCancelable(false);
                             progress.show();
                             DeleteAllContentTask task = new DeleteAllContentTask(
-                                    ContentListActivity.this, contentDirectory, progress, metadata,
-                                    metaFile);
+                                    ContentListActivity.this, contentDirectory, progress, currentSelectedFragment.getMetadata(),
+                                    currentSelectedFragment.getMetaFile());
                             task.execute();
 
                         }
@@ -767,7 +563,7 @@ public class ContentListActivity extends Activity implements BookmarkManager {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // Serialize the current dropdown position.
-        SparseBooleanArray array = drawerList.getCheckedItemPositions();
+        SparseBooleanArray array = currentSelectedFragment.getDrawerList().getCheckedItemPositions();
         ArrayList<Integer> sel = new ArrayList<Integer>();
         for (int i = 0; i < array.size(); i++) {
             if (array.get(i))
@@ -778,21 +574,22 @@ public class ContentListActivity extends Activity implements BookmarkManager {
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+        //TODO fix this issue
         // Restore the previously state
         if (savedInstanceState.containsKey(STATE_SELECTED_DRAWER_ITEMS)) {
             for (Integer i : savedInstanceState.getIntegerArrayList(STATE_SELECTED_DRAWER_ITEMS)) {
-                drawerList.setItemChecked(i, true);
-                drawerItems.get(i).setChecked(true);
+                currentSelectedFragment.getDrawerList().setItemChecked(i, true);
+                currentSelectedFragment.getDrawerItems().get(i).setChecked(true);
             }
         }
     }
 
     @Override
     public boolean onNavigateUp() {
-        if (!drawerLayout.isDrawerOpen(Gravity.LEFT))
-            drawerLayout.openDrawer(Gravity.LEFT);
+        if (!currentSelectedFragment.getDrawerLayout().isDrawerOpen(Gravity.LEFT))
+            currentSelectedFragment.getDrawerLayout().openDrawer(Gravity.LEFT);
         else
-            drawerLayout.closeDrawer(Gravity.LEFT);
+            currentSelectedFragment.getDrawerLayout().closeDrawer(Gravity.LEFT);
         return true;
     }
 
@@ -824,192 +621,6 @@ public class ContentListActivity extends Activity implements BookmarkManager {
             // if user allowed turning on bt, try to sync again
             sync();
         }
-    }
-
-    /**
-     * reload metadata and refresh the list
-     * 
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public void reload(boolean firsttime) {
-
-        // read meatadata
-        metaFile = new File(contentDirectory, Constants.metaFileName);
-        ArrayList<Media.Item> contents = new ArrayList<Media.Item>();
-
-        // content objects from metadata
-        try {
-            if (metaFile.exists())
-                metadata = Media.parseFrom(new FileInputStream(metaFile));
-            else
-                metadata = Media.newBuilder().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        contents.addAll(metadata.getItemsList());
-
-        contentItems.clear();
-        contentItems.addAll(contents);
-
-        // get a list of categories
-        categories = new ArrayList<String>();
-        for (Media.Item m : contentItems) {
-            for (String c : m.getCategoriesList()) {
-                if (!categories.contains(c))
-                    categories.add(c);
-            }
-        }
-        String[] cats = new String[categories.size()];
-        cats = categories.toArray(cats);
-
-        // setup menu drawer
-        drawerItems.clear();
-
-        // bookmarks
-        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_bookmarks),
-                DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
-                DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_ALL)));
-        drawerItems.add(new DrawerItem(FILTER_ID_STARRED, getString(R.string.drawer_starred),
-                DrawerItem.BOOKMARKS, selectedBookmark.equals(FILTER_ID_STARRED)));
-
-        // content type
-        drawerItems.add(new DrawerItem(null, getString(R.string.drawer_content_type),
-                DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(FILTER_ID_ALL, getString(R.string.drawer_all),
-                DrawerItem.CONTENT_TYPE, selectedType.equals(FILTER_ID_ALL)));
-        drawerItems.add(new DrawerItem(Media.Item.Type.VIDEO.toString(),
-                getString(R.string.drawer_video), DrawerItem.CONTENT_TYPE, selectedType
-                        .equals(Media.Item.Type.VIDEO.toString())));
-        drawerItems.add(new DrawerItem(Media.Item.Type.HTML.toString(),
-                getString(R.string.drawer_article), DrawerItem.CONTENT_TYPE, selectedType
-                        .equals(Media.Item.Type.HTML.toString())));
-        // drawerItems.add(new DrawerItem(Media.Item.Type.AUDIO.toString(),
-        // getString(R.string.drawer_audio), DrawerItem.CONTENT_TYPE,
-        // selectedType
-        // .equals(Media.Item.Type.AUDIO.toString())));
-
-        // categories
-        drawerItems.add(new DrawerItem(null,
-                getString(R.string.drawer_categories),
-                DrawerItem.HEADER, false));
-        drawerItems.add(new DrawerItem(FILTER_ID_ALL,
-                getString(R.string.drawer_all),
-                DrawerItem.CATEGORY, selectedCat.equals(FILTER_ID_ALL)));
-        for (String cat : cats) {
-            drawerItems.add(new DrawerItem(cat, cat, DrawerItem.CATEGORY,
-                    selectedCat.equals(cat)));
-        }
-        if (!firsttime)
-            applyListFilter();
-
-        // update/init adapter
-        if (drawerListAdapter == null) { // first time
-            drawerListAdapter = new DrawerListAdapter(this, drawerItems);
-            drawerList.setAdapter(drawerListAdapter);
-        } else
-            drawerListAdapter.notifyDataSetChanged();
-
-        if (contentListAdapter == null) {
-            contentListAdapter = new ContentListAdapter(this, contentItems,
-                    contentDirectory.getAbsolutePath());
-            contentList.setAdapter(contentListAdapter);
-        } else
-            contentListAdapter.notifyDataSetChanged();
-        updateFilter();
-
-    }
-
-    private String setFilter(String filter, String select) {
-        if (!select.contains(FILTER_ID_ALL))
-            if (filter.isEmpty())
-                filter = filter + " " + select;
-            else
-                filter = filter + "," + select;
-        return filter;
-    }
-
-    private void updateFilter() {
-        categoryFilter.setVisibility(View.VISIBLE);
-        String filter = "";
-        filter = setFilter(filter, drawerLabels.get(selectedBookmark));
-        filter = setFilter(filter, drawerLabels.get(selectedType));
-        // filter = setFilter(filter, drawerLabels.get(selectedCat));
-        if (selectedCat != null && selectedCat.length() > 0) {
-            filter = filter + "," + selectedCat;
-        }
-        if (filter.length() != 0)
-            categoryFilter.setText(getString(R.string.filters) + filter);
-        else
-            categoryFilter.setVisibility(View.GONE);
-    }
-
-    /**
-     * no changes to filter, just re-apply to the list
-     */
-    private void applyListFilter() {
-        applyListFilter(null);
-    }
-
-    private void applyListFilter(DrawerItem item) {
-
-        // if filter selected/de-selected
-        if (item != null) {
-            if (item.getType() == DrawerItem.HEADER)
-                return;
-
-            if (item.getType() == DrawerItem.BOOKMARKS) {
-                String newBookmark = item.getId();
-                if (!newBookmark.equals(selectedBookmark))
-                    selectedBookmark = newBookmark;
-                else
-                    return;
-            }
-
-            if (item.getType() == DrawerItem.CONTENT_TYPE) {
-                String newType = item.getId();
-                if (!newType.equals(selectedType)) {
-                    selectedType = newType;
-                } else
-                    return;
-            } else if (item.getType() == DrawerItem.CATEGORY) {
-                String newCat = item.getId();
-                if (!newCat.equals(selectedCat)) {
-                    selectedCat = newCat;
-                } else
-                    return;
-            }
-        }
-
-        contentListAdapter.clear();
-
-        // Apply filters
-        contentListAdapter.addAll(metadata.getItemsList());
-        if (!selectedType.equals(FILTER_ID_ALL) || !selectedCat.equals(FILTER_ID_ALL)
-                || !selectedBookmark.equals(FILTER_ID_ALL)) {
-            for (Media.Item m : metadata.getItemsList()) {
-                // type filter
-                if (!selectedType.equals(FILTER_ID_ALL)) {
-                    if (m.getType() != Media.Item.Type.valueOf(selectedType))
-                        contentListAdapter.remove(m);
-                }
-                // category filter
-                if (!selectedCat.equals(FILTER_ID_ALL)) {
-                    if (!m.getCategoriesList().contains(selectedCat))
-                        contentListAdapter.remove(m);
-                }
-                // bookmark filter
-                if (!selectedBookmark.equals(FILTER_ID_ALL)) {
-                    if (!bookmarks.contains(m.getFilename()))
-                        contentListAdapter.remove(m);
-                }
-            }
-        }
-
-        // update list
-        contentListAdapter.notifyDataSetChanged();
-        updateFilter();
     }
 
     /**
@@ -1246,64 +857,73 @@ public class ContentListActivity extends Activity implements BookmarkManager {
         return false;
     }
 
-    private void saveBookmarks() {
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove(SETTING_BOOKMARKS);
-        editor.apply();
-        editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
-        editor.apply();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see edu.isi.backpack.BookmarkManager#addBookmark(java.lang.String)
+    /**
+     * This class defines the callback methods of Tab selection, de-selection
+     * events
+     * 
+     * @author mohit aggarwl
      */
-    @Override
-    public void addBookmark(String id, boolean reload) {
-        if (!bookmarks.contains(id)) {
-            bookmarks.add(id);
-            saveBookmarks();
-            if (reload)
-                reload(false);
+    public class TabListener implements ActionBar.TabListener {
+        private Fragment mFragment;
+        private final Activity mActivity;
+        private final String mTag;
+        private final Class mClass;
+
+        /**
+         * Constructor used each time a new tab is created.
+         * 
+         * @param activity The host Activity, used to instantiate the fragment
+         * @param tag The identifier tag for the fragment
+         * @param clz The fragment's Class, used to instantiate the fragment
+         */
+        public TabListener(Activity activity, String tag, Class clz) {
+            mActivity = activity;
+            mTag = tag;
+            mClass = clz;
         }
-    }
 
-    /*
-     * (non-Javadoc)
-     * @see edu.isi.backpack.BookmarkManager#removeBookmark(java.lang.String)
-     */
-    @Override
-    public void removeBookmark(String id, boolean reload) {
-        if (bookmarks.contains(id)) {
-            bookmarks.remove(id);
-            saveBookmarks();
-            if (reload)
-                reload(false);
+        @Override
+        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+            // Check if the fragment is already initialized
+            if (mFragment == null) {
+                // If not, instantiate and add it to the activity
+                mFragment = Fragment.instantiate(mActivity, mClass.getName());
+                ft.add(android.R.id.content, mFragment, mTag);
+            } else {
+                // If it exists, simply attach it in order to show it
+                ft.attach(mFragment);
+            }
+            currentSelectedFragment = (MainContentFragment)mFragment;
         }
+
+        @Override
+        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+            if (mFragment != null) {
+                // Detach the fragment, because another one is being attached
+                ft.detach(mFragment);
+            }
+        }
+
+        @Override
+        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+
+        }
+
     }
 
-    /*
-     * (non-Javadoc)
-     * @see edu.isi.backpack.BookmarkManager#isBookmarked(java.lang.String)
-     */
-    @Override
-    public boolean isBookmarked(String id) {
-        if (bookmarks.contains(id))
-            return true;
-        else
-            return false;
+    public boolean isBookmarked(String filename) {
+        return currentSelectedFragment.isBookmarked(filename);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see edu.isi.backpack.BookmarkManager#removeAllBookmarks()
-     */
-    @Override
-    public void removeAllBookmarks(boolean reload) {
-        bookmarks.clear();
-        saveBookmarks();
-        if (reload)
-            reload(false);
+    public void removeBookmark(String filename, boolean b) {
+        currentSelectedFragment.removeBookmark(filename, b);
     }
 
+    public void addBookmark(String filename, boolean b) {
+        currentSelectedFragment.addBookmark(filename, b);
+    }
+
+    public void removeAllBookmarks(boolean b) {
+        currentSelectedFragment.removeAllBookmarks(b);
+    }
 }

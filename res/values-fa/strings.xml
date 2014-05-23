@@ -48,6 +48,8 @@
     <string name="action_web"> لینک مستقیم</string>
     <string name="action_bookmark">ستاره بگذار</string>
     <string name="action_delRow">حذف کن</string>
+    <string name="tab_hot">محبوب</string>
+	<string name="tab_recent">اخیر</string>
 
     <!-- MENU DRAWER -->
     <string name="drawer_open">منو را باز کن</string>

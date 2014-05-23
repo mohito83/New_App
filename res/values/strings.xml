@@ -48,6 +48,8 @@
 	<string name="action_web">View Original Article</string>
 	<string name="action_bookmark">Bookmark</string>
 	<string name="action_delRow">Delete</string>
+	<string name="tab_hot">Hot</string>
+	<string name="tab_recent">Recent</string>
 	
 	<!-- MENU DRAWER -->
     <string name="drawer_open">Open Drawer</string>
