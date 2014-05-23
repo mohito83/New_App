@@ -891,7 +891,7 @@ public class ContentListActivity extends FragmentActivity {
                 ft.add(android.R.id.content, mFragment, mTag);
             } else {
                 // If it exists, simply attach it in order to show it
-                ft.attach(mFragment);
+                ft.replace(android.R.id.content,mFragment);
             }
             currentSelectedFragment = (MainContentFragment)mFragment;
         }
@@ -902,6 +902,7 @@ public class ContentListActivity extends FragmentActivity {
                 // Detach the fragment, because another one is being attached
                 ft.detach(mFragment);
             }
+            mFragment = null;
         }
 
         @Override
