@@ -120,7 +120,7 @@
                         android:ellipsize="end"
                         android:fontFamily="sans-serif"
                         android:maxLines="2"
-                        android:textColor="@color/black"
+                        android:textColor="@color/balatarin_text_desc"
                         android:textSize="10sp" />
 
                     <TextView
@@ -135,7 +135,7 @@
                         android:ellipsize="end"
                         android:fontFamily="sans-serif"
                         android:maxLines="1"
-                        android:textColor="@color/black"
+                        android:textColor="@color/balatarin_text_desc"
                         android:textSize="10sp" />
                 </RelativeLayout>
             </LinearLayout>

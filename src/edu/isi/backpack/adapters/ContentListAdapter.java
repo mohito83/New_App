@@ -151,7 +151,7 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
         });
 
-        // adding on click listener to the vote count
+       /* // adding on click listener to the vote count
         holder.thumbsUp.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -174,7 +174,7 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
                 i--;
                 holder.votes.setText(Integer.toString(i));
             }
-        });
+        });*/
 
         // this will cause the selected item to be highlighted
         if (selected.get(pos))

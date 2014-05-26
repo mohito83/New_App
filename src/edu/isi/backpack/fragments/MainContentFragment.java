@@ -433,9 +433,13 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         // get a list of categories
         categories = new ArrayList<String>();
         for (Media.Item m : contentItems) {
-            for (String c : m.getCategoriesList()) {
+            /*for (String c : m.getCategoriesList()) {
                 if (!categories.contains(c))
                     categories.add(c);
+            }*/
+            //only the first item in the category list is important
+            if(!categories.contains(m.getCategoriesList().get(0))){
+                categories.add(m.getCategoriesList().get(0));
             }
         }
         String[] cats = new String[categories.size()];
