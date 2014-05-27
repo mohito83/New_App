@@ -76,8 +76,8 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
             holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
-            holder.thumbsUp = (ImageView) convertView.findViewById(R.id.rate_up);
-            holder.thumbsDown = (ImageView) convertView.findViewById(R.id.rate_down);
+            /*holder.thumbsUp = (ImageView) convertView.findViewById(R.id.rate_up);
+            holder.thumbsDown = (ImageView) convertView.findViewById(R.id.rate_down);*/
 
             // TODO populate actual vote count based on meta data info
             holder.positiveVotes = (TextView) convertView.findViewById(R.id.positive_vote_count);

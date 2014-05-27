@@ -154,20 +154,20 @@
                     android:layout_gravity="right"
                     android:background="@drawable/selectable_background_cardbank" >
 
-                    <ImageView
+                    <!-- <ImageView
                         android:id="@+id/rate_up"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
                         android:background="@drawable/selectable_background_cardbank"
-                        android:src="@drawable/ic_action_rating_good" />
+                        android:src="@drawable/ic_action_rating_good" /> -->
 
                     <TextView
                         android:id="@+id/positive_vote_count"
+                        android:drawableTop="@drawable/ic_action_rating_good"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/rate_up"
                         android:layout_alignParentRight="true"
                         android:ellipsize="end"
                         android:fontFamily="sans-serif"
@@ -176,6 +176,7 @@
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/negative_vote_count"
+                        android:drawableBottom="@drawable/ic_action_rating_bad"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/positive_vote_count"
@@ -186,14 +187,14 @@
                         android:textColor="@color/balatarin_text_desc"
                         android:textSize="12sp" />
 
-                    <ImageView
+                    <!-- <ImageView
                         android:id="@+id/rate_down"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_below="@+id/negative_vote_count"
                         android:background="@drawable/selectable_background_cardbank"
-                        android:src="@drawable/ic_action_rating_bad" />
+                        android:src="@drawable/ic_action_rating_bad" /> -->
 
                     <ImageView
                         android:id="@+id/star"
