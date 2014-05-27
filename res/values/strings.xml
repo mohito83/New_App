@@ -68,6 +68,8 @@
 	<string name="about">About</string>
 	<string name="license">USC Viterbi School of Engineering, Information Sciences Institute</string>
 	
+	<string name="login_request">Please Login</string>
+	
 	<string name="sync_report">Sync Report</string>
 	<string name="devices_found">devices Found</string>
 	<string name="deletion_in_progress">Deletion in progress</string>

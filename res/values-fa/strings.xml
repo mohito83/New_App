@@ -66,6 +66,8 @@
     <!-- INFO -->
     <string name="about">درباره</string>
     <string name="license">USC Viterbi School of Engineering, Information Sciences Institute</string>
+    <string name="login_request">Please Login</string>
+    
     <string name="sync_report"> گزارش تبادل فایلها</string>
     <string name="devices_found">دستگاههای موجود</string>
     <string name="deletion_in_progress">حذف</string>

@@ -1,6 +1,14 @@
 
 package edu.isi.backpack.adapters;
 
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.toosheh.android.R;
+
 import android.content.Context;
 import android.net.Uri;
 import android.util.SparseBooleanArray;
@@ -11,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -18,14 +27,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
-
-import org.toosheh.android.R;
-
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author jenniferchen Handles the content list
@@ -76,8 +77,11 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.descView = (TextView) convertView.findViewById(R.id.contentDesc);
             holder.starView = (ImageView) convertView.findViewById(R.id.star);
             holder.publishedDate = (TextView) convertView.findViewById(R.id.contentPublishedDate);
-            /*holder.thumbsUp = (ImageView) convertView.findViewById(R.id.rate_up);
-            holder.thumbsDown = (ImageView) convertView.findViewById(R.id.rate_down);*/
+            /*
+             * holder.thumbsUp = (ImageView)
+             * convertView.findViewById(R.id.rate_up); holder.thumbsDown =
+             * (ImageView) convertView.findViewById(R.id.rate_down);
+             */
 
             // TODO populate actual vote count based on meta data info
             holder.positiveVotes = (TextView) convertView.findViewById(R.id.positive_vote_count);
@@ -153,30 +157,22 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
         });
 
-       /* // adding on click listener to the vote count
-        holder.thumbsUp.setOnClickListener(new OnClickListener() {
+        // adding on click listener to the vote count
+        holder.positiveVotes.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String text = holder.votes.getText().toString();
-                int i = 0;
-                i = Integer.parseInt(text);
-                i++;
-                holder.votes.setText(Integer.toString(i));
+                Toast.makeText(v.getContext(), R.string.login_request, Toast.LENGTH_SHORT).show();
             }
         });
 
-        holder.thumbsDown.setOnClickListener(new OnClickListener() {
+        holder.negativeVotes.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String text = holder.votes.getText().toString();
-                int i = 0;
-                i = Integer.parseInt(text);
-                i--;
-                holder.votes.setText(Integer.toString(i));
+                Toast.makeText(v.getContext(), R.string.login_request, Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
         // this will cause the selected item to be highlighted
         if (selected.get(pos))
@@ -202,12 +198,12 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
         public TextView publishedDate;
 
-        public ImageView thumbsUp;
-
-        public ImageView thumbsDown;
+        /*
+         * public ImageView thumbsUp; public ImageView thumbsDown;
+         */
 
         public TextView positiveVotes;
-        
+
         public TextView negativeVotes;
     }
 

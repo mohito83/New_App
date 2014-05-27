@@ -174,4 +174,5 @@
  <color name="balatarin_sub">#B1CAE4</color>
  <color name="balatarin_text_title">#29456C</color>
  <color name="balatarin_text_desc">#898D92</color>
+ <color name="balatarin_border_color">#D2D6D4</color>
 </resources>

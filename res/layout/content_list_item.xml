@@ -165,11 +165,12 @@
                         android:fontFamily="sans-serif"
                         android:maxLines="1"
                         android:textColor="@color/balatarin_text_desc"
-                        android:background="@drawable/selectable_background_cardbank"
+                        android:background="@drawable/selectable_vote_up_control"
                         android:textSize="12sp" />
                     
                     <TextView
                         android:id="@+id/negative_vote_count"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:drawablePadding="0sp"
                         android:drawableBottom="@drawable/ic_action_rating_bad"
@@ -181,7 +182,7 @@
                         android:fontFamily="sans-serif"
                         android:maxLines="1"
                         android:textColor="@color/balatarin_text_desc"
-                        android:background="@drawable/selectable_background_cardbank"
+                        android:background="@drawable/selectable_vote_down_control"
                         android:textSize="12sp" />
 
                     <ImageView
