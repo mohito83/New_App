@@ -80,8 +80,10 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.thumbsDown = (ImageView) convertView.findViewById(R.id.rate_down);
 
             // TODO populate actual vote count based on meta data info
-            holder.votes = (TextView) convertView.findViewById(R.id.vote_count);
-            holder.votes.setText("0");
+            holder.positiveVotes = (TextView) convertView.findViewById(R.id.positive_vote_count);
+            holder.positiveVotes.setText("112");
+            holder.negativeVotes = (TextView) convertView.findViewById(R.id.negative_vote_count);
+            holder.negativeVotes.setText("17");
 
             convertView.setTag(holder);
         } else {
@@ -204,7 +206,9 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
 
         public ImageView thumbsDown;
 
-        public TextView votes;
+        public TextView positiveVotes;
+        
+        public TextView negativeVotes;
     }
 
     public boolean toggleSelection(int pos) {

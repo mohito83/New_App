@@ -81,7 +81,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
     private File contentDirectory;
     private File metaFile;
     private SharedPreferences settings;
-    
+
     private ActionMode.Callback rowActionCallback = new ActionMode.Callback() {
 
         @Override
@@ -119,7 +119,8 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
                     progress.setMessage(getString(R.string.deleting));
                     progress.setCancelable(false);
                     progress.show();
-                    DeleteContentTask task = new DeleteContentTask((ContentListActivity)appContext,
+                    DeleteContentTask task = new DeleteContentTask(
+                            (ContentListActivity) appContext,
                             contentDirectory, progress, metadata, metaFile);
                     Media.Item[] items = new Media.Item[0];
                     task.execute(selectedRowItems.toArray(items));
@@ -131,7 +132,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
             }
         }
     };
-    
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
@@ -160,7 +161,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         drawerLabels.put(Media.Item.Type.HTML.toString(), getString(R.string.drawer_article));
         drawerLabels.put(Media.Item.Type.AUDIO.toString(), getString(R.string.drawer_audio));
         drawerLabels.put(FILTER_ID_STARRED, getString(R.string.drawer_starred));
-        
+
         // content directory
         appContext = getActivity();
         File appDir = appContext.getExternalFilesDir(null);
@@ -168,7 +169,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         if (!contentDirectory.exists()) {
             contentDirectory.mkdir();
         }
-        
+
         LocalBroadcastManager.getInstance(appContext).registerReceiver(broadcastReceiver,
                 new IntentFilter(Constants.BOOKMARK_ACTION));
     }
@@ -189,16 +190,19 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         reload(true);
 
         // setup menu drawer
-        drawerToggle = new ActionBarDrawerToggle((Activity)appContext, drawerLayout, R.drawable.ic_drawer,
+        drawerToggle = new ActionBarDrawerToggle((Activity) appContext, drawerLayout,
+                R.drawable.ic_drawer,
                 R.string.drawer_open, R.string.drawer_close) {
             public void onDrawerClosed(View view) {
-                ((Activity)appContext).invalidateOptionsMenu(); // creates call to
-                                         // onPrepareOptionsMenu()
+                ((Activity) appContext).invalidateOptionsMenu(); // creates call
+                                                                 // to
+                // onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                ((Activity)appContext).invalidateOptionsMenu(); // creates call to
-                                         // onPrepareOptionsMenu()
+                ((Activity) appContext).invalidateOptionsMenu(); // creates call
+                                                                 // to
+                // onPrepareOptionsMenu()
             }
 
         };
@@ -246,7 +250,8 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
                             bookmarks.contains(currentContent.getFilename()));
 
                     startActivity(intent);
-                    ((Activity)appContext).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    ((Activity) appContext).overridePendingTransition(R.anim.slide_in_right,
+                            R.anim.slide_out_left);
                 } else { // if in editing/deletion mode, add/remove selection
                     boolean select = contentListAdapter.toggleSelection(pos);
                     if (select)
@@ -268,12 +273,12 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
 
                 selectedRowItems.add(contentListAdapter.getItem(pos));
                 contentListAdapter.toggleSelection(pos);
-                rowActionMode = ((Activity)appContext).startActionMode(rowActionCallback);
+                rowActionMode = ((Activity) appContext).startActionMode(rowActionCallback);
                 return true;
             }
 
         });
-        
+
         return rootView;
     }
 
@@ -336,7 +341,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         editor.putStringSet(SETTING_BOOKMARKS, bookmarks);
         editor.apply();
     }
-    
+
     /**
      * no changes to filter, just re-apply to the list
      */
@@ -403,7 +408,7 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         contentListAdapter.notifyDataSetChanged();
         updateFilter();
     }
-    
+
     /**
      * reload metadata and refresh the list
      * 
@@ -433,12 +438,13 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         // get a list of categories
         categories = new ArrayList<String>();
         for (Media.Item m : contentItems) {
-            /*for (String c : m.getCategoriesList()) {
-                if (!categories.contains(c))
-                    categories.add(c);
-            }*/
-            //only the first item in the category list is important
-            if(!categories.contains(m.getCategoriesList().get(0))){
+            /*
+             * for (String c : m.getCategoriesList()) { if
+             * (!categories.contains(c)) categories.add(c); }
+             */
+            // only the first item in the category list is important
+            if (m.getCategoriesList() != null && m.getCategoriesList().size() > 0
+                    && !categories.contains(m.getCategoriesList().get(0))) {
                 categories.add(m.getCategoriesList().get(0));
             }
         }
@@ -494,7 +500,8 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
             drawerListAdapter.notifyDataSetChanged();
 
         if (contentListAdapter == null) {
-            contentListAdapter = new ContentListAdapter((ContentListActivity)appContext, contentItems,
+            contentListAdapter = new ContentListAdapter((ContentListActivity) appContext,
+                    contentItems,
                     contentDirectory.getAbsolutePath());
             contentList.setAdapter(contentListAdapter);
         } else
@@ -568,6 +575,5 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
     public File getMetaFile() {
         return metaFile;
     }
-    
-    
+
 }
