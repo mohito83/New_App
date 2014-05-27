@@ -165,6 +165,8 @@
 
                     <TextView
                         android:id="@+id/positive_vote_count"
+                        android:gravity="center"
+                        android:drawablePadding="0sp"
                         android:drawableTop="@drawable/ic_action_rating_good"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -176,6 +178,8 @@
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/negative_vote_count"
+                        android:gravity="center"
+                        android:drawablePadding="0sp"
                         android:drawableBottom="@drawable/ic_action_rating_bad"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

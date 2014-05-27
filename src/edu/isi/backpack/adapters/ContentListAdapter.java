@@ -83,7 +83,7 @@ public class ContentListAdapter extends ArrayAdapter<Media.Item> {
             holder.positiveVotes = (TextView) convertView.findViewById(R.id.positive_vote_count);
             holder.positiveVotes.setText("112");
             holder.negativeVotes = (TextView) convertView.findViewById(R.id.negative_vote_count);
-            holder.negativeVotes.setText("17");
+            holder.negativeVotes.setText("7");
 
             convertView.setTag(holder);
         } else {
