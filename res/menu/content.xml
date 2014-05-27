@@ -1,6 +1,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_menu_overflow"
+        android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_download">
+        <menu>
+            <item
+                android:id="@+id/action_about"
+                android:title="@string/action_about"/>
+            <item
+                android:id="@+id/action_share_app"
+                android:title="@string/action_shareapp"/>
+            <item
+                android:id="@+id/action_tour_app"
+                android:title="@string/action_tourapp"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_delete_all"
+        android:icon="@drawable/ic_action_delete"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_deleteAll"/>
+    <item
         android:id="@+id/action_sync"
         android:icon="@drawable/ic_action_share"
         android:orderInCategory="100"
@@ -17,7 +41,7 @@
          <item
         android:id="@+id/action_sync_wifi"
         android:icon="@drawable/ic_action_sync_wifi"
-        android:title="@string/action_sync"/>
+        android:title="@string/action_sync"/>
     -->
     <!--
     item
@@ -47,28 +71,9 @@
     </item
     -->
     <item
-        android:id="@+id/action_delete_all"
-        android:icon="@drawable/ic_action_delete"
+        android:id="@+id/app_logo"
+		android:actionLayout="@layout/app_logo_action_bar_item"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_deleteAll"/>
-    <item
-        android:id="@+id/action_menu_overflow"
-        android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_download">
-        <menu>
-            <item
-                android:id="@+id/action_about"
-                android:title="@string/action_about"/>
-            <item
-                android:id="@+id/action_share_app"
-                android:title="@string/action_shareapp"/>
-            <item
-                android:id="@+id/action_tour_app"
-                android:title="@string/action_tourapp"/>
-        </menu>
-    </item>
+        android:showAsAction="always"/>
 
 </menu>

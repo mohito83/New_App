@@ -125,4 +125,7 @@
 	<string name="button_cancel">Cancel</string>
 	<string name="button_close">Close</string>
 	<string name="button_setting">Edit Setting</string>
+	
+	
+	<string name="balatarin_icon_text">بالاترین</string>
 </resources>
