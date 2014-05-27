@@ -25,14 +25,14 @@
             android:orientation="horizontal"
             android:padding="6dp" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/stripe"
                 android:layout_width="5dp"
                 android:layout_height="125dp"
                 android:adjustViewBounds="true"
                 android:background="@color/Goldenrod"
                 android:baselineAlignBottom="true"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop" /> -->
 
             <FrameLayout
                 android:id="@+id/contentThumbFrame"
