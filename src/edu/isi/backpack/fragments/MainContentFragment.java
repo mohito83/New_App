@@ -169,6 +169,8 @@ public class MainContentFragment extends Fragment implements BookmarkManager {
         if (!contentDirectory.exists()) {
             contentDirectory.mkdir();
         }
+        
+        settings = ((ContentListActivity)appContext).getPreferences(Context.MODE_PRIVATE);
 
         LocalBroadcastManager.getInstance(appContext).registerReceiver(broadcastReceiver,
                 new IntentFilter(Constants.BOOKMARK_ACTION));
