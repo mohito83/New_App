@@ -20,6 +20,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -344,13 +345,13 @@ public class ContentListActivity extends FragmentActivity {
         Tab tab = actionBar.newTab()
                            .setText(R.string.tab_hot)
                            .setTabListener(new TabListener(
-                                   this, "Hot", MainContentFragment.class));
+                                   this, MainContentFragment.class)).setTag("Hot");
         actionBar.addTab(tab);
 
         tab = actionBar.newTab()
                        .setText(R.string.tab_recent)
                        .setTabListener(new TabListener(
-                               this, "Recent", MainContentFragment.class));
+                               this, MainContentFragment.class)).setTag("Recent");
         actionBar.addTab(tab);
 
         // Set up the action bar to show a dropdown list for categories
@@ -866,7 +867,6 @@ public class ContentListActivity extends FragmentActivity {
     public class TabListener implements ActionBar.TabListener {
         private Fragment mFragment;
         private final Activity mActivity;
-        private final String mTag;
         private final Class mClass;
 
         /**
@@ -876,33 +876,39 @@ public class ContentListActivity extends FragmentActivity {
          * @param tag The identifier tag for the fragment
          * @param clz The fragment's Class, used to instantiate the fragment
          */
-        public TabListener(Activity activity, String tag, Class clz) {
+        public TabListener(Activity activity, Class clz) {
             mActivity = activity;
-            mTag = tag;
             mClass = clz;
         }
 
         @Override
         public void onTabSelected(Tab tab, FragmentTransaction ft) {
+            FragmentManager fm = getFragmentManager();
             // Check if the fragment is already initialized
             if (mFragment == null) {
                 // If not, instantiate and add it to the activity
                 mFragment = Fragment.instantiate(mActivity, mClass.getName());
-                ft.add(android.R.id.content, mFragment, mTag);
+                ft.add(android.R.id.content, mFragment, tab.getTag().toString());
+                //ft.addToBackStack("BackStack" + tab.getTag().toString());
+                //ft.commit();
             } else {
                 // If it exists, simply attach it in order to show it
-                ft.replace(android.R.id.content,mFragment);
+                //ft.replace(android.R.id.content,mFragment);
+                Fragment frag = fm.findFragmentByTag(tab.getTag().toString());
+                ft.show(frag);
             }
             currentSelectedFragment = (MainContentFragment)mFragment;
         }
 
         @Override
         public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-            if (mFragment != null) {
+            /*if (mFragment != null) {
                 // Detach the fragment, because another one is being attached
                 ft.detach(mFragment);
             }
-            mFragment = null;
+            mFragment = null;*/
+            Fragment frag = getFragmentManager().findFragmentByTag(tab.getTag().toString());
+            ft.hide(frag);
         }
 
         @Override
