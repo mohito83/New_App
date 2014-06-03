@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import edu.isi.backpack.adapters.BluetoothListAdapter;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.util.ArrayList;
 

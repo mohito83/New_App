@@ -1,6 +1,6 @@
 package edu.isi.backpack.activities;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;

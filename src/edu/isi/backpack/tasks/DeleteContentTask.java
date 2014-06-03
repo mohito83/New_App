@@ -11,7 +11,7 @@ import edu.isi.backpack.activities.ContentListActivity;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;

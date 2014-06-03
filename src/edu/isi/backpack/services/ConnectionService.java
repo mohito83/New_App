@@ -19,7 +19,7 @@ import edu.isi.backpack.sync.MessageHandler;
 import edu.isi.backpack.sync.SyncConnectorTransactor;
 import edu.isi.backpack.util.BackpackUtils;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.File;
 import java.io.IOException;

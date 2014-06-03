@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 import edu.isi.backpack.adapters.WifiListAdapter;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.util.ArrayList;
 import java.util.Collection;

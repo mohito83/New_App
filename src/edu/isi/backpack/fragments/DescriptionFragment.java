@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import edu.isi.backpack.constants.ExtraConstants;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 /**
  * @author jenniferchen A page that shows the description of individual content

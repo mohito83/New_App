@@ -13,7 +13,7 @@ import com.google.protobuf.GeneratedMessage;
 
 import edu.isi.backpack.metadata.MediaProtos.Media;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

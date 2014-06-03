@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.util.List;
 

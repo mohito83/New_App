@@ -18,7 +18,7 @@ import edu.isi.backpack.VideoControllerView;
 import edu.isi.backpack.activities.FullscreenVideoActivity;
 import edu.isi.backpack.constants.ExtraConstants;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 /**
  * @author jenniferchen This activity shows the video and its description

@@ -34,7 +34,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.lang.ref.WeakReference;
 import java.util.Formatter;

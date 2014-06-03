@@ -9,7 +9,7 @@ import android.content.ContextWrapper;
 import edu.isi.backpack.constants.Constants;
 import edu.isi.backpack.util.BackpackUtils;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.File;
 

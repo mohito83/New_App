@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import android.app.Activity;
 import android.app.Fragment;

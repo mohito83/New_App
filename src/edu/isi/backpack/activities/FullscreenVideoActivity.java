@@ -18,7 +18,7 @@ import edu.isi.backpack.VideoControllerView;
 import edu.isi.backpack.constants.ExtraConstants;
 import edu.isi.backpack.fragments.VideoPlayerFragment;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 /**
  * @author jenniferchen This activity is a fullscreen video view

@@ -11,7 +11,7 @@ import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 import edu.isi.backpack.util.BackpackUtils;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.File;
 import java.io.IOException;

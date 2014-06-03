@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import android.content.Context;
 import android.net.Uri;

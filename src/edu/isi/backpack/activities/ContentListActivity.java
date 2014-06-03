@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;

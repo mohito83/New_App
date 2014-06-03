@@ -29,7 +29,7 @@ import edu.isi.backpack.fragments.VideoPlayerFragment;
 import edu.isi.backpack.metadata.MediaProtos.Media;
 import edu.isi.backpack.metadata.MediaProtos.Media.Item.Type;
 
-import org.toosheh.android.R;
+import org.balatarin.android.R;
 
 import java.io.File;
 import java.util.ArrayList;
